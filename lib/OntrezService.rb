@@ -17,7 +17,7 @@ class OntrezService
   PAGING_RESOURCE_BY_CONCEPT = "/byconcept/virtual/@/#/%/false/false/$S$/10"
   VERSIONED_PAGING_RESOURCE_BY_CONCEPT = "/byconcept/@/#/%/false/false/$S$/10"
   RESOURCES = "/resources"
-  DETAILS = "/details/concept/virtual/@/#/resource/%/element/"
+  DETAILS = "/details/virtual/concept/@/#/resource/%/element/"
   VERSIONED_DETAILS = "/details/concept/@/#/resource/%/element/"
   
   CLASS_STRING = "/result/ontology/@/classID/#/from/0/number/15/metadata"
@@ -42,7 +42,6 @@ class OntrezService
     RAILS_DEFAULT_LOGGER.error Time.now - startGet
 
     RAILS_DEFAULT_LOGGER.error "Parse resources"
-    RAILS_DEFAULT_LOGGER.error ONTREZ_URL + RESOURCES
     doc.elements.each("*/obs\.obr\.populate\.Resource"){|resource|
       new_resource = Resource.new
       new_resource.name = resource.elements["resourceName"].get_text.value
@@ -151,6 +150,8 @@ class OntrezService
     within the context of other research."
     resource.logo ="http://www.nextbio.com/b/s/images2/common/nbLogoSmBeta.png"
     resource.count = doc.elements["NBResultSummary"].elements["count"].get_text.value.to_i
+    # Placeholder for main_context because NextBio doesn't include this information
+    resource.main_context = "Title"
       doc.elements.each("*/details"){ |detail| 
           detail.elements.each { |element| 
             resource.context_numbers[element.name]=element.get_text.value          
