@@ -103,9 +103,9 @@ $(document).ready(function(){
 		        	<li class="tab" id="t_tab3_top"><a  href="#t_tab3:">Notes <span id="note_count">(<%=@concept.note_count%>)</span></a></li>
 					<li class="tab" id="t_tab4_top"><a  href="#t_tab4:">Mappings <span id="map_count">(<%=@concept.mapping_count%>)</span></a></li>				
 					<%if @ontology.ontologyId.to_s.eql?("1104")%>	
-					<li class="tab" id="t_tab5_top"><a  href="#t_tab5:" >Resources <span style="color:blue;font-size:9px;">alpha</span></a></li>			
+					<li class="tab" id="t_tab5_top"><a  href="#t_tab5:" >Resource Index</span></a></li>			
 					<%else%>							
-					<li class="tab" id="t_tab5_top" onclick="callTab(5,'/resources/@ontology@/@concept@');"><a  href="#t_tab5:" alt="callTab(5,'/resources/<%=@ontology.id%>/<%=@concept.id%>')">Resources <span style="color:blue;font-size:9px;">alpha</span></a></li>
+					<li class="tab" id="t_tab5_top" onclick="callTab(5,'/resources/@ontology@/@concept@');"><a  href="#t_tab5:" alt="callTab(5,'/resources/<%=@ontology.id%>/<%=@concept.id%>')">Resource Index</a></li>
 					<%end%>
 		
 			</ul>
@@ -186,8 +186,8 @@ jQuery(document).ready(function(){
 
 function callTab(tab_num,url){
     
-		if(getCache(getConcept())!=null && getCache(getConcept())[tab_num]!=null){		
-	        jQuery("#t_tab"+tab_num).innerHTML=getCache(getConcept())[tab_num];
+		if(getCache(getConcept())!=null && getCache(getConcept()[tab_num])!=null){
+	        jQuery("#t_tab"+tab_num).innerHTML=getCache(getConcept()[tab_num]);
 	    }else{
 			jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Resources...</h1>' }); 
     		jQuery.get(url.replace("@ontology@",getOntology()).replace("@concept@",getConcept()),function(data){
