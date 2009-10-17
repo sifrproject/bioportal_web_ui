@@ -262,7 +262,7 @@ function nodeClicked(node_id,node_label) {
 		jQuery('#map_count').html('('+tabData[6]+')');
         // Load the resource index tab in background
         loc = new String(document.location)
-        if (loc.split("#")[1].replace(":", "") == "t_tab5") {
+        if (loc.search("#t_tab") >= 0 && loc.split("#")[1].replace(":", "") == "t_tab5") {
 			callTab(5, '/resources/@ontology@/@concept@');
 		}
 		
@@ -289,7 +289,7 @@ function nodeClicked(node_id,node_label) {
 			
 			// Load the resource index tab in background
 			loc = new String(document.location)
-            if (loc.split("#")[1].replace(":","") == "t_tab5") {
+            if (loc.search("#t_tab") >= 0 && loc.split("#")[1].replace(":","") == "t_tab5") {
 				callTab(5, '/resources/@ontology@/@concept@');
 			}
 
