@@ -252,46 +252,54 @@ function nodeClicked(node_id,node_label) {
 
 	setConcept(node_id) 
 	
-
-
-
 	if(getCache(node_id)!=null){
 		tabData = getCache(node_id)
 		jQuery('#t_tab1').html(tabData[0]);
 		jQuery('#t_tab2').html(tabData[1]);
 		jQuery('#t_tab3').html(tabData[2]);
 		jQuery('#t_tab4').html(tabData[3]);
-		jQuery('#note_count').html('('+tabData[5]+')')
-		jQuery('#map_count').html('('+tabData[6]+')')
-
+		jQuery('#note_count').html('('+tabData[5]+')');
+		jQuery('#map_count').html('('+tabData[6]+')');
+        // Load the resource index tab in background
+        loc = new String(document.location)
+        if (loc.split("#")[1].replace(":", "") == "t_tab5") {
+			callTab(5, '/resources/@ontology@/@concept@');
+		}
+		
 						<%if @ontology.displayLabel.eql?("Biomedical Resource Ontology")%>		
-						document.getElementById('t_tab5').innerHTML=tabData[4]				
+	       					document.getElementById('t_tab5').innerHTML=tabData[4]				
 						<%end%>
 
-		 update_tab('<%=@ontology.to_param%>',node_id)
+		update_tab('<%=@ontology.to_param%>',node_id);
 		tb_init('a.thickbox, area.thickbox, input.thickbox');
 		
 
 	}else{
-		jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Concept...</h1>' }); 
+		jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Concept...</h1>' });
 		jQuery.get('/visconcepts/<%=@ontology.to_param%>/?id='+encodeURIComponent(node_id)+'&callback=load' ,
 		  function(data){
 		    tabData = data.split("|||")
-				// the tabs
-		jQuery('#t_tab1').html(tabData[0]);
-		jQuery('#t_tab2').html(tabData[1]);
-		jQuery('#t_tab3').html(tabData[2]);
-		jQuery('#t_tab4').html(tabData[3]);
-		jQuery('#note_count').html('('+tabData[5]+')')
-		jQuery('#map_count').html('('+tabData[6]+')')
+			// the tabs
+			jQuery('#t_tab1').html(tabData[0]);
+			jQuery('#t_tab2').html(tabData[1]);
+			jQuery('#t_tab3').html(tabData[2]);
+			jQuery('#t_tab4').html(tabData[3]);
+			jQuery('#note_count').html('('+tabData[5]+')');
+			jQuery('#map_count').html('('+tabData[6]+')');
+			
+			// Load the resource index tab in background
+			loc = new String(document.location)
+            if (loc.split("#")[1].replace(":","") == "t_tab5") {
+				callTab(5, '/resources/@ontology@/@concept@');
+			}
 
-							<%if @ontology.displayLabel.eql?("Biomedical Resource Ontology")%>		
+					<%if @ontology.displayLabel.eql?("Biomedical Resource Ontology")%>		
 						document.getElementById('t_tab5').innerHTML=tabData[4]				
-						<%end%>
+					<%end%>
 
-					setCache(node_id,tabData)
-					jQuery.unblockUI();	
-					tb_init('a.thickbox, area.thickbox, input.thickbox');
+			setCache(node_id,tabData);
+			jQuery.unblockUI();	
+			tb_init('a.thickbox, area.thickbox, input.thickbox');
 
 		  });
 	}	

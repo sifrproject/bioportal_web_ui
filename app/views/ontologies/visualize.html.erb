@@ -185,22 +185,21 @@ jQuery(document).ready(function(){
 });
 
 function callTab(tab_num,url){
-    
-		if(getCache(getConcept())!=null && getCache(getConcept()[tab_num])!=null){
-	        jQuery("#t_tab"+tab_num).innerHTML=getCache(getConcept()[tab_num]);
+		if(getCache(getConcept() + tab_num) != null) {
+	        document.getElementById("t_tab"+tab_num).innerHTML=getCache(getConcept() + tab_num);
 	    }else{
-			jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Resources...</h1>' }); 
+			jQuery("#t_tab"+tab_num).html('<h1><img src="/images/tree/spinner.gif" /> Loading Resources...</h1>');
     		jQuery.get(url.replace("@ontology@",getOntology()).replace("@concept@",getConcept()),function(data){
-				if (getCache(getConcept())!=null){
-			    	getCache(getConcept())[6]=data
-		    	}
-				jQuery("#t_tab"+tab_num).html(data)
+				// This was setting the cache improperly, not sure what it's actually supposed to do
+				//if (getCache(getConcept())!=null){
+			    //	getCache(getConcept())[6]=data;
+		    	//}
+				jQuery("#t_tab"+tab_num).html(data);
+				setCache(getConcept() + tab_num,data);
 				jQuery.unblockUI();	
 				tb_init('a.thickbox, area.thickbox, input.thickbox');
-				
 			});
 		}
-
 }
 
 
