@@ -1107,7 +1107,8 @@ private
          list_content = []
          if !beans.empty?
            beans.each do |bean|
-             list_content << classbeanXML.first.find(bean.path + "/label").first.content
+             bean_label = classbeanXML.first.find(bean.path + "/label")
+             list_content << bean_label.first.content unless bean_label.first.nil?
            end
          else
            # if there's no classBeans, process the list normally
