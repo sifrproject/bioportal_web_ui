@@ -3,24 +3,30 @@
 	tb_init('a.thickbox, area.thickbox, input.thickbox');
 </script>
 <table class="annotations" cellpadding=0 cellspacing=0 width="100%">
+  <tr>
+    <th class="top" style="padding:3px; background: #234979; color: #FFFFFF;""><%=params[:resource_main_context].gsub(/.+?_/,"").capitalize%></th>
+    <th class="top" style="padding:3px; background: #234979; color: #FFFFFF;">ElementId</th>
+  </tr>
+        
      <% for annotation in @resource.annotations%>
+     <% # Check for OMIM resources and remove extra non-integer characters
+       cleaned_local_id = params[:resource].eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id 
+     %>
 	 <%color = cycle("","alt") %>
        <tr class="<%=color%>" >
-          <td colspan="2" style="padding:3px;"<% if annotation == @resource.annotations.first %> class="top"<% end %>><%=params[:resource_main_context].gsub(/.+?_/,"").capitalize%>: <a class="thickbox" href="/res_details/<%=params[:concept]%>?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&resource=<%=params[:resource]%>&element=<%=annotation.local_id%>&height=500&width=600"><%=annotation.description || "No description available"%></a></td>
-       </tr>	   
-	   <tr  class="<%=color%>" >
-	   		<td style="border-top:0px;padding:3px;">ElementId: <%=annotation.local_id%></td><td  style="border-top:0px;padding:3px;"> Score: <%=annotation.score%></td>
+          <td style="padding:3px;"><a class="thickbox" href="/res_details/<%=params[:concept]%>?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&resource=<%=params[:resource]%>&element=<%=annotation.local_id%>&height=500&width=600"><%=annotation.description || "No description available"%></a></td>
+   	      <td style="padding:3px;"><a target="_blank" href="<%=params[:resource_element_url] + cleaned_local_id%>"><%=annotation.local_id%></a></td>
 	   </tr>
       
 	  <%end%>
 	<tr>
 		<td colspan="2" align="right">
 			<%if params[:start].to_i > 0%>
-			<a href="#" onclick="jQuery('#innerannot<%=params[:index]%>').load('/respage/?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&concept=<%=params[:concept]%>&resource=<%=params[:resource]%>&resource_main_context=<%=params[:resource_main_context]%>&start=<%=params[:start].to_i-10%>&end=<%=params[:start]%>&index=<%=params[:index]%>&total=<%=params[:total]%>');return false;">&lt;&lt; Previous Page</a>
+			<a href="#" onclick="jQuery('#innerannot<%=params[:index]%>').load('/respage/?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&concept=<%=params[:concept]%>&resource=<%=params[:resource]%>&resource_element_url=<%=params[:resource_element_url]%>&resource_main_context=<%=params[:resource_main_context]%>&start=<%=params[:start].to_i-10%>&end=<%=params[:start]%>&index=<%=params[:index]%>&total=<%=params[:total]%>');return false;">&lt;&lt; Previous Page</a>
 		<%end%>
 		 &nbsp;&nbsp; 
 		<%if params[:end].to_i <= params[:total].to_i+10%>
-				<a href="#" onclick="jQuery('#innerannot<%=params[:index]%>').load('/respage/?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&concept=<%=params[:concept]%>&resource=<%=params[:resource]%>&resource_main_context=<%=params[:resource_main_context]%>&start=<%=params[:end]%>&end=<%=params[:end].to_i+10%>&index=<%=params[:index]%>&total=<%=params[:total]%>');return false;">Next Page &gt;&gt;</a>
+				<a href="#" onclick="jQuery('#innerannot<%=params[:index]%>').load('/respage/?ontology=<%=params[:ontology]%>&latest=<%=params[:latest]%>&version_id=<%=params[:version_id]%>&concept=<%=params[:concept]%>&resource=<%=params[:resource]%>&resource_element_url=<%=params[:resource_element_url]%>&resource_main_context=<%=params[:resource_main_context]%>&start=<%=params[:end]%>&end=<%=params[:end].to_i+10%>&index=<%=params[:index]%>&total=<%=params[:total]%>');return false;">Next Page &gt;&gt;</a>
 		<%end%>
 		</td>
 	</tr>

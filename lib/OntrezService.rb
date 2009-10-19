@@ -47,6 +47,7 @@ class OntrezService
       new_resource.name = resource.elements["resourceName"].get_text.value
       new_resource.shortname = resource.elements["resourceID"].get_text.value
       new_resource.url = resource.elements["resourceURL"].get_text.value
+      new_resource.resource_element_url = resource.elements["resourceElementURL"].get_text.value
       new_resource.description = resource.elements["resourceDescription"].get_text.value
       new_resource.logo = resource.elements["resourceLogo"].get_text.value
       new_resource.main_context = resource.elements["mainContext"].get_text.value
@@ -55,11 +56,17 @@ class OntrezService
     RAILS_DEFAULT_LOGGER.error Time.now - startGet
 
     RAILS_DEFAULT_LOGGER.error "Retrieve annotations"
-    RAILS_DEFAULT_LOGGER.error ONTREZ_URL+resource_url.gsub("@",ont.to_s.strip).gsub("#",concept_id.strip)
+    RAILS_DEFAULT_LOGGER.error ONTREZ_URL+resource_url.gsub("@",ont).gsub("#",concept_id)
     startGet = Time.now
     # this call gets the annotation numbers and the first 10 annotations for each resource
-    doc = REXML::Document.new(open(ONTREZ_URL + resource_url.gsub("@",ont.to_s.strip).gsub("#",concept_id.strip)))
+    begin
+      doc = REXML::Document.new(open(ONTREZ_URL + resource_url.gsub("@",ont).gsub("#",concept_id)))
+    rescue Exception => e
+      RAILS_DEFAULT_LOGGER.error e.inspect
+    end
+    
     RAILS_DEFAULT_LOGGER.error Time.now - startGet
+    RAILS_DEFAULT_LOGGER.error doc.inspect
     
     # parse out the annotation numbers and annotations
     RAILS_DEFAULT_LOGGER.error "Parse annotations"
@@ -199,10 +206,6 @@ private
 
     xpath = "obs.common.beans.ObrAnnotationBeanDetailled"
 
-    #RAILS_DEFAULT_LOGGER.error "starting parsing"
-    #RAILS_DEFAULT_LOGGER.error doc.inspect
-    #RAILS_DEFAULT_LOGGER.error doc.elements[xpath].inspect
-    
     doc.elements.each(xpath){ |statistic|
       annotation = Annotation.new
       annotation.score = statistic.elements["score"].get_text.value

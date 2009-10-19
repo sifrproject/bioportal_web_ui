@@ -23,23 +23,28 @@ its subclasses based on the textual descriptions of those records.
       <tr name = "annotations" id = "<%="annotation#{index}"%>" style="display:none;"><td colspan=3>
 	    <div id="innerannot<%=index%>" >
           <table class="annotations" cellpadding=0 cellspacing=0 width="100%">                   
+		      <tr>
+		        <th class="top" style="padding:3px; background: #234979; color: #FFFFFF;""><%=resource.main_context.gsub(/.+?_/,"").capitalize%></th>
+		        <th class="top" style="padding:3px; background: #234979; color: #FFFFFF;">ElementId</th>
+		      </tr>
         
   	<%end%>
 
     <%for annotation in resource.annotations%>
+	  <% # Check for OMIM resources and remove extra non-integer characters
+        cleaned_local_id = resource.shortname.eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id 
+	  %>
 	  <%color = cycle("","alt") %>
       <tr class="<%=color%>" >
-        <td colspan="2" style="padding:3px;"<% if annotation == resource.annotations.first %> class="top"<% end %>><%=resource.main_context.gsub(/.+?_/,"").capitalize%>: <a class="thickbox" href="/res_details/<%=@concept.id%>?ontology=<%=@ontology.ontologyId%>&latest=<%=@ontology.is_latest?%>&version_id=<%=@ontology.id%>&resource=<%=resource.shortname%>&element=<%=annotation.local_id%>&height=500&width=600"><%=annotation.description || "No description available"%></a></td>
+        <td style="padding:3px;"><a class="thickbox" href="/res_details/<%=@concept.id%>?ontology=<%=@ontology.ontologyId%>&latest=<%=@ontology.is_latest?%>&version_id=<%=@ontology.id%>&resource=<%=resource.shortname%>&element=<%=annotation.local_id%>&height=500&width=600"><%=annotation.description || "No description available"%></a></td>
+		<td style="padding:3px;"><a target="_blank" href="<%=resource.resource_element_url + cleaned_local_id%>"><%=annotation.local_id%></a></td>
       </tr>
-	  <tr  class="<%=color%>" >
-	    <td style="border-top:0px;padding:3px;">ElementId: <%=annotation.local_id%></td><td  style="border-top:0px;padding:3px;"> Score: <%=annotation.score%></td>
-	  </tr>      
     <%end%>
      
 	<%if resource.count > 0 && !resource.name.eql?("NextBio")%>
 	  <% if resource.count > 10%>
 	    <tr>
-		  <td colspan="2" align="right"> <a href="#" onclick="jQuery('#innerannot<%=index%>').load('/respage/?ontology=<%=@ontology.ontologyId%>&latest=<%=@ontology.is_latest?%>&version_id=<%=@ontology.id%>&concept=<%=@concept.id%>&resource=<%=resource.shortname%>&resource_main_context=<%=resource.main_context%>&start=10&end=20&index=<%=index%>&total=<%=resource.count%>');return false;">Next Page &gt;&gt;</a></td>
+		  <td colspan="2" align="right"> <a href="#" onclick="jQuery('#innerannot<%=index%>').load('/respage/?ontology=<%=@ontology.ontologyId%>&latest=<%=@ontology.is_latest?%>&version_id=<%=@ontology.id%>&concept=<%=@concept.id%>&resource=<%=resource.shortname%>&resource_element_url=<%=resource.resource_element_url%>&resource_main_context=<%=resource.main_context%>&start=10&end=20&index=<%=index%>&total=<%=resource.count%>');return false;">Next Page &gt;&gt;</a></td>
 		</tr>
 	  <%end%>
         </table>
