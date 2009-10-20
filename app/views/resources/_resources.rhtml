@@ -32,7 +32,10 @@ its subclasses based on the textual descriptions of those records.
 
     <%for annotation in resource.annotations%>
 	  <% # Check for OMIM resources and remove extra non-integer characters
-        cleaned_local_id = resource.shortname.eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id 
+         cleaned_local_id = resource.shortname.eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id
+         # Check for Biositemap and change resource element URL (info from OBR is wrong) and local id (stored differently)
+         resource.resource_element_url = resource.shortname.eql?("BSM") ? "http://biositemaps.bioontology.org/editor/BiositemapBrowser.html?file=" : resource.resource_element_url
+         cleaned_local_id = resource.shortname.eql?("BSM") ? annotation.local_id.gsub(/\+/,"&resource=").strip : annotation.local_id
 	  %>
 	  <%color = cycle("","alt") %>
       <tr class="<%=color%>" >

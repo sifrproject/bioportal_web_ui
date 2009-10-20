@@ -10,7 +10,10 @@
         
      <% for annotation in @resource.annotations%>
      <% # Check for OMIM resources and remove extra non-integer characters
-       cleaned_local_id = params[:resource].eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id 
+        cleaned_local_id = params[:resource].eql?("OMIM") ? annotation.local_id.gsub(/\D/,"") : annotation.local_id 
+        # Check for Biositemap and change resource element URL (info from OBR is wrong) and local id (stored differently)
+        params[:resource_element_url] = params[:resource].eql?("BSM") ? "http://biositemaps.bioontology.org/editor/BiositemapBrowser.html?file=" : params[:resource_element_url]
+        cleaned_local_id = params[:resource].eql?("BSM") ? annotation.local_id.gsub(/\+/,"&resource=").strip : annotation.local_id
      %>
 	 <%color = cycle("","alt") %>
        <tr class="<%=color%>" >
