@@ -97,7 +97,6 @@ class DataAccess
       
       return list
     else
-      SERVICE.getOntologyList(true)        
       return CACHE.get("ont_list")
     end
   end
@@ -113,7 +112,6 @@ class DataAccess
       
       return list
     else
-      SERVICE.getCategories(true)
       return CACHE.get("categories")
     end
   end
@@ -136,7 +134,6 @@ class DataAccess
       end
       return list
     else
-      SERVICE.getOntologyList(true)
       return CACHE.get("act_ont_list")
     end
   end
