@@ -1016,69 +1016,70 @@ private
   end
 
   def self.parseConceptLibXML(classbeanXML,ontology)
-     # check if we're at the root node
-     root = classbeanXML.path == "/success/data/classBean" ? true : false
+    # check if we're at the root node
+    root = classbeanXML.path == "/success/data/classBean" ? true : false
 
-     # build a node object
-     node = NodeWrapper.new
-     # set default child size
-     node.child_size=0
-     # get node.id
-     id = classbeanXML.first.find(classbeanXML.path + "/id")
-     node.id = id.first.content unless id.first.nil?
-     # get fullId
-     fullId = classbeanXML.first.find(classbeanXML.path + "/fullId")
-     node.fullId = fullId.first.content unless fullId.first.nil?
-     # get label
-     label = classbeanXML.first.find(classbeanXML.path + "/label")
-     node.name = label.first.content unless label.first.nil?
-     # get childcount info
-     childcount = classbeanXML.first.find(classbeanXML.path + "/relations/entry[string='ChildCount']/int")
-     node.child_size = childcount.first.content.to_i unless childcount.first.nil?
-     # get isBrowsable info
-     is_browsable = classbeanXML.first.find(classbeanXML.path + "/isBrowsable")
-     node.is_browsable = is_browsable.first.content.to_i != 0
+    # build a node object
+    node = NodeWrapper.new
+    # set default child size
+    node.child_size=0
+    # get node.id
+    id = classbeanXML.first.find(classbeanXML.path + "/id")
+    node.id = id.first.content unless id.first.nil?
+    # get fullId
+    fullId = classbeanXML.first.find(classbeanXML.path + "/fullId")
+    node.fullId = fullId.first.content unless fullId.first.nil?
+    # get label
+    label = classbeanXML.first.find(classbeanXML.path + "/label")
+    node.name = label.first.content unless label.first.nil?
+    # get childcount info
+    childcount = classbeanXML.first.find(classbeanXML.path + "/relations/entry[string='ChildCount']/int")
+    node.child_size = childcount.first.content.to_i unless childcount.first.nil?
+    # get isBrowsable info
+    is_browsable = classbeanXML.first.find(classbeanXML.path + "/isBrowsable")
+    browseable_check = is_browsable.first.nil? ? 1 : is_browsable.first.content.to_i
+    node.is_browsable = browseable_check != 0
      
-     node.version_id = ontology
-     node.children = []
-     node.properties = {}
-     
-     if root == true
-       # look for child nodes and process if found
-       search = classbeanXML.path + "/relations/entry[string='SubClass']/list/classBean"
-       results = classbeanXML.first.find(search)
-       unless results.empty?
-         results.each do |child|
-           node.children << parseConceptLibXML(child,ontology)
-         end
-       end
+    node.version_id = ontology
+    node.children = []
+    node.properties = {}
+    
+    if root == true
+      # look for child nodes and process if found
+      search = classbeanXML.path + "/relations/entry[string='SubClass']/list/classBean"
+      results = classbeanXML.first.find(search)
+      unless results.empty?
+        results.each do |child|
+          node.children << parseConceptLibXML(child,ontology)
+        end
+      end
        
-       # find all other properties
-       search = classbeanXML.path + "/relations/entry"
-       classbeanXML.first.find(search).each do |entry|
-         # check to see if the entry is a relationship (signified by [R]), if it is move on
-         if classbeanXML.first.find(entry.path + "/string").first.content[0,3] == "[R]"
-           next
-         end
-         # check to see if this entry has a list of classBeans
-         beans = classbeanXML.first.find(entry.path + "/list/classBean")
-         list_content = []
-         if !beans.empty?
-           beans.each do |bean|
-             bean_label = classbeanXML.first.find(bean.path + "/label")
-             list_content << bean_label.first.content unless bean_label.first.nil?
-           end
-         else
-           # if there's no classBeans, process the list normally
-           list = classbeanXML.first.find(entry.path + "/list/string")
-           list.each do |item|
-             list_content << item.content
-           end
-         end
-         node.properties[classbeanXML.first.find(entry.path + "/string").first.content] = list_content.join(" | ")
-       end # stop processing relation entries
+      # find all other properties
+      search = classbeanXML.path + "/relations/entry"
+      classbeanXML.first.find(search).each do |entry|
+        # check to see if the entry is a relationship (signified by [R]), if it is move on
+        if classbeanXML.first.find(entry.path + "/string").first.content[0,3] == "[R]"
+          next
+        end
+        # check to see if this entry has a list of classBeans
+        beans = classbeanXML.first.find(entry.path + "/list/classBean")
+        list_content = []
+        if !beans.empty?
+          beans.each do |bean|
+            bean_label = classbeanXML.first.find(bean.path + "/label")
+            list_content << bean_label.first.content unless bean_label.first.nil?
+          end
+        else
+          # if there's no classBeans, process the list normally
+          list = classbeanXML.first.find(entry.path + "/list/string")
+          list.each do |item|
+            list_content << item.content
+          end
+        end
+        node.properties[classbeanXML.first.find(entry.path + "/string").first.content] = list_content.join(" | ")
+      end # stop processing relation entries
        
-     end # stop root node processing
+    end # stop root node processing
      
     node.children.sort!{|x,y| x.name.downcase<=>y.name.downcase}
     return node
