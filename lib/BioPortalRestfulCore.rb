@@ -154,11 +154,11 @@ class BioPortalRestfulCore
       def self.getTopLevelNodes(ontology,view = false)
         node = nil
         RAILS_DEFAULT_LOGGER.debug "Retrieve top level nodes"
-        RAILS_DEFAULT_LOGGER.debug BASE_URL+CONCEPT_PATH.gsub("%ONT%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=100"
+        RAILS_DEFAULT_LOGGER.debug BASE_URL+CONCEPT_PATH.gsub("%ONT%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=200"
           if view
-            doc = REXML::Document.new(open(BASE_URL+VIEW_CONCEPT_PATH.gsub("%VIEW%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=100"))            
+            doc = REXML::Document.new(open(BASE_URL+VIEW_CONCEPT_PATH.gsub("%VIEW%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=200"))            
           else
-            doc = REXML::Document.new(open(BASE_URL+CONCEPT_PATH.gsub("%ONT%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=100"))
+            doc = REXML::Document.new(open(BASE_URL+CONCEPT_PATH.gsub("%ONT%",ontology.to_s).gsub("%CONC%","root")+"&applicationid=#{APPLICATION_ID}&maxnumchildren=200"))
           end
          time = Time.now
          node = errorCheck(doc)         
