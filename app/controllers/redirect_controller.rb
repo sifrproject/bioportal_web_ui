@@ -12,7 +12,7 @@ class RedirectController < ApplicationController
         if !param.eql?("url") && !param.eql?("action") && !param.eql?("controller")
           seperator = first_param ? "?" : "&"
           first_param = false
-          params_string += seperator + param + "=" + value
+          params_string += seperator + param + "=" + CGI.escape(value)
         end
       end
       # Redirect with params intact
