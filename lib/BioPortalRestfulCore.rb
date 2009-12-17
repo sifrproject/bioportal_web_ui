@@ -250,12 +250,10 @@ class BioPortalRestfulCore
       def self.getOntologyMetrics(ontology)
         ont = nil
           
-          temp_base = "http://stagerest.bioontology.org/bioportal"
-
           RAILS_DEFAULT_LOGGER.debug "Retrieving ontology metrics"
-          RAILS_DEFAULT_LOGGER.debug temp_base + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"
+          RAILS_DEFAULT_LOGGER.debug BASE_URL + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"
           begin
-            doc = REXML::Document.new(open(temp_base + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"))
+            doc = REXML::Document.new(open(BASE_URL + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"))
           rescue Exception=>e
             RAILS_DEFAULT_LOGGER.debug "getOntologyMetrics error: #{e.message}"
             return ont
