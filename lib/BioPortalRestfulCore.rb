@@ -219,7 +219,8 @@ class BioPortalRestfulCore
       def self.getOntology(ontology)
         ont = nil
        # begin
-          
+          RAILS_DEFAULT_LOGGER.debug "Retrieving ontology"
+          RAILS_DEFAULT_LOGGER.debug BASE_URL + ONTOLOGIES_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"
           doc = REXML::Document.new(open(BASE_URL + ONTOLOGIES_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"))
         #rescue Exception=>e
         #  doc =  REXML::Document.new(e.io.read)
@@ -249,8 +250,17 @@ class BioPortalRestfulCore
       def self.getOntologyMetrics(ontology)
         ont = nil
           
-          doc = REXML::Document.new(open(BASE_URL + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"))
+          temp_base = "http://stagerest.bioontology.org/bioportal"
 
+          RAILS_DEFAULT_LOGGER.debug "Retrieving ontology metrics"
+          RAILS_DEFAULT_LOGGER.debug temp_base + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"
+          begin
+            doc = REXML::Document.new(open(temp_base + METRICS_PATH.gsub("%ONT%",ontology.to_s)+"?applicationid=#{APPLICATION_ID}"))
+          rescue Exception=>e
+            RAILS_DEFAULT_LOGGER.debug "getOntologyMetrics error: #{e.message}"
+            return ont
+          end
+          
             ont = errorCheck(doc)
 
              unless ont.nil?
@@ -987,9 +997,9 @@ private
       class_count = element.elements['string[2]'].get_text.value.to_i
       ontologyMetrics.classesWithMoreThanXSubclasses[class_name] = class_count
       unless defined? first
-        ontologyMetrics.classesWithMoreThanXSubclassesAll = element.get_text.value.strip.eql?("alltriggered")
-        ontologyMetrics.classesWithMoreThanXSubclassesLimitPassed = element.get_text.value.strip.include?("limitpassed") ? 
-            element.get_text.value.strip.split(":")[1].to_i : false
+        ontologyMetrics.classesWithMoreThanXSubclassesAll = element.elements['string[1]'].get_text.value.strip.eql?("alltriggered")
+        ontologyMetrics.classesWithMoreThanXSubclassesLimitPassed = element.elements['string[1]'].get_text.value.strip.include?("limitpassed") ? 
+            element.elements['string[2]'].get_text.value.strip.to_i : false
         first = false
       end
    }
