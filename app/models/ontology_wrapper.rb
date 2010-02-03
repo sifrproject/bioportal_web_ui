@@ -34,7 +34,9 @@ class OntologyWrapper
   attr_accessor :preferredNameSlot
   attr_accessor :documentationSlot
   attr_accessor :authorSlot
-  
+
+  # RRF-specific metadata
+  attr_accessor :targetTerminologies
   
   attr_accessor :reviews
   attr_accessor :projects

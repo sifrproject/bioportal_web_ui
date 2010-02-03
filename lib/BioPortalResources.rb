@@ -19,7 +19,7 @@ class BioPortalResources
       if @params
         @@tokens.each do |token, symbol|
           if @uri.include?(token)
-            @uri.gsub!(token, CGI.escape(@params[symbol]))
+            @uri.gsub!(token, CGI.escape(@params[symbol].to_s))
           end
         end
       end

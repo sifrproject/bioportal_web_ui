@@ -576,7 +576,7 @@ private
   def self.postMultiPart(url, paramsHash)
     params=[]
     for param in paramsHash.keys
-      if param.eql?("filePath")
+      if paramsHash["isRemote"].eql?("0") && param.eql?("filePath")
         params << file_to_multipart('filePath',paramsHash["filePath"].original_filename,paramsHash["filePath"].content_type,paramsHash["filePath"])
       else
         params << text_to_multipart(param,paramsHash[param])
@@ -729,10 +729,11 @@ private
     ontology.documentation = ontologybeanXML.elements["documentation"].get_text.value.strip rescue ""
     ontology.publication = ontologybeanXML.elements["publication"].get_text.value.strip rescue ""
     ontology.dateCreated = Date.parse(ontologybeanXML.elements["dateCreated"].get_text.value).strftime('%m/%d/%Y') rescue ""
-    ontology.preferredNameSlot=ontologybeanXML.elements["preferredNameSlot"].get_text.value.strip rescue ""
-    ontology.synonymSlot=ontologybeanXML.elements["synonymSlot"].get_text.value.strip rescue ""
-    ontology.description=ontologybeanXML.elements["description"].get_text.value.strip rescue ""
-    ontology.abbreviation=ontologybeanXML.elements["abbreviation"].get_text.value.strip rescue ""    
+    ontology.preferredNameSlot = ontologybeanXML.elements["preferredNameSlot"].get_text.value.strip rescue ""
+    ontology.synonymSlot = ontologybeanXML.elements["synonymSlot"].get_text.value.strip rescue ""
+    ontology.description = ontologybeanXML.elements["description"].get_text.value.strip rescue ""
+    ontology.abbreviation = ontologybeanXML.elements["abbreviation"].get_text.value.strip rescue ""    
+    ontology.targetTerminologies = ontologybeanXML.elements["targetTerminologies"].get_text.value.strip rescue ""    
     
     ontology.categories = []
     ontologybeanXML.elements["categoryIds"].elements.each do |element|

@@ -59,28 +59,27 @@
         jQuery("#ontology_format").change(ontologyFormatChange);
         
         // Check to see if owl is selected, show options if so
-        if (jQuery("#ontology_format").val().indexOf("OWL") >= 0 || jQuery("#ontology_format").val().indexOf("PROTEGE") >= 0) {
-            jQuery("#owl_options").optionsIn("fast");
-        }
+        ontologyFormatChange()
     });
     
-    function ontologyFormatChange(){
+    function ontologyFormatChange(format){
         var selected = jQuery("#ontology_format option:selected");
 
-        if (selected.val().indexOf("OWL") >= 0 || selected.val().indexOf("PROTEGE") >= 0) {
-            jQuery("#owl_options").optionsIn("fast");
-        }
-        else {
-            jQuery("#owl_options").optionsOut("fast");
-        }
-        
-        if (selected.val().indexOf("OWL") >= 0 || selected.val().indexOf("PROTEGE") >= 0) {
-            jQuery("#owl_options").optionsIn("fast");
-        }
-        else {
-            jQuery("#owl_options").optionsOut("fast");
-        }
-        
+		switch(selected.val()){
+			case 'OWL':
+			case 'OWL-DL':
+			case 'OWL-FULL':
+			case 'OWL-LITE':
+				jQuery(".format_options").optionsOut("fast");				
+				jQuery("#owl_options").optionsIn("fast");
+				break;
+			case 'RRF':
+				jQuery(".format_options").optionsOut("fast");				
+				jQuery("#rrf_options").optionsIn("fast");
+				break;
+			default:
+				jQuery(".format_options").optionsOut("fast");				
+		}
     }
     
     jQuery.fn.optionsIn = function(speed, easing, callback){
@@ -161,13 +160,13 @@
                 <div id="format_spacing">
                 </div>
                 <table id="format_specific_options">
-                    <tbody id="owl_options">
+                    <tbody id="owl_options" class="format_options">
                         <tr>
                             <th>
                                 Prefered Name Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2000/01/rdf-schema#label">rdfs:label</a>)
                             </th>
                             <td>
-                                <%=text_field :ontology,:preferredNameSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+                                <%=text_field :ontology, :preferredNameSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
                             </td>
                         </tr>
                         <tr>
@@ -175,7 +174,7 @@
                                 Synonym Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#altLabel">skos:altLabel</a>)
                             </th>
                             <td>
-                                <%=text_field :ontology,:synonymSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+                                <%=text_field :ontology, :synonymSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
                             </td>
                         </tr>
                         <tr>
@@ -183,7 +182,7 @@
                                 Definition Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#definition">skos:definition</a>)
                             </th>
                             <td>
-                                <%=text_field :ontology,:documentationSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+                                <%=text_field :ontology, :documentationSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
                             </td>
                         </tr>
                         <tr>
@@ -191,10 +190,20 @@
                                 Author Property (Owl Only) (default: <a target="_blank" href="http://purl.org/dc/elements/1.1/creator">dc:creator</a>)
                             </th>
                             <td>
-                                <%=text_field :ontology,:authorSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+                                <%=text_field :ontology, :authorSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
                             </td>
                         </tr>
                     </tbody>
+					<tbody id="rrf_options" class="format_options">
+				        <tr>
+				            <th>
+				                Target Terminologies (RRF Only)
+				            </th>
+				            <td>
+				                <%=text_field :ontology, :targetTerminologies, :title => 'Target Terminologies' %>
+				            </td>
+				        </tr>
+					</tbody>
                 </table>
             </td>
         </tr>

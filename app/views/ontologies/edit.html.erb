@@ -135,40 +135,54 @@
         <%else %>
         <%=hidden_field  :ontology,:urn %>
         <%end %>
-        <%if @ontology.format.include?("OWL") || @ontology.format.include?("PROTEGE") %>
-        <tr>
-            <th>
-                Prefered Name Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2000/01/rdf-schema#label">rdfs:label</a>)
-            </th>
-            <td>
-                <%=text_field :ontology,:preferredNameSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
-            </td>
-        </tr>
-        <tr>
-            <th>
-                Synonym Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#altLabel">skos:altLabel</a>)
-            </th>
-            <td>
-                <%=text_field :ontology,:synonymSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
-            </td>
-        </tr>
-        <tr>
-            <th>
-                Definition Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#definition">skos:definition</a>)
-            </th>
-            <td>
-                <%=text_field :ontology,:documentationSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
-            </td>
-        </tr>
-        <tr>
-            <th>
-                Author Property (Owl Only) (default: <a target="_blank" href="http://purl.org/dc/elements/1.1/creator">dc:creator</a>)
-            </th>
-            <td>
-                <%=text_field :ontology,:authorSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
-            </td>
-        </tr>
+        
+		<!-- Ontology format-specific fields -->
+		
+		<%if @ontology.format.include?("OWL") || @ontology.format.include?("PROTEGE") %>
+	        <tr>
+	            <th>
+	                Prefered Name Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2000/01/rdf-schema#label">rdfs:label</a>)
+	            </th>
+	            <td>
+	                <%=text_field :ontology,:preferredNameSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>
+	                Synonym Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#altLabel">skos:altLabel</a>)
+	            </th>
+	            <td>
+	                <%=text_field :ontology,:synonymSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>
+	                Definition Property (Owl Only) (default: <a target="_blank" href="http://www.w3.org/2004/02/skos/core#definition">skos:definition</a>)
+	            </th>
+	            <td>
+	                <%=text_field :ontology,:documentationSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th>
+	                Author Property (Owl Only) (default: <a target="_blank" href="http://purl.org/dc/elements/1.1/creator">dc:creator</a>)
+	            </th>
+	            <td>
+	                <%=text_field :ontology,:authorSlot, :class => 'defaultText defaultTextActive', :title => 'use default' %>
+	            </td>
+	        </tr>
         <%end %>
+		
+		<% if @ontology.format.include?("RRF") %>
+	        <tr>
+	            <th>
+	                Target Terminologies (RRF Only)
+	            </th>
+	            <td>
+	                <%=text_field :ontology,:targetTerminologies, :title => 'Target Terminologies' %>
+	            </td>
+	        </tr>
+		<% end %>
         <tr>
             <th>
                 Categories:
