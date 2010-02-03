@@ -486,7 +486,7 @@ class BioPortalRestfulCore
       response = postMultiPart(BASE_URL+ONTOLOGIES_PATH.gsub("%ONT%","")+"?applicationid=#{APPLICATION_ID}",params)
       doc = REXML::Document.new(response)
     rescue Exception=>e
-      doc =  REXML::Document.new(e.io.read)
+      doc = REXML::Document.new(e.io.read)
     end
 
     ontology = errorCheck(doc)
@@ -605,7 +605,7 @@ private
   def self.postMultiPart(url,paramsHash)
     params=[]
     for param in paramsHash.keys
-      if param.eql?("filePath")
+      if paramsHash["isRemote"].eql?("0") && param.eql?("filePath")
         params << file_to_multipart('filePath',paramsHash["filePath"].original_filename,paramsHash["filePath"].content_type,paramsHash["filePath"])
       else
         params << text_to_multipart(param,paramsHash[param])
