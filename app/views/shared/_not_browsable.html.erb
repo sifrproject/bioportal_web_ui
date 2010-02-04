@@ -8,7 +8,7 @@
 <div id="not_browsable_content" style="display:none;">
     <h1 style="font-size: 200%; font-weight: bold; padding-bottom: .8em;">Not Browsable</h1>
 	<p><span style="font-size: large; line-height: 1.2em;">
-	    Sorry, <strong><%=@concept.name%></strong> is not browsable because it is a <%=@concept.type.downcase%><br><br>
+		<%= ErrorHelpers::not_browsable_text(@concept) %><br><br>
 		From here you can:<br>
 		<span style="line-height: 1.5em;">
 		  <ul>

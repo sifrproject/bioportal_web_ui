@@ -8,87 +8,91 @@
 <script src="/javascripts/JqueryPlugins/superfish/hoverIntent.js" type="text/javascript" charset="utf-8"></script>
 <script src="/javascripts/JqueryPlugins/superfish/superfish.js" type="text/javascript" charset="utf-8"></script>
 
-
-
 <script type="text/javascript">
 var searchbox;
 var resourcebox;
 
 function jumpToValue(li){
 	if( li == null ){
-	//didnt pick an ont
-	alert("The ontology does not exist. You must pick an ontology from the list.")
-
-	return false;
+		//didnt pick an ont
+		alert("The ontology does not exist. You must pick an ontology from the list.")
+	
+		return false;
 	}
 
-
-		if( !!li.extra ){
-			
-			var sValue = li.extra[0];
-			
-			document.location="/virtual/"+sValue;
-			jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Ontology...</h1>' }); 
-			return
-		}
-
-	
+	if( !!li.extra ){
+		var sValue = jQuery("#find_ontology_id").val();
+		document.location="/virtual/"+sValue;
+		jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Ontology...</h1>' }); 
+		return;
+	}
 }
-
 
 function formatItem(row) {
  	return row[0];
 }
 
-
 function jumpToValueResource(li){
 	if( li == null ){
-	// Im doing a search	
-	
-	var search = confirm("Press OK to Search for resources using the term, or Cancel to select a term")
+		// Im doing a search	
+		
+		var search = confirm("Press OK to Search for resources using the term, or Cancel to select a term")
 		if(search){
 			query = jQuery("#find_resource").val()
 			document.location="/resources?search="+query;
-			return
+			return;
 		}
 	}
 
-
-		if( !!li.extra ){
-			var concept_id = li.extra[0]
-			var ont_id = li.extra[2];
-			document.location="/resources?concept="+concept_id+"&ontology="+ont_id;
-			return
-		}
-
-	
+	if( !!li.extra ){
+		var concept_id = li.extra[0]
+		var ont_id = li.extra[2];
+		document.location="/resources?concept="+concept_id+"&ontology="+ont_id;
+		return;
+	}
 }
 
 function formatItemResource(row) {
  	return row[0] + " <span style='font-size:9px;color:blue;'>(" + row[2] + ")</span>";
 }
 
-
-
-
-
-<%names = @ontologies.map{|ont| "[\"#{ont.displayLabel}\",\"#{ont.ontologyId}\"]"}
+<%
+  names = @ontologies.map{|ont| "[\"#{ont.displayLabel}\",\"#{ont.ontologyId}\"]"}
   abrv = @ontologies.map{|ont|
-	"[\"#{ont.abbreviation} - #{ont.displayLabel}\",\"#{ont.ontologyId}\"]"
-	}
-	
-names = names | abrv%>
+    "[\"#{ont.abbreviation} - #{ont.displayLabel}\",\"#{ont.ontologyId}\"]"
+  }
+  names = names | abrv
+%>
 
-function selectFindOntology(){
-jQuery('#find_ontology').focus();
+// Sets a hidden form value that records the virtual id when a concept is chosen in the jump to
+// This is a workaround because the default autocomplete search method cannot distinguish between two
+// ontologies that have the same preferred name but different ids.
+function selectFindOntology(li){
+	jQuery("#find_ontology_id").val(li.extra[0]);
+	jQuery("#find_ontology").focus();
 }
 
 var ontologies_array=[<%=names.join(",")%>]
 jQuery(document).ready(function(){
-	 jQuery("#find_ontology").autocompleteArray(ontologies_array, { minChars:1,matchSubset:1,maxItemsToShow:20,onFindValue:jumpToValue,formatItem:formatItem,onItemSelect:selectFindOntology });
+	jQuery("#find_ontology").autocompleteArray(ontologies_array, {
+		minChars: 1,
+		matchSubset: 1,
+		maxItemsToShow: 20,
+		onFindValue: jumpToValue,
+		formatItem: formatItem,
+		onItemSelect: selectFindOntology
+	});
 	searchbox =  jQuery("#find_ontology")[0].autocompleter;
 	
-	 jQuery("#find_resource").autocomplete("/search/json_search/0", { lineSeparator:"~!~",cacheLength:1,matchSubset:0, minChars:3,maxItemsToShow:10,onFindValue:jumpToValueResource,formatItem:formatItemResource });
+	jQuery("#find_resource").autocomplete("/search/json_search/0", {
+		lineSeparator:"~!~",
+		cacheLength: 1,
+		matchSubset: 0,
+		minChars: 3,
+		maxItemsToShow: 10,
+		onFindValue: jumpToValueResource,
+		formatItem: formatItemResource
+	});
 	resourcebox =  jQuery("#find_resource")[0].autocompleter;
 	
 	
@@ -108,12 +112,27 @@ function greybox(box){
 	}
 }
 
+
 </script>
 <style>
 .greyed{
 	color:#CFCFCF;
 }
 </style>
+
+<% unless $FRONT_NOTICE.nil? || $FRONT_NOTICE.empty? || cookies[:front_page_notice_closed].eql?("true") %>
+	<script type="text/javascript">
+		function close_message(){
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + 7);
+			document.cookie="front_page_notice_closed=true; expires="+exdate.toGMTString();
+			jQuery("#notice_message").hide();
+		}
+	</script>
+	<p style="padding: 10px; margin: 10px; border:1px solid #EFEFEF; background-color: #F9F9F9;" id="notice_message">
+		<%=$FRONT_NOTICE%>&nbsp;&nbsp;<a href="#" onclick="close_message(); return false;" style="font-size: small; color: darkGray;">[close]</a>
+	</p>
+<% end %>
 
 <h2 style="margin:10px;"> Welcome to the NCBO Bioportal</h2>
 <p style="padding:10px;margin:10px; border:1px solid #EFEFEF;" >
@@ -155,7 +174,10 @@ in the "Find an ontology" box in the middle column), search biomedical resources
 				<legend>Find an ontology</legend>
 				<table>
 					<tr>				
-						<td nowrap><input class="home_input greyed" type="text" name="ontology" style="width:240px;" size="30" id="find_ontology"  onclick="greybox(this)" value="Enter ontology name, e.g. NCI Thesaurus"> <input type="button" value="Explore" class="home_button" onclick="searchbox.findValue()"></td>
+						<td nowrap>
+							<input class="home_input greyed" type="text" name="ontology" style="width:240px;" size="30" id="find_ontology"  onclick="greybox(this)" value="Enter ontology name, e.g. NCI Thesaurus"> <input type="button" value="Explore" class="home_button" onclick="searchbox.findValue()">
+							<input type="hidden" id="find_ontology_id">
+						</td>
 					</tr>
 					<tr>
 						<td style="padding-left:15px;height:10px;">

@@ -29,37 +29,50 @@
 	<script type="text/javascript">
 	var searchbox;
 	
+	// Called when the "Go" button on the Jump To form is clicked
 	function jumpToValue(li){
 		if( li == null ){
-		// Im doing a search	
-		
-		var search = confirm("Term could not be found..\n Press OK to go to the Search page or Cancel to continue browsing")
+			// User performs a search	
+			var search = confirm("Term could not be found..\n Press OK to go to the Search page or Cancel to continue browsing");
+			
 			if(search){
 				jQuery("#search_keyword").val(jQuery("#search_box").val())
 				jQuery("#search_form").submit()
 				return
 			}
 		}
-	
-			// if coming from an AJAX call, let's use the CityId as the value
-			if( !!li.extra ){
-				
-				var sValue = li.extra[0];
-				document.location="/visualize/<%=@ontology.id%>/?conceptid="+encodeURIComponent(sValue)+"&jump_to_nav=true";
-				jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Term...</h1>' }); 
-				return
-			}
-	
-		
+
+		// Appropriate value selected
+		if( !!li.extra ){
+			var sValue = jQuery("#jump_to_concept_id").val();
+			document.location="/visualize/<%=@ontology.id%>/?conceptid="+encodeURIComponent(sValue)+"&jump_to_nav=true";
+			jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Term...</h1>' }); 
+			return;
+		}
 	}
 	
+	// Sets a hidden form value that records the concept id when a concept is chosen in the jump to
+	// This is a workaround because the default autocomplete search method cannot distinguish between two
+	// concepts that have the same preferred name but different ids.
+	function jumpToSelect(li){
+		jQuery("#jump_to_concept_id").val(li.extra[0]);
+	}
+	
+	// Formats the Jump To search results
 	function formatItem(row) {
 	 	return row[0] + " <span style='font-size:9px;color:blue;' >(" + row[2] + ")</span>";
 	}
 	
-	
 	jQuery(document).ready(function(){
-		jQuery("#search_box").autocomplete("/search/json_search/<%=@ontology.ontologyId%>", { lineSeparator:"~!~",matchSubset:0,minChars:3,maxItemsToShow:20,onFindValue:jumpToValue,formatItem:formatItem });
+		jQuery("#search_box").autocomplete("/search/json_search/<%=@ontology.ontologyId%>", {
+			lineSeparator: "~!~",
+			matchSubset: 0,
+			minChars: 3,
+			maxItemsToShow: 20,
+			onFindValue: jumpToValue,
+			onItemSelect: jumpToSelect,
+			formatItem: formatItem
+		});
 		searchbox = jQuery("#search_box")[0].autocompleter;
 	
 	    <%if !@ontology.is_latest? %>
@@ -120,6 +133,7 @@
 			Jump To:
 				<input type="textbox" id="search_box" size="30"/>
 				<input type="button" value="Go" onclick="searchbox.findValue()"/>
+				<input type="hidden" id="jump_to_concept_id">
 			
 			&nbsp;<a class="thickbox" href ="#TB_inline?height=300&width=300&inlineId=legend"> Legend <img src="/stylesheets/layout/images/help.png" width="16" height="16" alt="Help"></a>
 			</div>		

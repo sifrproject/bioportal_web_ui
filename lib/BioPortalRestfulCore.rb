@@ -12,6 +12,9 @@ class BioPortalRestfulCore
   # Resources
   BASE_URL = $REST_URL
   
+  # Search URL
+  SEARCH_PATH = "/search/%query%?%ONT%"
+  
   # Constants
   SUPERCLASS = "SuperClass"
   SUBCLASS = "SubClass"
