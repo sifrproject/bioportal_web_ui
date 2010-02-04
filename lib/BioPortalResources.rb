@@ -45,9 +45,9 @@ class BioPortalResources
     end
     
     class UpdateOntology < BioPortalResources
-      def initialize
-        super
-        @uri << "/ontologies/"
+      def initialize(params)
+        super(params)
+        @uri << "/ontologies/%ONT%"
       end
     end
     

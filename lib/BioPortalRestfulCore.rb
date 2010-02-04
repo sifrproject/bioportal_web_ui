@@ -472,7 +472,7 @@ class BioPortalRestfulCore
   end
   
   def self.updateOntology(params,version_id)
-    uri_gen = BioPortalResources::UpdateOntology.new
+    uri_gen = BioPortalResources::UpdateOntology.new(:ontology_id => version_id)
     uri = uri_gen.generate_uri
     
     begin
@@ -629,6 +629,7 @@ private
   end
   
   def self.putToRestlet(url, paramsHash)
+    paramsHash["applicationid"] = $APPLICATION_ID
     paramsHash["method"]="PUT"
     for param in paramsHash.keys
       if paramsHash[param].class.to_s.downcase.eql?("array")

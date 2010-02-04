@@ -149,18 +149,21 @@ class DataAccess
     unless(params[:ontologyId].nil?)
       CACHE.delete("#{params[:ontologyId]}::_versions")
       CACHE.delete("#{params[:ontologyId]}::_details")
+      CACHE.delete("ont_list")
     end
     return ontology
   end
   
   def self.updateOntology(params, ontology_id)
-    ontology = SERVICE.updateOntology(params, ontology_id)
+    SERVICE.updateOntology(params, ontology_id)
     CACHE.delete("#{ontology_id}::_details")
     CACHE.delete("ont_list")
     unless(params[:ontologyId].nil?)
       CACHE.delete("#{params[:ontologyId]}::_versions")
+      CACHE.delete("#{self.getLatestOntology(params[:ontologyId]).id}::_details")
+      CACHE.delete("ont_list")
     end
-    return ontology
+    return self.getLatestOntology(params[:ontologyId])
   end
   
   def self.download(ontology_id)
