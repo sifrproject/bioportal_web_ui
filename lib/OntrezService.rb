@@ -72,7 +72,8 @@ class OntrezService
     for resource in resources
       # number of annotations
       xpath = "*/obs.common.beans.ObrResultBean[resourceID='" + resource.shortname + "']/statistics/obs.common.beans.StatisticsBean/nbAnnotation"
-      
+      resource.count = doc.elements[xpath].get_text.value.to_i
+
       # annotations
       xpath = "*/obs.common.beans.ObrResultBean[resourceID='" + resource.shortname + "']/annotations"
       annotations_doc = doc.elements[xpath]
