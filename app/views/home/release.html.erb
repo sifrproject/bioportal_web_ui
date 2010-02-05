@@ -5,36 +5,6 @@
         <p>
             Welcome to the National Center for Biomedical Ontology’s BioPortal. BioPortal is a Web-based application for accessing and sharing biomedical ontologies.
         </p>
-        <h2>New features in BioPortal 2.2.2 (released December 14th, 2009):</h2>
-        <div class="enable-lists">
-            <ul>
-                <li>
-                    Metrics are now displayed on the Ontology Summary page when available
-                </li>
-                <li>
-                    Added fields for supplying Author and Definition Slot names on the ontology metadata form
-                </li>
-                <li>
-                    Schema dump for rake db:migrate has been updated
-                </li>
-                <li>
-                    Synonyms and Definitions are now shown when provided by the concept service
-                </li>
-                <li>
-                    Additional space has been added between items in lists that are displayed in the details tab. This makes concepts with properties that include several paragraphs of text more readable.
-                </li>
-                <li>
-                    Improvements were made to the functionality that handles non-browsable concepts, including handling of the new concept bean 'type' property and inclusion in the path-to-root processing, and moving the Rails template for non-browsable concepts to a shared partial.
-                </li>
-                <li>
-                    Fixed bug where LEXGRID-XML formats were not adding properly in the ontology add/edit form
-                </li>
-                <li>
-                    New Memcache admin utilities that allow flushing and resetting Memcache connection without the need to restart the front end server
-                </li>
-            </ul>
-            <br/>
-        </div>
         <h1>Getting Started</h1>
         <p>
             BioPortal allows users to browse, upload, download, search, comment on, and create mappings for ontologies.
@@ -55,7 +25,175 @@
             To receive notices of new BioPortal releases or site outages, please subscribe 
             to the <a href="https://mailman.stanford.edu/mailman/listinfo/bioportal-announce">bioportal-announce list</a>.
         </p>
-    </div>
+         <h1>Release Notes: BioPortal 2.3 (February 3, 2010)</h1>
+        <div class="enable-lists">
+        <a name="New_features"></a>
+        <h2><span class="mw-headline"> New features </span></h2>
+        <ul>
+            <li>
+                BioPortal will process SKOS labels for preferred names and synonyms:
+                <ul>
+                    <li>
+                        The following is the default property for synonyms: <a href="http://www.w3.org/2004/02/skos/core#altLabel" class="external free" title="http://www.w3.org/2004/02/skos/core#altLabel" rel="nofollow">http://www.w3.org/2004/02/skos/core#altLabel</a>
+                    </li>
+                    <li>
+                        The following is the default property for preferred name: <a href="http://www.w3.org/2004/02/skos/core#prefLabel" class="external free" title="http://www.w3.org/2004/02/skos/core#prefLabel" rel="nofollow">http://www.w3.org/2004/02/skos/core#prefLabel</a>
+                        (rdfs:label otherwise)
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Ontologies used by Annotator &amp; Hierarchy services will now be updated on a regular basis (around every week).
+            </li>
+            <li>
+                The filtering of annotation by semantic types is available only for the ontologies which provide that information
+            </li>
+            <li>
+                The Annotator scoring function has changed a bit. 
+            </li>
+            <li>
+                Users can now exclude the annotations created with synonym terms. 
+            </li>
+            <li>
+                Users can now exclude the annotations less than a certain length. 
+            </li>
+            <li>
+                There is a change in the XML returned by the Annotator service. The &lt;sematicTypeBean&gt; information is presented differently. The Get all terms REST service is also affected.
+            </li>
+            <li>
+                Users can now define target terminologies for RRF ontologies via the BioPortal UI.
+            </li>
+            <li>
+                Referencing the tabs on ontology visualization pages in the BioPortal UI is now done using the tab name:
+                <ul>
+                    <li>
+                        <a href="http://bioportal.bioontology.org/visualize/40644#mappings" class="external free" title="http://bioportal.bioontology.org/visualize/40644#mappings" rel="nofollow">http://bioportal.bioontology.org/visualize/40644#mappings</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <p>
+            <br>
+            Please refer to <a href="http://www.bioontology.org/wiki/index.php/Annotator_User_Guide" class="external free" title="http://www.bioontology.org/wiki/index.php/Annotator_User_Guide" rel="nofollow">http://www.bioontology.org/wiki/index.php/Annotator_User_Guide</a>
+            for details on Annotator enhancements
+        </p>
+        <a name="New_way_to_address_UMLS_ontologies"></a>
+        <h2><span class="mw-headline"> New way to address UMLS ontologies </span></h2>
+        <p>
+            We have harmonized the ontologies in the Annotator and BioPortal. The full list is available at: <a href="http://rest.bioontology.org/obs/ontologies" class="external free" title="http://rest.bioontology.org/obs/ontologies" rel="nofollow">http://rest.bioontology.org/obs/ontologies</a>. This change has implications when using the Annotator with UMLS ontologies.
+        </p>
+        <ul>
+            <li>
+                Currently, BioPortal (and, therefore, Annotator and Hierarchy services) can use 16 ontologies from UMLS. We will add UMLS ontologies to BioPortal on demand. Please send email to support@bioontology.org to request a specific UMLS ontology to be added to BioPortal. 
+            </li>
+            <li>
+                UMLS SAB is no longer valid as ontologyId. Please refer to <a href="http://bioportal.bioontology.org/ontologies/?filter=UMLS" class="external free" title="http://bioportal.bioontology.org/ontologies/?filter=UMLS" rel="nofollow">http://bioportal.bioontology.org/ontologies/?filter=UMLS</a>
+                to map your SAB to the corresponding ontology version id. 
+            </li>
+            <li>
+                UMLS CUIs are no longer valid as conceptId. You can look up the conceptId corresponding to a CUI by using the NCBO search interface (<a href="http://bioportal.bioontology.org/search" class="external free" title="http://bioportal.bioontology.org/search" rel="nofollow">http://bioportal.bioontology.org/search</a>): type in the CUI and check "Include attributes in search". You can also use the search REST service (<a href="http://www.bioontology.org/wiki/index.php/BioPortal_REST_services#Search_services" class="external free" title="http://www.bioontology.org/wiki/index.php/BioPortal_REST_services#Search_services" rel="nofollow">http://www.bioontology.org/wiki/index.php/BioPortal_REST_services#Search_services</a>) to search for the concept by CUI.  We are working on a new concept service that will accept CUI as conceptId in the near future.
+            </li>
+        </ul>
+		<br/>
+        <a name="Known_issues"></a>
+        <h2><span class="mw-headline"> Known issues </span></h2>
+        <ul>
+            <li>
+                ISA closure in the Annotator and Hierarchy services do not work properly for NCIT and Galen. This will be fixed in an upcoming release.
+            </li>
+            <li>
+                Some mappings present in BioPortal are not yet available for use with the Annotator.
+            </li>
+        </ul>
+		<br/>
+        <a name="Other_features_and_bug_fixes"></a>
+        <h2><span class="mw-headline"> Other features and bug fixes </span></h2>
+        <ul>
+            <li>
+                Implemented updates to Hierarchy (OBS Wrapper) Services to conform to the new OBS output XML structure
+            </li>
+            <li>
+                Added case sensitivity check for the root concept (per #1793)
+            </li>
+            <li>
+                Upgraded the deprecated Acegi Security to Spring Security
+            </li>
+            <li>
+                Implemented support for OpenID Authentication
+            </li>
+            <li>
+                New lexbig JAR intended to fix the problem with the graph not focused properly when there are 2 ontologies with the same uri.(Bioportal bug #1783)
+            </li>
+        </ul>
+		<br/>
+        <a name="BioPortal_UI_Internal_Features_and_Bugfixes"></a>
+        <h2><span class="mw-headline"> BioPortal UI Internal Features and Bugfixes </span></h2>
+        <ul>
+            <li>
+                Fixed bug in autocomplete drop-downs where they could not distinguish between two ontologies or concepts with the same name.
+            </li>
+            <li>
+                New functionality to display messages on the front page with a close button that remembers that users closed the message. Set $FRONT_NOTICE in environment.rb to your desired message in order to display a message.
+            </li>
+            <li>
+                Updated language on error messages when attempting to browse individuals/properties.
+            </li>
+            <li>
+                Fixed a bug where submiting a remote ontology would trigger an exception because the app was looking for an uploaded file.
+            </li>
+            <li>
+                Fixed a bug in URI generation for resources where fixnums were being interpreted as strings without conversion.
+            </li>
+            <li>
+                Added a custom logging framework to enable logging to the BioPortal Core.
+            </li>
+            <li>
+                Added functionality to hide explore and download links using a global array. This fix is temporary until this information is stored in the ontology metadata.
+            </li>
+            <li>
+                A custom Google Analytics ID can now be provided via the environment.rb file.
+            </li>
+            <li>
+                If metrics don't exist, the UI now checks prior versions (back through 21 versions, three weeks for ontologies that are updated daily). The user is informed that the metrics are from a previous version and given a link to that version.
+            </li>
+            <li>
+                When registering a new account, a check is now made to make sure that the username doesn't already exist.
+            </li>
+            <li>
+                Before displaying a link for downloading diffs, the UI now makes sure that the diff is between that ontology and the prior existing ontology. This is to handle cases where an ontology may have been deleted but the record of a diff still exists. (Bug #1389)
+            </li>
+            <li>
+                Somehow sorting was removed from the resources on the Resource Index tab. This has been re-enabled.
+            </li>
+            <li>
+                Extending the slider on the ontology visualization page now works properly in IE (Bug #1500)
+            </li>
+            <li>
+                The BioPortal UI is now using the REST service to gather its list of Groups and related ontologies. In addition, Groups have been added to the ontology summary page. (Bug #1607)
+            </li>
+            <li>
+                Fixed a bug where visiting the "Submit new ontology" link on the Browse page while logged out didn't redirect properly once a user logged in (Bug #1486).
+            </li>
+            <li>
+                Removed extra characters from search fields on the BioPortal index page (Bug #1390)
+            </li>
+            <li>
+                Refactored much of the code in the DataAccess class to implement a common method to store/retrieve objects from the cache and make calls to the BioPortal Core when objects aren't in the cache.
+            </li>
+            <li>
+                Exception handling for IO errors due to calls to the back-end that could not be completed. Generally these were improper or unknown concept ids being passed by GoogleBot, but there were some genuine errors that weren't being handled. The user is now informed, via a very basic error message, when a concept can't be found in an existing ontology.
+            </li>
+            <li>
+                Added a REST_DOMAIN config option so that we could pass this parameter to Flex apps and have them use the appropriate locations for REST services. Prior to this the Flex apps were hard-coded to use production for many parts of their operation.
+            </li>
+            <li>
+                Added a FLEX_URL config option to allow for hosting of Flex apps in different locations.
+            </li>
+        </ul>
+
+            <br/>
+        </div>
+   </div>
     <div style="clear:both;">
     </div>
 </div>

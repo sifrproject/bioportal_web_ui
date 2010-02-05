@@ -22,6 +22,10 @@ class SearchController < ApplicationController
   end
   
   def fetch_results
+    if params[:search].nil?
+      redirect_to :ontologies
+      return
+    end
     @query = params[:search][:keyword]
     @ontologies = params[:search][:ontologies]
     if @ontologies.eql?("0") || @ontologies.first.eql?("0")

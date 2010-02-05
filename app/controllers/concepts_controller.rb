@@ -16,7 +16,7 @@ class ConceptsController < ApplicationController
       @concept = DataAccess.getNode(params[:ontology],params[:id])
       
       # We only want to log concept loading, not showing a list of child concepts
-      LOG.add :info, 'visualize_concept', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
+      LOG.add :info, 'visualize_concept', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id if @concept && @ontology
     end
 
     # TODO: This should use a proper error-handling technique with custom exceptions
@@ -161,8 +161,7 @@ class ConceptsController < ApplicationController
             @children << TreeNode.new(child)
             @children.sort!{|x,y| x.name.downcase<=>y.name.downcase}
           end
-          RAILS_DEFAULT_LOGGER.error "Tree Build Time"
-          RAILS_DEFAULT_LOGGER.error Time.now - start_tree
+          LOG.add :debug,  "Tree build (#{Time.now - start_tree})"
           render :partial => 'childNodes'
       end    
   end
