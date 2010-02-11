@@ -202,6 +202,10 @@ private
   def self.parseAnnotations(doc,resource)
     resource.context_numbers = {}
     resource.annotations = []
+    
+    # Sometimes the OBR service doesn't return an annotation tag when there are no annotations
+    # To work around this, return is the annotation source xml is nil
+    return if doc.nil?
 
     xpath = "obs.common.beans.ObrAnnotationBeanDetailled"
 
