@@ -57,7 +57,7 @@ class ConceptsController < ApplicationController
       return
     elsif @ontology.statusId.to_i.eql?(3)
       LOG.add :info, 'show_virtual', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel
-      redirect_to "/visualize/#{version.id}"
+      redirect_to "/visualize/#{@ontology.id}"
       return
     else
       for version in @versions

@@ -213,17 +213,17 @@ class OntologiesController < ApplicationController
       # if the id is coming from a param, use that to get concept
       @concept = DataAccess.getNode(@ontology.id,params[:id],view)
 
+      # TODO: This should use a proper error-handling technique with custom exceptions
+      if @concept.nil?
+        @error = "The requested term could not be found."
+        return
+      end
+      
       # Did we come from the Jump To widget, if so change logging
       if params[:jump_to_nav]
         LOG.add :info, 'jump_to_nav', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
       else
         LOG.add :info, 'visualize_concept', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
-      end
-      
-      # TODO: This should use a proper error-handling technique with custom exceptions
-      if @concept.nil?
-        @error = "The requested term could not be found."
-        return
       end
       
       # This handles special cases where a passed concept id is for a concept
