@@ -42,3 +42,6 @@ if defined?(PhusionPassenger)
     end
   end
 end
+
+# Include the BioPortal-specific configuration options
+require 'config/bioportal_config.rb'

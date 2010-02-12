@@ -1,0 +1,59 @@
+
+# Application ID: unique string representing the UI's id for use with the BioPortal Core
+$APPLICATION_ID = "" 
+
+# REST core service address
+$REST_URL="http://domain.com:8080/bioportal"
+
+# OBR REST service address
+$OBR_REST_URL="http://domain.com/resource_index"
+
+# REST core service port number
+$REST_PORT="8080"
+
+# Release version text (appears in footer of all pages, except 404 and 500 errors)
+$RELEASE_VERSION = ""
+
+# Google Analytics ID (optional)
+$ANALYTICS_ID = ""
+
+# Email address to mail when exceptions are raised
+ExceptionNotifier.exception_recipients = %w(recipient@domain.com) 
+
+# SMTP settings
+ActionMailer::Base.smtp_settings = {
+  :address  => "", # smtp server address, ex: smtp.domain.com
+  :port  => 25, # smtp server port
+  :domain  => "", # fqdn of rails server, ex: rails.domain.com
+} 
+
+# Settings for date formatting
+CalendarDateSelect.format = :american
+
+# reCAPTCHA
+# In order to use reCAPTCHA on the user account creation page:
+#    1. Obtain a key from reCAPTCHA: http://recaptcha.net
+#    2. Include the corresponding keys below (between the single quotes)
+#    3. Set the USE_RECAPTCHA option to 'true'
+ENV['USE_RECAPTCHA'] = 'false'
+ENV['RECAPTCHA_PUBLIC_KEY']  = ''
+ENV['RECAPTCHA_PRIVATE_KEY'] = ''
+
+# Custom BioPortal logging
+require 'log'
+$REMOTE_LOGGING = "false"
+
+##
+# Flex Options
+##
+
+# Increment the following 'version' to prevent caching when Flex apps are updated
+$FLEX_VERSION="1.0.8"
+
+# URL to pull flex apps from
+# Default uses Flex apps hosted at University of Victoria, you should only change this
+# if you are hosting the apps yourself.
+$FLEX_URL = "http://keg.cs.uvic.ca/ncbo"
+
+# REST domain: this is the domain that hosts your services (Core, OBS, OBR, etc)
+$REST_DOMAIN = "domain.com"

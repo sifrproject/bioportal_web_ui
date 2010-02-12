@@ -14,8 +14,7 @@ class LOG
   def self.add(level, message, request = nil, remote_params = nil)
     if request
       if $REMOTE_LOGGING.eql?("true")
-        remote_log = RestClient::Resource.new $REST_URL + "/log", :timeout => 30
-        remote(level, message, request, remote_log, remote_params)
+        remote(level, message, request, remote_params)
       end
     else
       local(level, message)
@@ -24,17 +23,38 @@ class LOG
   
   private
   
-  def self.remote(level, event, request, log, params)
+  def self.remote(level, event, request, params)
+    params = {} if params.nil?
+    params = convert_params(params) unless params.empty?
+
+    log = RestClient::Resource.new $REST_URL + "/log", :timeout => 30
+    
     session = request.session
     params[:user] = session[:user].username rescue ""
-    params[:user_id] = session[:user].id rescue ""
-    params[:user_ip] = request.remote_ip
-    params[:session_id] = session.session_id
-    params[:event] = event
-    params[:application_id] = $APPLICATION_ID
-    params[:request_uri] = request.request_uri
+    params[:userid] = session[:user].id rescue ""
+    params[:ipaddress] = request.remote_ip
+    params[:sessionid] = request.session_options[:id]
+    params[:eventtype] = event
+    params[:applicationid] = $APPLICATION_ID
+    params[:requesturl] = request.request_uri
     
-    log.post(params)
+    begin
+      log.post(params)
+    rescue Exception=>e
+      LOG.add :debug, "Remote logging failed: #{e.message}"
+    end
+  end
+  
+  # Convert parameter names before making the call. Removes underscores.
+  def self.convert_params(params)
+    params[:ontologyversionid] = params[:ontology_id] if params[:ontology_id] 
+    params[:ontologyid] = params[:virtual_id] if params[:ontologyid]
+    params[:ontologyname] = params[:ontology_name] if params[:ontology_name]
+    params[:conceptid] = params[:concept_id] if params[:concept_id]
+    params[:conceptname] = params[:concept_name] if params[:concept_name]
+    params[:query] = params[:search_term] if params[:search_term]
+    params[:numsearchresults] = params[:result_count] if params[:result_count]
+    params
   end
   
   def self.local(level, message)

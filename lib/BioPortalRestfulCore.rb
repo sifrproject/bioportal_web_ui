@@ -304,39 +304,38 @@ class BioPortalRestfulCore
     return root
   end
 
-      def self.getNodeNameContains(ontologies,search,page)
-        if ontologies.to_s.eql?("0")
-          ontologies=""
-        else
-          ontologies = "ontologyids=#{ontologies.join(",")}&"
+  def self.getNodeNameContains(ontologies,search,page)
+    if ontologies.to_s.eql?("0")
+      ontologies=""
+    else
+      ontologies = "ontologyids=#{ontologies.join(",")}&"
         end
-        
-        LOG.add :debug, "####################################################"
+ 
         LOG.add :debug, BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"
-        begin
-          doc = REXML::Document.new(open(BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"))
-        rescue Exception=>e
-          doc =  REXML::Document.new(e.io.read)
-        end   
+    begin
+     doc = REXML::Document.new(open(BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"))
+    rescue Exception=>e
+      doc =  REXML::Document.new(e.io.read)
+    end   
 
-        results = errorCheck(doc)
-        
-        unless results.nil?
-          return results
-        end 
+    results = errorCheck(doc)
+    
+    unless results.nil?
+      return results
+    end 
 
-        results = []
-        doc.elements.each("*/data/page/contents"){ |element|  
-          results = parseSearchResults(element)
-        }
+    results = []
+    doc.elements.each("*/data/page/contents"){ |element|  
+      results = parseSearchResults(element)
+    }
 
-        pages = 1
-        doc.elements.each("*/data/page"){|element|
-          pages = element.elements["numPages"].get_text.value
-        }
-        
-        return results,pages
-      end
+    pages = 1
+    doc.elements.each("*/data/page"){|element|
+      pages = element.elements["numPages"].get_text.value
+    }
+    
+    return results,pages
+  end
 
   def self.getUsers()
     uri_gen = BioPortalResources::Users.new

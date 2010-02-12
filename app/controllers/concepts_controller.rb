@@ -42,35 +42,38 @@ class ConceptsController < ApplicationController
   end
   
   def virtual
-    time = Time.now
-    #puts "Starting Retrieval"
     @ontology = DataAccess.getLatestOntology(params[:ontology])
     @versions = DataAccess.getOntologyVersions(@ontology.ontologyId)
     @concept =  DataAccess.getNode(@ontology.id,params[:id])
-
-    LOG.add :info, 'show_virtual_concept', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
-
+    
     if @ontology.isRemote.to_i.eql?(1)
       redirect_to "/ontologies/#{@ontology.id}"
       return
     end
     
-    if @ontology.statusId.to_i.eql?(3)
+    if version.statusId.to_i.eql?(3) && @concept
+      LOG.add :info, 'show_virtual_concept', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
       redirect_to "/visualize/#{@ontology.id}/#{@concept.id}"
+      return
+    elsif version.statusId.to_i.eql?(3)
+      LOG.add :info, 'show_virtual', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel
+      redirect_to "/visualize/#{version.id}"
       return
     else
       for version in @versions
-        if version.statusId.to_i.eql?(3)
+        if version.statusId.to_i.eql?(3) && @concept
+          LOG.add :info, 'show_virtual_concept', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
           redirect_to "/visualize/#{version.id}/#{@concept.id}"
+          return
+        elsif version.statusId.to_i.eql?(3)
+          LOG.add :info, 'show_virtual', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel
+          redirect_to "/visualize/#{version.id}"
           return
         end
       end
-      
       redirect_to "/ontologies/#{@ontology.id}"
       return
     end
-    
-    
   end
   
 

@@ -16,12 +16,12 @@ class DataAccess
   
   def self.getNode(ontology_id, node_id, view = false) 
     view_string = view ? "view_" : ""
-    return self.cache_pull("#{view_string}#{param(ontology_id)}::#{node_id.gsub(" ","%20")}", "getNode", { :ontology_id => ontology_id, :concept_id => node_id })
+    return self.cache_pull("#{view_string}#{param(ontology_id)}::#{node_id.to_s.gsub(" ","%20")}", "getNode", { :ontology_id => ontology_id, :concept_id => node_id })
   end
 
   def self.getLightNode(ontology_id, node_id, view = false)
     view_string = view ? "view_" : ""
-    return self.cache_pull("#{view_string}#{param(ontology_id)}::#{node_id.gsub(" ","%20")}_light", "getLightNode", { :ontology_id => ontology_id, :concept_id => node_id })
+    return self.cache_pull("#{view_string}#{param(ontology_id)}::#{node_id.to_s.gsub(" ","%20")}_light", "getLightNode", { :ontology_id => ontology_id, :concept_id => node_id })
   end
   
   def self.getView(view_id)

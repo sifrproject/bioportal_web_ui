@@ -97,6 +97,10 @@ class SearchController < ApplicationController
   end
   
   def json_search
+    if params[:q].nil? || params[:id].nil?
+      render :text => "No search term or ontology id provided"
+      return
+    end
     
     @results,@pages = DataAccess.getNodeNameContains([params[:id]],params[:q],1)
 
