@@ -51,11 +51,11 @@ class ConceptsController < ApplicationController
       return
     end
     
-    if version.statusId.to_i.eql?(3) && @concept
+    if @ontology.statusId.to_i.eql?(3) && @concept
       LOG.add :info, 'show_virtual_concept', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
       redirect_to "/visualize/#{@ontology.id}/#{@concept.id}"
       return
-    elsif version.statusId.to_i.eql?(3)
+    elsif @ontology.statusId.to_i.eql?(3)
       LOG.add :info, 'show_virtual', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel
       redirect_to "/visualize/#{version.id}"
       return
