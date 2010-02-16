@@ -201,15 +201,15 @@ class OntologiesController < ApplicationController
       # get the initial concept to display
       @concept = DataAccess.getNode(@ontology.id,@root.children.first.id,view)
       
-      LOG.add :info, 'visualize_ontology', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
-
       # Some ontologies have "too many children" at their root. These will not process and are handled here.
       # TODO: This should use a proper error-handling technique with custom exceptions
       if @concept.nil?
         @error = "The requested term could not be found."
         return
       end
-    else
+      
+      LOG.add :info, 'visualize_ontology', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.name, :concept_id => @concept.id
+   else
       # if the id is coming from a param, use that to get concept
       @concept = DataAccess.getNode(@ontology.id,params[:id],view)
 
