@@ -26,13 +26,14 @@ class NodeWrapper
     hash.each do |key,value|
       if key.eql?("relations")
         self.child_size = value['ChildCount'].to_i if value['ChildCount'] 
-        
+
         self.children = []
         if value['SubClass']
           value['SubClass'].each do |value|
-            self.children << NodeWrapper.new(value, params) 
+            self.children << NodeWrapper.new(value, params) unless value.empty?
           end
         end
+        
         self.children.sort! { |a,b| a.name.downcase <=> b.name.downcase } unless self.children.empty?
       else
         begin

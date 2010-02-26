@@ -105,8 +105,7 @@ class SearchController < ApplicationController
     @results,@pages = DataAccess.getNodeNameContains([params[:id]],params[:q],1)
 
     if params[:id]
-      @ontology = DataAccess.getLatestOntology(params[:id])
-      LOG.add :info, 'jump_to_search', request, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :search_term => params[:q], :result_count => @results.length
+      LOG.add :info, 'jump_to_search', request, :virtual_id => params[:id], :search_term => params[:q], :result_count => @results.length
     else
       LOG.add :info, 'jump_to_search', request, :search_term => params[:q], :result_count => @results.length
     end
@@ -128,7 +127,7 @@ class SearchController < ApplicationController
         target_value = result[:preferredName]
       end      
       
-      if params[:id]
+      if params[:id] && params[:id].split(",").length == 1
         response << "#{target_value}|#{result[:conceptIdShort]}|#{result[:recordType].titleize.gsub("Record Type","").downcase.strip}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}~!~"
       else
         response << "#{target_value}|#{result[:conceptIdShort]}|#{result[:recordType].titleize.gsub("Record Type","").downcase.strip}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}|#{result[:ontologyDisplayLabel]}~!~"
@@ -138,7 +137,6 @@ class SearchController < ApplicationController
     if params[:response].eql?("json")
       response = response.gsub("\"","'")
       response = "#{params[:callback]}({data:\"#{response}\"})"
-
     end
     
     #default widget

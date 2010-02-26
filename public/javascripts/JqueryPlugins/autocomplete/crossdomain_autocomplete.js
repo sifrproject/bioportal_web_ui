@@ -221,6 +221,8 @@ jQuery.autocomplete = function(input, options) {
 		var pos = findPos(input);
 		// either use the specified width, or autocalculate based on form element
 		var iWidth = (options.width > 0) ? options.width : $input.width();
+		// add any footer information
+		if (options.footer != undefined) $results.append(options.footer);
 		// reposition
 		$results.css({
 			width: parseInt(iWidth) + "px",
