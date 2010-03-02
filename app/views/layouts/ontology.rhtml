@@ -18,11 +18,27 @@
 
 </head>
 <body>
-						<%=render :partial =>'layouts/topnav'%>            			
+	<%=render :partial =>'layouts/topnav'%>            			
 		
-			<div id="bd">
-				<%=yield%>	
-			</div>
+	<div id="bd">
+		<% message_name = "" %>
+		<% $SITE_NOTICE.each_key { |k| message_name = k } %>
+		<% unless $SITE_NOTICE.nil? || $SITE_NOTICE.empty? || cookies[message_name.to_sym].eql?("true") %>
+			<script type="text/javascript">
+				function close_message(){
+					var exdate = new Date();
+					exdate.setDate(exdate.getDate() + 365);
+					document.cookie="<%=message_name%>=true; expires="+exdate.toGMTString();
+					jQuery("#notice_message").hide();
+				}
+			</script>
+			<p style="padding: 13px 10px 10px; margin: 10px; border:1px solid #EFEFEF; background-color: #F9F9F9;" id="notice_message">
+				<%=$SITE_NOTICE[message_name.to_sym]%>&nbsp;&nbsp;<a href="#" onclick="close_message(); return false;" style="font-size: small; color: darkGray;">[close]</a>
+			</p>
+		<% end %>
+	
+		<%=yield%>	
+	</div>
 
 
 	<%=render :partial =>'layouts/footer'%>          
