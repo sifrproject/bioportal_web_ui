@@ -28,7 +28,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::View.new(params)
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     view = nil
     doc.elements.each("*/data/ontologyBean"){ |element|  
@@ -42,7 +42,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::ViewVersions.new(params)
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
 
     views = []
     doc.elements.each("*/data/list/list"){ |element|
@@ -60,7 +60,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::Categories.new
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     categories = errorCheck(doc)
 
@@ -83,7 +83,7 @@ class BioPortalRestfulCore
 
     LOG.add :debug, "Retrieve groups"
     LOG.add :debug, uri
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     groups = errorCheck(doc)
     unless groups.nil?
@@ -132,8 +132,8 @@ class BioPortalRestfulCore
     
     LOG.add :debug, "Retrieve top level nodes"
     LOG.add :debug, uri
-    doc = open(uri)
-    #doc = REXML::Document.new(open(uri))            
+    doc = get_xml(uri)
+    #doc = REXML::Document.new(get_xml(uri))            
 
     node = errorCheck(doc)         
 
@@ -151,7 +151,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::Ontologies.new
     uri = uri_gen.generate_uri
     
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     ontologies = errorCheck(doc)
     
@@ -171,7 +171,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::ActiveOntologies.new
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     ontologies = errorCheck(doc)
     
@@ -191,7 +191,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::OntologyVersions.new(params)
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     ontologies = errorCheck(doc)
     
@@ -214,7 +214,7 @@ class BioPortalRestfulCore
 
     LOG.add :debug, "Retrieving ontology"
     LOG.add :debug, uri
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
 
     ont = errorCheck(doc)
     
@@ -240,7 +240,7 @@ class BioPortalRestfulCore
     LOG.add :debug, "Retrieving ontology metrics"
     LOG.add :debug, uri
     begin
-      doc = REXML::Document.new(open(uri))
+      doc = REXML::Document.new(get_xml(uri))
     rescue Exception=>e
       LOG.add :debug, "getOntologyMetrics error: #{e.message}"
       return ont
@@ -263,7 +263,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::LatestOntology.new(params)
     uri = uri_gen.generate_uri
     
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     ont = errorCheck(doc)
     
@@ -287,7 +287,7 @@ class BioPortalRestfulCore
     
     LOG.add :debug, "Retrieve path to root"
     LOG.add :debug, uri
-    doc = open(uri)
+    doc = get_xml(uri)
     
     root = errorCheck(doc)
     
@@ -310,7 +310,7 @@ class BioPortalRestfulCore
  
         LOG.add :debug, BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"
     begin
-     doc = REXML::Document.new(open(BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"))
+     doc = REXML::Document.new(get_xml(BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",search.gsub(" ","%20"))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15"))
     rescue Exception=>e
       doc =  REXML::Document.new(e.io.read)
     end   
@@ -338,7 +338,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::Users.new
     uri = uri_gen.generate_uri
     
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     results = errorCheck(doc)
     
@@ -358,7 +358,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::User.new(params)
     uri = uri_gen.generate_uri
     
-    doc = REXML::Document.new(open(uri))
+    doc = REXML::Document.new(get_xml(uri))
     
     user = errorCheck(doc)
     
@@ -378,7 +378,7 @@ class BioPortalRestfulCore
     uri = uri_gen.generate_uri
     
     begin
-      doc = REXML::Document.new(open(uri))
+      doc = REXML::Document.new(get_xml(uri))
     rescue Exception=>e
       doc = REXML::Document.new(e.io.read)
     end
@@ -420,14 +420,14 @@ class BioPortalRestfulCore
     return user
   end
   
-  def self.updateUser(params,id)
-    uri_gen = BioPortalResources::UpdateUser.new
+  def self.updateUser(params,user_id)
+    uri_gen = BioPortalResources::UpdateUser.new(:user_id => user_id)
     uri = uri_gen.generate_uri
     
     begin
       doc = REXML::Document.new(putToRestlet(uri, params))
     rescue Exception=>e
-      doc =  REXML::Document.new(e.io.read)
+      doc = REXML::Document.new(e.io.read)
     end
 
     user = errorCheck(doc)
@@ -502,7 +502,7 @@ class BioPortalRestfulCore
     uri = uri_gen.generate_uri
     
     begin
-      doc = REXML::Document.new(open(uri))
+      doc = REXML::Document.new(get_xml(uri))
     rescue Exception=>e
       doc = REXML::Document.new(e.io.read)
     end   
@@ -533,12 +533,17 @@ class BioPortalRestfulCore
   
 private
   
+  # Gets XML from the rest service. Used to include a user-agent in one location.
+  def self.get_xml(uri)
+    open(uri, "User-Agent" => "BioPortal-UI")
+  end
+  
   def self.getConcept(ontology, concept_uri)    
     begin
       LOG.add :debug, "Concept retreive url"
       LOG.add :debug, concept_uri
       startTime = Time.now
-      rest = open(concept_uri)
+      rest = get_xml(concept_uri)
       LOG.add :debug, "Concept retreive (#{Time.now - startTime})"
     rescue Exception=>e
       LOG.add :debug, "getConcept retreive error: #{e.message}"
@@ -1097,7 +1102,14 @@ private
   def self.parse(node)
     a = {}
     
+    test = node
+    
+    
     node.each_element do |child|
+      if child.content.eql?("NCBITaxon:28771")
+        test = "test"
+        test
+      end
       case child.name
         when "entry"
           a[child.first.content] = process_entry(child)

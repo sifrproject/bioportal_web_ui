@@ -163,9 +163,9 @@ class BioPortalResources
     end
     
     class UpdateUser < BioPortalResources
-      def initialize
-        super
-        @uri << "/users/"
+      def initialize(params)
+        super(params)
+        @uri << "/users/%USR%"
       end
     end
     

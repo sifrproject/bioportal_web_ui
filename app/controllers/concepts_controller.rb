@@ -19,8 +19,14 @@ class ConceptsController < ApplicationController
     # TODO: This should use a proper error-handling technique with custom exceptions
     if @concept.nil?
       @error = "The requested term could not be found."
-      render :file=> '/ontologies/visualize',:use_full_path =>true, :layout=>'ontology' # done this way to share a view
-      return
+
+      if request.xhr?
+        render :text => @error
+        return
+      else
+        render :file=> '/ontologies/visualize',:use_full_path =>true, :layout=>'ontology' # done this way to share a view
+        return
+      end
     end
 
     # This handles special cases where a passed concept id is for a concept
