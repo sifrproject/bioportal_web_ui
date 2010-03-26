@@ -108,7 +108,7 @@ class BioPortalResources
           @uri << "&maxnumchildren=" + max_children.to_s
         end
         if light
-          @uri << "&light=true"
+          @uri << ""
         end
       end
     end
