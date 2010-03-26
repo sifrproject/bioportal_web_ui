@@ -9,6 +9,15 @@ class ConceptsController < ApplicationController
   def show
     @ontology = DataAccess.getOntology(params[:ontology])
 
+    if @ontology.statusId.to_i.eql?(6)
+      @latest_ontology = DataAccess.getLatestOntology(@ontology.ontologyId)
+      params[:ontology] = @latest_ontology.id
+      flash[:notice] = "The version of <b>#{@ontology.displayLabel}</b> you were attempting to view (#{@ontology.versionNumber}) has been archived and is no longer available for exploring. You have been redirected to the most recent version (#{@latest_ontology.versionNumber})."
+      concept_id = params[:id] ? "?conceptid=#{params[:id]}" : ""
+      redirect_to "/visualize/#{@latest_ontology.id}#{concept_id}", :status => :moved_permanently
+      return
+    end
+    
     # If we're looking for children, just use the light version of the call
     if params[:callback].eql?("children")
       @concept = DataAccess.getLightNode(params[:ontology],params[:id])

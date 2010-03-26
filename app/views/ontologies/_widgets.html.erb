@@ -5,7 +5,7 @@
         <h1>Adding NCBO Widgets for <%=@ontology.displayLabel %> to Your Site</h1>
         <h2>Step 1: Select a widget</h2>
         <hr/>
-        <center>
+        <div style="margin: auto;">
             <style>
                 #widget_table td {
                     border: 1px solid #EFEFEF;
@@ -44,6 +44,7 @@
                         <a href="#TB_inline?height=400&width=600&inlineId=jump" class="thickbox getcode">Get Code</a>
                     </td>
                     <td>
+                    	<div id="bp_quick_jump"></div>
 						<%= javascript_include_tag "/javascripts/widgets/quick_jump.js" %>
                         <div id="jump" style="display:none;">
                         <h2>Step 2: Follow the Instructions</h2>
@@ -80,6 +81,7 @@
 	                        </ul>
 						</div>
                         <textarea rows=8 cols=70>
+                        	<div id="bp_quick_jump"></div>
                             <script type="text/javascript">
                                 var BP_ontology_id = "<%=@ontology.ontologyId%>";
                             </script>
@@ -202,17 +204,18 @@
                         <a href="#TB_inline?height=400&width=600&inlineId=feed" class="thickbox getcode">Get Code</a>
                     </td>
                     <td>
+						<div id="bp_feed_container"></div>
                         <script type="text/javascript">
                             var BP_ontology_id = "<%=@ontology.ontologyId%>"
                         </script>
-                        <script src="/javascripts/widgets/feed_widget.js" type="text/javascript" charset="utf-8">
-                        </script>
+						<%= javascript_include_tag "/javascripts/widgets/feed_widget.js" %>
                         <div id="feed" style="display:none;">
                             <h2>Step 2: Follow the Instructions</h2>
                             <hr/><b>Copy the code below and paste it to your HTML page</b>
                             <br/>
                             <br/>
-                            <textarea rows=4 cols=70>
+                            <textarea rows=8 cols=70>
+                            	<div id="bp_feed_container"></div>
                                 <script type="text/javascript">
                                     var BP_ontology_id = "<%=@ontology.ontologyId%>"
                                 </script>
@@ -235,8 +238,8 @@
                         <a href="#TB_inline?height=400&width=600&inlineId=visual" class="thickbox getcode">Get Code</a>
                     </td>
                     <td>
-                        <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="FlexoViz" width="300px" height="300px" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-                            <param name="movie" value="<%=$FLEX_URL%>/flexviz/FlexoViz.swf?v=<%=$FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" />
+                        <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="FlexoViz" width="750px" height="500px" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
+                            <param name="movie" value="<%=$FLEX_URL%>/flexviz/FlexoViz.swf?v=<%=$FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" /><param name="wmode" value="opaque" />
                             <embed src="<%=$FLEX_URL%>/flexviz/FlexoViz.swf?v=<%=$FLEX_VERSION%>" bgcolor="#ffffff" width="100%" height="100%" name="FlexoViz" align="middle" play="true" loop="false" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" flashVars="widget=true&ontology=<%=@ontology.id%>&server=http://rest.bioontology.org/bioportal/" pluginspage="http://www.adobe.com/go/getflashplayer">
                             </embed>
                         </object>
@@ -269,7 +272,7 @@
                     </td>
                 </tr>
             </table>
-        </center>
+        </div>
     </div>
     <div style="clear:both;">
     </div>

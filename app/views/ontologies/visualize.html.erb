@@ -185,7 +185,7 @@
 			jQuery(id+"_top").addClass("selected");
 			tab_li = jQuery(jQuery("a[href='"+id+"']").parents().get(0));
 			tab_li.addClass("selected");
-			a = jQuery("a[href='"+id+":']");
+			var a = jQuery("a[href='"+id+":']");
 			// Run code found in the alt attribute (this was being used to load the 
 			// resource index tab, I'm not sure it needs to be left in but we can
 			// address when we handle tab history down the road).

@@ -539,7 +539,11 @@ private
   
   # Gets XML from the rest service. Used to include a user-agent in one location.
   def self.get_xml(uri)
-    open(uri, "User-Agent" => "BioPortal-UI")
+    begin
+      open(uri, "User-Agent" => "BioPortal-UI")
+    rescue Exception => e
+      LOG.add :debug, "Problem retrieving xml: #{e.message}"
+    end
   end
   
   def self.getConcept(ontology, concept_uri)    

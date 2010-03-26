@@ -36,7 +36,7 @@
             	        jQuery(id+"_top").addClass("selected");
             	        tab_li = jQuery(jQuery("a[href='"+id+"']").parents().get(0));
             	        tab_li.addClass("selected");
-            	        a = jQuery("a[href='"+id+":']");
+            	        var a = jQuery("a[href='"+id+":']");
             	        eval(a.attr("alt"));
             	    }
             

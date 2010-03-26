@@ -1,9 +1,9 @@
 <div id="reviews_content" style="display:none;" class="tab_content">
     <%if session[:user].nil? %>
-    <br>
-    <a href="/login?redirect=/ontologies/<%=@ontology.id%>">Review This Ontology</a>
+	    <br>
+	    <h2><a href="/login?redirect=/ontologies/<%=@ontology.id%>">Review This Ontology</a></h2>
     <%else %>
-    <h2><a href="/reviews/new?ontology=<%=@ontology.ontologyId%>&height=500&width=600" title="Review For <%=@ontology.displayLabel%>" class="thickbox">Review This Ontology</a></h2>
+	    <h2><a href="/reviews/new?ontology=<%=@ontology.ontologyId%>&height=500&width=600" title="Review For <%=@ontology.displayLabel%>" class="thickbox">Review This Ontology</a></h2>
     <%end %>
     <br>
     <table class="zebra" cellpadding="0" cellspacing="0" width="60%">
@@ -21,9 +21,10 @@
                     <%for rating in review.ratings %>
                     <li>
                         <%if rating.value.eql?(0) %>
-                        <span style="float:left;">Not Rated</span>
+	                        <span style="float:left;">Not Rated</span>
                         <%else %>
-                        <input name="star_<%=rating.id%>" type="radio" class="star" value="1"<% if rating.value.to_i.eql?(1) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="2"<% if rating.value.to_i.eql?(2) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="3"<% if rating.value.to_i.eql?(3) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="4"<% if rating.value.to_i.eql?(4) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="5"<% if rating.value.to_i.eql?(5) %> checked="checked"<%end %>disabled="disabled" /><%end %>
+                        	<input name="star_<%=rating.id%>" type="radio" class="star" value="1"<% if rating.value.to_i.eql?(1) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="2"<% if rating.value.to_i.eql?(2) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="3"<% if rating.value.to_i.eql?(3) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="4"<% if rating.value.to_i.eql?(4) %> checked="checked"<%end %>disabled="disabled" /> <input name="star_<%=rating.id%>" type="radio" class="star" value="5"<% if rating.value.to_i.eql?(5) %> checked="checked"<%end %>disabled="disabled" />
+						<%end %>
                         <b>&nbsp;<%=rating.rating_type.name %></b>
                     </li>
                     <%end %>
