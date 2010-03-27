@@ -542,6 +542,9 @@ private
     begin
       open(uri, "User-Agent" => "BioPortal-UI")
     rescue Exception => e
+      if !e.io.status.nil? && e.io.status[0].to_i == 404
+        raise Error404
+      end
       LOG.add :debug, "Problem retrieving xml: #{e.message}"
     end
   end
