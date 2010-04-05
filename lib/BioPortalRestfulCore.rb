@@ -52,7 +52,7 @@ class BioPortalRestfulCore
       }
         virtual_view.sort! { |a,b| a.internalVersion <=> b.internalVersion }
         virtual_view.reverse!
-        views << virtual_view
+        views << virtual_view unless virtual_view.nil? || virtual_view.empty?
     }
     
     views.sort! {|a,b| a[0].displayLabel <=> b[0].displayLabel }
