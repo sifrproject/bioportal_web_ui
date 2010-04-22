@@ -77,12 +77,12 @@ class HomeController < ApplicationController
     for ontology in @ontologies
       unless ontology.categories.nil?
         for cat in ontology.categories
-          @sorted_ontologies[cat]<<ontology
+          @sorted_ontologies[cat] << ontology
         end
       end
       
       if ontology.categories.nil? || ontology.categories.empty?
-        @sorted_ontologies["0"]<<ontology
+        @sorted_ontologies["0"] << ontology
       end
       
     end

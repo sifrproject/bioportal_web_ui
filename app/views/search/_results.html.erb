@@ -22,7 +22,7 @@
 		<%begin
 		#catch exceptions and dont draw row
 		row =	"<tr class=\"#{cycle("", "alt")}\">
-				<td>#{link_to highlight(result[:contents],@keyword),uri_url(:ontology=>result[:ontologyVersionId],:id=>result[:conceptIdShort]),:onclick=>"YAHOO.tabwait.container.wait.show();"}</td>
+				<td>#{link_to highlight(result[:contents],@keyword),uri_url(:ontology=>result[:ontologyVersionId],:conceptid=>result[:conceptIdShort]),:onclick=>"YAHOO.tabwait.container.wait.show();"}</td>
 				<td>#{result[:recordType].titleize.gsub("Record Type","")}</td>
 				<td>#{link_to result[:ontologyDisplayLabel], ontology_path(:id=>result[:ontologyVersionId])}</td>
 			</tr>"%>

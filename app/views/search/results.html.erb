@@ -200,7 +200,7 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 			<%begin
 			#catch exceptions and dont draw row
 			row =	"<tr class=\"#{cycle("", "alt")}\">
-					<td>#{link_to highlight(result[:contents],@keyword),uri_url(:ontology=>result[:ontologyVersionId],:id=>result[:conceptIdShort]),:onclick=>"jQuery.blockUI({ message: '<h1><img src=\"/images/tree/spinner.gif\" /> Building Tree...</h1>' }); "}</td>
+					<td>#{link_to highlight(result[:contents],@keyword),uri_url(:ontology=>result[:ontologyVersionId],::conceptid=>result[:conceptIdShort]),:onclick=>"jQuery.blockUI({ message: '<h1><img src=\"/images/tree/spinner.gif\" /> Building Tree...</h1>' }); "}</td>
 					<td>#{result[:recordType].titleize.gsub("Record Type","")}</td>
 					<td>#{link_to result[:ontologyDisplayLabel], ontology_path(:id=>result[:ontologyVersionId])}</td>
 				</tr>"%>

@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
     else
       tab = find_tab(session[:redirect][:ontology])
       session[:redirect]=nil
-      redirect_to uri_url(:ontology=>tab.ontology_id,:id=>tab.concept)
+      redirect_to uri_url(:ontology=>tab.ontology_id,:conceptid=>tab.concept)
     end
   end
   

@@ -242,14 +242,14 @@ group such as ontologies from the <a href = "http://www.obofoundry.org/">OBO Fou
 		<tr>
 		<td>
 		<%if note.mapping_id.nil?%>
-		<%=link_to note.subject,uri_url(:ontology=>note.ontology_version_id,:id=>note.concept_id)%>
+		<%=link_to note.subject,uri_url(:ontology=>note.ontology_version_id,:conceptid=>note.concept_id)%>
 			<br>
-			<span style="color:#AAAAAA"><%=link_to "#{note.concept.name} (#{note.ontology.displayLabel})" ,uri_url(:ontology=>note.ontology_version_id,:id=>note.concept_id)%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
+			<span style="color:#AAAAAA"><%=link_to "#{note.concept.name} (#{note.ontology.displayLabel})" ,uri_url(:ontology=>note.ontology_version_id,:conceptid=>note.concept_id)%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
 		
 		<%else%>
-		<%=link_to note.subject,uri_url(:ontology=>note.mapping.source_version_id,:id=>note.mapping.source_id)%>
+		<%=link_to note.subject,uri_url(:ontology=>note.mapping.source_version_id,:conceptid=>note.mapping.source_id)%>
 			<br>
-			<span style="color:#AAAAAA"><%=link_to "#{note.mapping.source_name} (#{note.mapping.source_ont_name})" ,uri_url(:ontology=>note.mapping.source_version_id,:id=>note.mapping.source_id)%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
+			<span style="color:#AAAAAA"><%=link_to "#{note.mapping.source_name} (#{note.mapping.source_ont_name})" ,uri_url(:ontology=>note.mapping.source_version_id,:conceptid=>note.mapping.source_id)%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
 		<%end%>
 			
 			<p><%= truncate(strip_tags(note.comment),100)%>&nbsp;</p>
@@ -268,7 +268,7 @@ group such as ontologies from the <a href = "http://www.obofoundry.org/">OBO Fou
 		<td>	<%= if map.dest_node.nil? 
 				"#{map.source_name} (#{map.source_ont_name}) => #{map.destination_name} (#{map.destination_ont_name})"
 				else
-				link_to "#{map.source_name} (#{map.source_ont_name}) => #{map.destination_name} (#{map.destination_ont_name})" , uri_url(:ontology=>map.destination_version_id,:id =>map.destination_id)
+				link_to "#{map.source_name} (#{map.source_ont_name}) => #{map.destination_name} (#{map.destination_ont_name})" , uri_url(:ontology=>map.destination_version_id,:conceptid =>map.destination_id)
 				end %>
 				<br>
 					<span style="color:#AAAAAA"><%=map.map_source%><%=map.created_at.strftime("%m/%d/%y")%> <%=map.user.username%></span>

@@ -292,12 +292,12 @@ in the "Find an ontology" box in the middle column), search biomedical resources
 					<tr>
 					<td>
 					<%if note.mapping_id.nil?%>
-					<%=link_to note.subject,uri_url(:ontology=>note.ontology_version_id,:id=>note.concept_id)%>
+					<%=link_to note.subject,uri_url(:ontology=>note.ontology_version_id,:conceptid=>note.concept_id)%>
 						<br>
 						<span style="color:#AAAAAA"><%=link_to "#{note.concept.name} (#{note.ontology.displayLabel})" ,"/visualize/#{note.ontology_version_id}/#{note.concept_id}#notes"%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
 
 					<%else%>
-					<%=link_to note.subject,uri_url(:ontology=>note.mapping.source_version_id,:id=>note.mapping.source_id)%>
+					<%=link_to note.subject,uri_url(:ontology=>note.mapping.source_version_id,:conceptid=>note.mapping.source_id)%>
 						<br>
 						<span style="color:#AAAAAA"><%=link_to "#{note.mapping.source_name} (#{note.mapping.source_ont_name})" ,"/visualize/#{note.mapping.source_version_id}/#{note.mapping.source_id}#mappings"%> <%=note.created_at.strftime("%m/%d/%y")%> <%=note.user.username%></span>
 					<%end%>
