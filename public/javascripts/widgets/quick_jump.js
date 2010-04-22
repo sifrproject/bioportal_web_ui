@@ -25,6 +25,9 @@ try {
 
 // Widget-specific code
     
+//Set the search server to the UI installation of BioPortal that you want to search
+var searchServer = "http://bioportal.bioontology.org";
+
 jQuery(document).ready(function(){
 	// Install any CSS we need (check to make sure it hasn't been loaded)
 	if (jQuery('link[href$="http://bioportal.bioontology.org/javascripts/JqueryPlugins/autocomplete/jquery.autocomplete.css"]')) {
@@ -57,7 +60,7 @@ function jumpTo_jumpToValue(li) {
 	if (jQuery("#jump_to_concept_id") == null && jQuery("#jump_to_ontology_id") == null) {
 		var search = confirm("Term could not be found or is not browsable in BioPortal.\n\nPress OK to go to the Bioportal Search page or Cancel to try again");
 		if (search) {
-		    document.location="http://bioportal.bioontology.org/search/";
+		    document.location = searchServer + "/search/";
 			return;
 		}
 	}
@@ -65,7 +68,7 @@ function jumpTo_jumpToValue(li) {
 	if (jQuery("#jump_to_concept_id") != null && jQuery("#jump_to_ontology_id") != null) {
 		var sValue = jQuery("#jump_to_concept_id").val();
 		var ontology_id = jQuery("#jump_to_ontology_id").val();
-		document.location = "http://bioportal.bioontology.org/visualize/" + ontology_id + "/"+sValue;
+		document.location = searchServer + "/visualize/" + ontology_id + "/?conceptid=" + encodeURIComponent(sValue);
 		return;
 	}
 }
@@ -82,7 +85,7 @@ function jumpTo_formatItem(row, position, count) {
 }
 
 function jumpTo_setup_functions() {
-    jQuery("#BP_search_box").autocomplete("http://bioportal.bioontology.org/search/json_search/"+BP_ontology_id, {
+    jQuery("#BP_search_box").autocomplete(searchServer + "/search/json_search/"+BP_ontology_id, {
 		lineSeparator: "~!~",
 		matchSubset: 0,
 		minChars: 3,

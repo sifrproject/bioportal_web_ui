@@ -781,12 +781,12 @@ private
     
     ontology.categories = []
     ontologybeanXML.elements["categoryIds"].elements.each do |element|
-      ontology.categories<< element.get_text.value.strip
+      ontology.categories << element.get_text.value.strip rescue ""
     end
     
     ontology.groups = []
     ontologybeanXML.elements["groupIds"].elements.each do |element|
-      ontology.groups << element.get_text.value.strip.to_i
+      ontology.groups << element.get_text.value.strip.to_i rescue ""
     end
     
     # View-related parsing
@@ -800,10 +800,10 @@ private
     ontology.virtual_view_ids=[]
     begin
       ontologybeanXML.elements["hasViews"].elements.each{|element|
-        ontology.view_ids << element.get_text.value.strip
+        ontology.view_ids << element.get_text.value.strip rescue ""
       }
       ontologybeanXML.elements['virtualViewIds'].elements.each{|element|
-        ontology.virtual_view_ids << element.get_text.value.strip
+        ontology.virtual_view_ids << element.get_text.value.strip rescue ""
       }
     rescue
     end
@@ -829,53 +829,49 @@ private
     
     begin
       ontologybeanXML.elements["classesWithOneSubclass"].elements.each { |element|
-        ontologyMetrics.classesWithOneSubclass << element.get_text.value.strip
+        ontologyMetrics.classesWithOneSubclass << element.get_text.value.strip rescue ""
         unless defined? first
           ontologyMetrics.classesWithOneSubclassAll = element.get_text.value.strip.eql?("alltriggered")
-          ontologyMetrics.classesWithOneSubclassLimitPassed = element.get_text.value.strip.include?("limitpassed") ? 
-          element.get_text.value.strip.split(":")[1].to_i : false
+          ontologyMetrics.classesWithOneSubclassLimitPassed = element.get_text.value.strip.include?("limitpassed") ? element.get_text.value.strip.split(":")[1].to_i : false
           first = false
         end
       }
       
       ontologybeanXML.elements["classesWithMoreThanXSubclasses"].elements.each { |element|
-        class_name = element.elements['string[1]'].get_text.value
-        class_count = element.elements['string[2]'].get_text.value.to_i
+        class_name = element.elements['string[1]'].get_text.value rescue ""
+        class_count = element.elements['string[2]'].get_text.value.to_i rescue ""
         ontologyMetrics.classesWithMoreThanXSubclasses[class_name] = class_count
         unless defined? first
           ontologyMetrics.classesWithMoreThanXSubclassesAll = element.elements['string[1]'].get_text.value.strip.eql?("alltriggered")
-          ontologyMetrics.classesWithMoreThanXSubclassesLimitPassed = element.elements['string[1]'].get_text.value.strip.include?("limitpassed") ? 
-          element.elements['string[2]'].get_text.value.strip.to_i : false
+          ontologyMetrics.classesWithMoreThanXSubclassesLimitPassed = element.elements['string[1]'].get_text.value.strip.include?("limitpassed") ? element.elements['string[2]'].get_text.value.strip.to_i : false
           first = false
         end
       }
       
       ontologybeanXML.elements["classesWithNoDocumentation"].elements.each { |element|
-        ontologyMetrics.classesWithNoDocumentation << element.get_text.value.strip
+        ontologyMetrics.classesWithNoDocumentation << element.get_text.value.strip rescue ""
         unless defined? first
           ontologyMetrics.classesWithNoDocumentationAll = element.get_text.value.strip.eql?("alltriggered")
           ontologyMetrics.classesWithNoDocumentationLimitPassed = element.get_text.value.strip.include?("limitpassed") ? 
-          element.get_text.value.strip.split(":")[1].to_i : false
+              element.get_text.value.strip.split(":")[1].to_i : false
           first = false
         end
       }
       
       ontologybeanXML.elements["classesWithNoAuthor"].elements.each { |element|
-        ontologyMetrics.classesWithNoAuthor << element.get_text.value.strip
+        ontologyMetrics.classesWithNoAuthor << element.get_text.value.strip rescue ""
         unless defined? first
           ontologyMetrics.classesWithNoAuthorAll = element.get_text.value.strip.eql?("alltriggered")
-          ontologyMetrics.classesWithNoAuthorLimitPassed = element.get_text.value.strip.include?("limitpassed") ? 
-          element.get_text.value.strip.split(":")[1].to_i : false
+          ontologyMetrics.classesWithNoAuthorLimitPassed = element.get_text.value.strip.include?("limitpassed") ? element.get_text.value.strip.split(":")[1].to_i : false
           first = false
         end
       }
       
       ontologybeanXML.elements["classesWithMoreThanOnePropertyValue"].elements.each { |element|
-        ontologyMetrics.classesWithMoreThanOnePropertyValue << element.get_text.value.strip
+        ontologyMetrics.classesWithMoreThanOnePropertyValue << element.get_text.value.strip rescue ""
         unless defined? first
           ontologyMetrics.classesWithMoreThanOnePropertyValueAll = element.get_text.value.strip.eql?("alltriggered")
-          ontologyMetrics.classesWithMoreThanOnePropertyValueLimitPassed = element.get_text.value.strip.include?("limitpassed") ? 
-          element.get_text.value.strip.split(":")[1].to_i : false
+          ontologyMetrics.classesWithMoreThanOnePropertyValueLimitPassed = element.get_text.value.strip.include?("limitpassed") ? element.get_text.value.strip.split(":")[1].to_i : false
           first = false
         end
       }

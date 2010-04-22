@@ -25,9 +25,12 @@ try{
 
 // Wdiget-specific code
 
+//Set the search server to the UI installation of BioPortal that you want to search
+var searchServer = "http://bioportal.bioontology.org";
+
 jQuery(document).ready(function(){
 	// Install any CSS we need (check to make sure it hasn't been loaded)
-	if (!jQuery('link[href="http://bioportal.bioontology.org/javascripts/JqueryPlugins/autocomplete/jquery.autocomplete.css"]')) {
+	if (jQuery('link[href="http://bioportal.bioontology.org/javascripts/JqueryPlugins/autocomplete/jquery.autocomplete.css"]')) {
 		jQuery("head").append("<link>");
 		css = jQuery("head").children(":last");
 		css.attr({
@@ -59,7 +62,7 @@ function formComplete_setup_functions() {
 		var ontology_id = values[1];
 		var target_property = values[2];
 		if (ontology_id == "all") { ontology_id = ""; }
-		jQuery(this).autocomplete("http://bioportal.bioontology.org/search/json_search/"+ontology_id, {
+		jQuery(this).autocomplete(searchServer + "/search/json_search/"+ontology_id, {
 				extraParams: { target_property: target_property, input: this },
 				lineSeparator: "~!~",
 				matchSubset: 0,
