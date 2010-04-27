@@ -5,7 +5,8 @@ class SearchController < ApplicationController
   layout 'ontology'
   
   def index
-  #  @ontologies = DataAccess.getActiveOntologies() 
+    @search_query = params[:query].nil? ? params[:q] : params[:query]
+    @search_query = "" if @search_query.nil?
   end
   
   def concept #search for concept for mappings
