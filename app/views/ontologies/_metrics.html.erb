@@ -3,7 +3,8 @@
 	<p style="border: 1px solid rgb(239, 239, 239); margin: 10px; padding: 10px;">
 		BioPortal calculates the metrics on the salient properties of the ontology, including statistics and quality-control
 		and quality-assurance metrics. Each ontology may have all, some, or no values filled in for its metrics and only metrics
-		for the most recent version are reflected.
+		for the most recent version are reflected. The metrics currently do not distinguish between the terms defined directly in
+		this ontology and imported terms (for OWL) or referenced terms (for OBO).
 		<%= link_to "See metrics descriptions", "http://www.bioontology.org/wiki/index.php/Ontology_Metrics" %>
 	</p>
 	<% if @metrics.nil? || @metrics.empty? %>
