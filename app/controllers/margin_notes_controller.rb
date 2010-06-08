@@ -60,11 +60,11 @@ class MarginNotesController < ApplicationController
       end
     end    
    
-     #adds note to syndication
+      # Adds note to syndication
       event = EventItem.new
       event.event_type="Note"
       event.event_type_id=@margin_note.id
-      event.ontology_id= @margin_note.ontology_id
+      event.ontology_id = @margin_note.ontology_id
       event.save
    
    

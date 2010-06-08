@@ -139,6 +139,18 @@ class DataAccess
     
     # Remove cached notes for this ontology
     CACHE.delete("#{params[:ontology_virtual_id]}::notes")
+    
+    # Add note to index table
+    notes_index = NotesIndex.new
+    notes_index.populate(note)
+    notes_index.save
+    
+    # Adds note to syndication
+    event = EventItem.new
+    event.event_type = "Note"
+    event.event_type_id = note.id
+    event.ontology_id = params[:ontology_virtual_id]
+    event.save
 
     note
   end
