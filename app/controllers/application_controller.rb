@@ -45,12 +45,14 @@ class ApplicationController < ActionController::Base
   end
   
   def to_param(name) # Paramaterizes URLs without encoding
-    name.gsub(' ',"_")
+    unless name.nil?
+      name.to_s.gsub(' ',"_")
+    end
   end
   
   def undo_param(name) #Undo Paramaterization   
     unless name.nil?
-      name.gsub('_'," ")
+      name.to_s.gsub('_'," ")
     end
   end
   
