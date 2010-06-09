@@ -1,4 +1,6 @@
 require 'uri'
+require 'cgi'
+
 class NodeWrapper
   
   attr_accessor :synonyms
@@ -109,12 +111,12 @@ class NodeWrapper
   end
 
   def note_count
-    if CACHE.get("#{DataAccess.getOntology(self.version_id).ontologyId}::#{self.fullId}_NoteCount").nil?
-        count = DataAccess.getNotesForConcept(DataAccess.getOntology(self.version_id).ontologyId, self.fullId, false, true).size rescue "0"
-        CACHE.set("#{DataAccess.getOntology(self.version_id).ontologyId}::#{self.fullId}_NoteCount", count)
+    if CACHE.get("#{DataAccess.getOntology(self.version_id).ontologyId}::#{CGI.escape(self.fullId_proper)}_NoteCount").nil?
+        count = DataAccess.getNotesForConcept(DataAccess.getOntology(self.version_id).ontologyId, CGI.escape(self.fullId_proper), false, true).size rescue "0"
+        CACHE.set("#{DataAccess.getOntology(self.version_id).ontologyId}::#{CGI.escape(self.fullId_proper)}_NoteCount", count)
       return count
     else
-      return CACHE.get("#{DataAccess.getOntology(self.version_id).ontologyId}::#{self.fullId}_NoteCount")
+      return CACHE.get("#{DataAccess.getOntology(self.version_id).ontologyId}::#{CGI.escape(self.fullId_proper)}_NoteCount")
     end
   end
     
