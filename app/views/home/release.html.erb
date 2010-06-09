@@ -33,141 +33,148 @@
 			<%= link_to 'Feature Requests', "https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemBrowse&tracker_id=213" %><br/>
 			<%= link_to 'Bug Reports', "https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemBrowse&tracker_id=103" %><br/>
 		</p>
-        <h1>Release Notes: BioPortal 2.3.3 (April 7, 2010)</h1>
+        <h1>Release Notes: BioPortal 2.5 (June 7, 2010)</h1>
         <div class="enable-lists">
-		<br>
-        <h2>BioPortal Core (tag 1025)</h2>
-        <h3>New Features</h3>
-        <ul>
-            <li>
-                Implemented the multi-wildcard phrase search functionality.
-            </li>
-            <li>
-                Removed unused relations from UMLS term output.
-            </li>
-            <li>
-                Added the ability to pass a URL-encoded search queries via a query parameter. (see tracker item [#1348] Unable to search with term BN/NHsdMcwi - Rat Strain ontology: https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1348).
-                <br/>
-            </li>
-            <li>
-                Removed &lt;instances/&gt; tags from Term services.
-                <br/>
-            </li>
-            <li>
-                Added a new relation to ClassBean: InstanceCount that displays the number of instances for a given term.
-                <br/>
-            </li>
-            <li>
-                Added new properties to the output of parent, children, and siblings services:
-                <br/>
-                <ul>
-                    <li>
-                        fullId
-                        <br/>
+      		<br>
+          <h2>
+            BioPortal Core (Tag 1026)
+          </h2>
+          <h3>
+            New Features
+          </h3>
+          <ul type="disc">
+            <li>Services for handling notes. The notes service is based on Protege 4 and OWL API and wraps around an API created by Csongor Nyulas for interacting with ChAO (Changes and Annotations Ontology). The following features were implemented:
+              <ul type="circle">
+                <li>Creating notes attached to:
+                  <ul type="square">
+                    <li>Classes
                     </li>
-                    <li>
-                        label
-                        <br/>
+                    <li>Individuals
                     </li>
-                    <li>
-                        synonyms
-                        <br/>
+                    <li>Notes
                     </li>
-                    <li>
-                        definitions
-                        <br/>
+                  </ul>
+                </li>
+                <li>Retrieving notes attached to:
+                  <ul type="square">
+                    <li>Ontologies (using virtual id)
                     </li>
-                </ul>
-            </li>
-            <li>
-                Moved instance service to a new signature (see tracker item [#1937] Move instance service to a new signature: https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1937)
-                <br/>
-            </li>
-            <li>
-                Signature: /bioportal/instance/&lt;ontologyVersionId&gt;/?instanceid=&lt;instance id&gt;
-                <br/>
-            </li>
-            <li>
-                Added the ability to display all instances for a given concept:
-                <br/>
-                <ul>
-                    <li>
-                        Signature: /bioportal/concepts/instances/&lt;ontologyVersionId&gt;/?conceptid=&lt;concept id&gt;
-                        <br/>
+                    <li>Classes
                     </li>
-                </ul>
+                    <li>Individuals
+                    </li>
+                    <li>Notes
+                    </li>
+                  </ul>
+                </li>
+                <li>Note types:
+                  <ul type="square">
+                    <li>Comment
+                    </li>
+                    <li>Proposal
+                      <ul type="square">
+                        <li>New term
+                        </li>
+                        <li>Relationship change
+                        </li>
+                        <li>Property value change
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li>The two primary URLs for working with notes:
+                  <ul type="square">
+                    <li>/notes/{ontology_version_id}
+                    </li>
+                    <li>/virtual/notes/{ontology_virtual_id}
+                    </li>
+                  </ul>
+                </li>
+                <li>Documentation is being updated here:
+                  <ul type="square">
+                    <li>
+                      <a href="http://www.bioontology.org/wiki/index.php/Ontology_Notes">http://www.bioontology.org/wiki/index.php/Ontology_Notes</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </li>
-            <li>
-                Added a default limit of 10000 concepts to be processed by the view extractor. Changes default number of concepts to 1000, up from 100.
+            <li>Exposed the create diffs functionality via the rest interface. Added it to the service layer as well.
             </li>
-        </ul>
-        <h3>Bug Fixes</h3>
-        <ul>
-            <li>
-                [#1947] Not all the data is imported for SVN pull: https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1947
-                <br/>
+            <li>Modified code to start populating the fullId field for OBO and UMLS ontologies.
             </li>
-            <li>
-                [#1904] Instance service returns the wrong structure for instanceType: https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1904 
+            <li>Updated Protégé 3.4.4 libraries
             </li>
-        </ul>
-		<br><br>
-        <h2>BioPortal UI (tag 1037)</h2>
-        <h3>New Features</h3>
-        <ul>
-            <li>
-                jQuery tag cloud plugin (used on the ontology summary page) has been replaced by a custom implementation that uses an algorithm based on the relative size of entries in the list. Therefore the tag cloud shows differentiation even when there are only minor differences between the sizes of the entries.
-                <br/>
+          </ul>
+          <br/>
+          <h3>
+            Bug Fixes
+          </h3>
+          <ul type="disc">
+            <li>Updated the UMLS loader to render French and Spanish characters correctly. Tracker item: &nbsp;[#1986] Incorrect display of characters in Spanish and French. <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1986">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1986</a>
             </li>
-            <li>
-                A new message is displayed where the &quot;Explore&quot; link appears for when ontologies is first submitted: Waiting to Parse.
+            <li>Updated the OBO loader to properly deal with OBO_REL:part_of relations.
             </li>
-        </ul>
-        <h3>Bug Fixes</h3>
-        <ul>
-            <li>
-                Usernames that contain a space can now be used to login via the UI.
-                <br/>
+            <li>[#1998] Anonymous classes not being filtered when jumping into the middle of the tree : <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1998">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1998</a>
             </li>
-            <li>
-                Sometimes extra, empty views were parsed from the response XML. A safety check has been added to detect these empty arrays and not process them.
-                <br/>
+          </ul>
+          <br/></br/>
+          <h2>
+            BioPortal UI (Tag 1039)
+          </h2>
+          <h3>
+            New Features
+          </h3>
+          <ul>
+            <li>Structured Notes are now available via the UI, utilizing the new BioPortal Core Notes RESTful service.
+              <ul>
+                <li>Notes can be viewed/added at the term level on the ontology visualize screen:<br>
+                  http://bioportal.bioontology.org/visualize/42483/?conceptid=http%3A%2F%2Fbioontology.org%2Fontologies%2FBiomedicalResourceOntology.owl%23Network_Model#notes
+                </li>
+                <li>There is a new Notes tab on the ontology summary page:<br>
+                  http://bioportal.bioontology.org/ontologies/42483#notes
+                </li>
+                <li>One of four note types can be created:
+                  <ul>
+                    <li>Comment
+                    </li>
+                    <li>Propose New Term
+                    </li>
+                    <li>Propose Relationship Change
+                    </li>
+                    <li>Propose Property Value Change
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </li>
-            <li>
-                If the BioPortal core returned a 404 for a particular call, indicating that a term couldn't be found, for example, then the UI would respond to the user with a 500 error. Now, a proper 404 is returned instead.
-                <br/>
+            <li>On the ontology visualize page, the bar that separates the tree from the tabs can now be resized by clicking and dragging. In addition, the bar extends to the bottom and the tree will expand without vertical scrollbars as far as needed.
             </li>
-            <li>
-                Empty relations were sometimes parsed from the REST service. There is now a check to make sure these entries are valid before processing them in the view.
-                <br/>
-                Deprecated ontologies are now handled properly when browsing to a term directly (previously these were only handled when visualizing an ontology without a specific term).
+          </ul>
+          <br/>
+          <h3>
+            Bug Fixes
+          </h3>
+          <ul>
+            <li>Reviews can now be properly added/edited.
             </li>
-        </ul>
-        <h3>Updates</h3>
-        <ul>
-            <li>
-                jQuery updated to 1.4.2
-                <br/>
+            <li>Fix to form_complete widget that was preventing proper URIs from showing when multiple class names were present on the form input element.
             </li>
-            <li>
-                jQuery rating pack updated to 3.13
-                <br/>
+          </ul>
+          <br/></br/>
+          <h2>
+            BioPortal Admin (Tag 1006)
+          </h2>
+          <h3>
+            New Features
+          </h3>
+          <ul>
+            <li>Implemented the diff creation functionality
             </li>
-            <li>
-                jQuery blockUI updated to 2.33
-                <br/>
-            </li>
-        </ul>
-		<br><br>
-        <h2>BioPortal Admin (tag 1005)</h2>
-        <h3>Bug Fixes</h3>
-        <ul>
-            <li>
-                Fixed a bug in Ontology Deprecator tool that, under certain conditions deprecated ontologies that should have been kept active
-            </li>
-        </ul>
-        </div>
-   </div>
-    <div style="clear:both;">
+          </ul>
+            </div>
+         </div>
+          <div style="clear:both;">
     </div>
 </div>
