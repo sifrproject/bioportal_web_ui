@@ -80,6 +80,21 @@ ActiveRecord::Schema.define(:version => 20100219205647) do
     t.datetime "updated_at"
   end
 
+  create_table "notes_indices", :force => true do |t|
+    t.string   "note_id",                      :null => false
+    t.integer  "ontology_id",                  :null => false
+    t.integer  "author",                       :null => false
+    t.string   "note_type",                    :null => false
+    t.string   "subject",                      :null => false
+    t.string   "applies_to",                   :null => false
+    t.string   "applies_to_type",              :null => false
+    t.text     "body"
+    t.integer  "created",         :limit => 8, :null => false
+    t.datetime "timestamp"
+  end
+
+  add_index "notes_indices", ["note_id"], :name => "note_id", :unique => true
+
   create_table "projects", :force => true do |t|
     t.string   "name"
     t.string   "institution"
@@ -107,11 +122,11 @@ ActiveRecord::Schema.define(:version => 20100219205647) do
 
   create_table "reviews", :force => true do |t|
     t.integer  "user_id"
-    t.integer  "ontology_id"
-    t.integer  "project_id"
+    t.string   "ontology_id"
     t.text     "review"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "project_id"
   end
 
   create_table "users", :force => true do |t|
