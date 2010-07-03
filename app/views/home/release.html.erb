@@ -134,44 +134,119 @@
           <h2>
             BioPortal UI (Tag 1039)
           </h2>
-          <h3>
-            New Features
-          </h3>
+          <h3>New Features</h3>
           <ul>
-            <li>Structured Notes are now available via the UI, utilizing the new BioPortal Core Notes RESTful service.
-              <ul>
-                <li>Notes can be viewed/added at the term level on the ontology visualize screen:<br>
-                  http://bioportal.bioontology.org/visualize/42483/?conceptid=http%3A%2F%2Fbioontology.org%2Fontologies%2FBiomedicalResourceOntology.owl%23Network_Model#notes
-                </li>
-                <li>There is a new Notes tab on the ontology summary page:<br>
-                  http://bioportal.bioontology.org/ontologies/42483#notes
-                </li>
-                <li>One of four note types can be created:
-                  <ul>
-                    <li>Comment
-                    </li>
-                    <li>Propose New Term
-                    </li>
-                    <li>Propose Relationship Change
-                    </li>
-                    <li>Propose Property Value Change
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li>On the ontology visualize page, the bar that separates the tree from the tabs can now be resized by clicking and dragging. In addition, the bar extends to the bottom and the tree will expand without vertical scrollbars as far as needed.
-            </li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1600&amp;start=0"
+          onmouseover="tooltip('Information on the BioPortal reference
+          paper is at: http://www.ncbi.nlm.nih.gov/pubmed/19483092. A
+          section on how to cite BioPortal should be added. For now, it
+          seems the only place this can go is on the Help/About page.
+          Interested for other suggestions however.<br /><br />Trish
+          ');"
+          onmouseout="tooltipexit()">Add info on how to cite BioPortal</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1669&amp;start=0"
+          onmouseover="tooltip('It would be useful to include text on
+          BioPortal page so that people know that they can register
+          PURLs with purl.bioontology.org. Exact details can be
+          discussed in person.<br /><br />Trish');"
+          onmouseout="tooltipexit()">Request to add text on BioPortal to let
+          people know about PURL server</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1747&amp;start=0"
+          onmouseover="tooltip('Email from support list:<br />On the
+          spatial ontology page<br
+          />http://bioportal.bioontology.org/visualize/40827<br />it is
+          quite annoying to fade in and out the screen when you click on
+          a link. It is fun for the first time to watch but after the
+          third time it is just distracting. You want to give a smooth
+          transition as much as possible. <br />---------<br /><br />Is
+          the fading in and out of the screen needed? Now that the
+          transition from term to term is so quick this transition of
+          fading out the screen is admittedl...');"
+          onmouseout="tooltipexit()">Screen transition when loading terms</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=882&amp;start=0"
+          onmouseover="tooltip('A user mentioned that after clicking on
+          GEO nothing happened for the OBI term device. There are no
+          annotations for OBI mapped to this term.<br /><br />I gather
+          that it is not obvious that if there are no annotations mapped
+          to the term, then there will be no action. Suggest to add a
+          message after clicking on a term to remind user that there are
+          no annotations so the lack of action does not look like a bug.
+          Perhaps also include when the ontology was last used to
+          annotate the resource or a status saying...');"
+          onmouseout="tooltipexit()">Resources - message when no results</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2042&amp;start=0"
+          onmouseover="tooltip('It would be really useful if the terms
+          being typed into the text box are highlighted in the words
+          being displayed in the drop-down. It is difficult to see why
+          certain terms are being displayed as candidate terms by the
+          autocomplete.');"
+          onmouseout="tooltipexit()">term-selection and Jump to widgets</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1952&amp;start=0"
+          onmouseover="tooltip('A GoogleGroup has been started for the
+          NCBO Annotator,
+          http://groups.google.com/group/annotator-discuss. Please add a
+          link to this group on the Annotator page in BioPortal. The
+          purpose of the group is for users to be able to engage in
+          dialog with other users to share use cases and experiences,
+          e.g. parameters, ontologies, semantic expansion, with the
+          Annotator. <br /><br />Thanks,<br />Trish<br />');"
+          onmouseout="tooltipexit()">Add link to NCBO Annotator Users GoogleGroup</a></li>
+          <li>Tweaked the tree browser to limit the height to 650px after Trish
+          pointed out that you couldn't see the details for a term if the term
+          itself was deep in the tree (the Details tab and the term couldn't
+          appear on the screen at the same time due to the need to scroll down to
+          see the term itself)</li>
+          <li>Changed the background color and font weight for the selected
+          term in the tree</li>
+          <li>Upped the limit on maxchildren to 2100 to account for PMA, which
+          has 2072 children at the root term</li>
           </ul>
-          <br/>
-          <h3>
-            Bug Fixes
-          </h3>
+          <h3> Bug Fixes</h3>
           <ul>
-            <li>Reviews can now be properly added/edited.
-            </li>
-            <li>Fix to form_complete widget that was preventing proper URIs from showing when multiple class names were present on the form input element.
-            </li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2051&amp;start=0"
+          onmouseover="tooltip('-go to BRO,
+          http://bioportal.bioontology.org/ontologies/42483<br />-click
+          on Edit Ontology Metadata<br /><br />Although the definition
+          property was set to \'desc:Definition\' it is not listed in
+          the form as the value for this field and IF it is not
+          re-entered is removed as the value for this field and replaced
+          with the default value based on the rest call:
+          http://rest.bioontology.org/bioportal/virtual/ontology/1104?email=example@example.org');"
+          onmouseout="tooltipexit()">Edit ontology metadata - memory of current
+          values</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2054&amp;start=0"
+          onmouseover="tooltip('-go to
+          http://bioportal.bioontology.org/ontologies<br />-select
+          \'Filter by category\'<br />-type \'i\' twice to highlight the
+          term \'immunology\'<br />-hit return<br /><br />The list of
+          ontologies is not filtered. ');"
+          onmouseout="tooltipexit()">Filter by category - selection of filter
+          item in Firefox</a></li>
+          <li> <a
+          href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2152&amp;start=0"
+          onmouseover="tooltip('Paul, when I add a new version of an rrf
+          ontolgy the new screen does a great job in copying over the
+          data from the previous version, but it fails to copy over the
+          target terminology value (SAB) from the previous version. As a
+          result, then I submit the new version, the target terminology
+          value isn\'t set.<br /><br />I just added a new version of
+          SNOMEDCT. The ontology version id is 42789, but wouldn\'t set
+          its target terminology value to SNOMEDCT.<br /><br />I have
+          the same problem when trying to edit the ontol...');"
+          onmouseout="tooltipexit()">No field to specify the SAB when adding new
+          version of an ontology</a></li>
+          <li>Force the autocomplete drop-down background to be white on all
+          browsers</li>
+          <li>After views-related operations, the user should get redirected to
+          the views list</li>
           </ul>
           <br/></br/>
           <h2>
