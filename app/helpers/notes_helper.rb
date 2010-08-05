@@ -76,6 +76,8 @@ module NotesHelper
           <tr>
             <th>Reason for Change</th>
             <td>#{note.values[note.type]['reasonForChange']}</td>
+            <th>Status</th>
+            <td>#{note.status}</td>
             <th>Contact Info</th>
             <td>#{note.values[note.type]['contactInfo']}</td>
           </tr>
@@ -107,6 +109,8 @@ module NotesHelper
           <tr>
             <th>Reason for Change</th>
             <td>#{note.values[note.type]['reasonForChange']}</td>
+            <th>Status</th>
+            <td>#{note.status}</td>
             <th>Contact Info</th>
             <td>#{note.values[note.type]['contactInfo']}</td>
           </tr>
@@ -130,6 +134,8 @@ module NotesHelper
           <tr>
             <th>Reason for Change</th>
             <td>#{note.values[note.type]['reasonForChange']}</td>
+            <th>Status</th>
+            <td>#{note.status}</td>
             <th>Contact Info</th>
             <td>#{note.values[note.type]['contactInfo']}</td>
           </tr>
