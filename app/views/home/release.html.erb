@@ -44,90 +44,37 @@
     		  Noy, N.F., Shah, N.H., Whetzel, P.L., Dai, B., Dorf, M., Griffith, N., Jonquet, C., Rubin, D.L., Storey, M.A., Chute, C.G., Musen, M.A. <b>BioPortal: ontologies and integrated data resources at the click of a mouse.</b> Nucleic Acids Res. 2009 Jul 1;37(Web Server issue):W170-3. PMID: 19483092. doi:10.1093/nar/gkp440
         </p>
     		
-        <h1>Release Notes: BioPortal 2.5 (June 7, 2010)</h1>
+        <h1>Release Notes: BioPortal 2.6 (August 17, 2010)</h1>
         <div class="enable-lists">
       		<br>
           <h2>
-            BioPortal Core (Tag 1026)
+            BioPortal Core (Tag 1029)
           </h2>
           <h3>
-            New Features
+            New Features / Bug Fixes
           </h3>
-          <ul type="disc">
-            <li>Services for handling notes. The notes service is based on Protege 4 and OWL API and wraps around an API created by Csongor Nyulas for interacting with ChAO (Changes and Annotations Ontology). The following features were implemented:
-              <ul type="circle">
-                <li>Creating notes attached to:
-                  <ul type="square">
-                    <li>Classes
-                    </li>
-                    <li>Individuals
-                    </li>
-                    <li>Notes
-                    </li>
-                  </ul>
-                </li>
-                <li>Retrieving notes attached to:
-                  <ul type="square">
-                    <li>Ontologies (using virtual id)
-                    </li>
-                    <li>Classes
-                    </li>
-                    <li>Individuals
-                    </li>
-                    <li>Notes
-                    </li>
-                  </ul>
-                </li>
-                <li>Note types:
-                  <ul type="square">
-                    <li>Comment
-                    </li>
-                    <li>Proposal
-                      <ul type="square">
-                        <li>New term
-                        </li>
-                        <li>Relationship change
-                        </li>
-                        <li>Property value change
-                        </li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-                <li>The two primary URLs for working with notes:
-                  <ul type="square">
-                    <li>/notes/{ontology_version_id}
-                    </li>
-                    <li>/virtual/notes/{ontology_virtual_id}
-                    </li>
-                  </ul>
-                </li>
-                <li>Documentation is being updated here:
-                  <ul type="square">
-                    <li>
-                      <a href="http://www.bioontology.org/wiki/index.php/Ontology_Notes">http://www.bioontology.org/wiki/index.php/Ontology_Notes</a>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+          <ul>
+            <li>Performance Updates for better DB connection and memory management
             </li>
-            <li>Exposed the create diffs functionality via the rest interface. Added it to the service layer as well.
+            <li>Revamped thread handling throughout the site
             </li>
-            <li>Modified code to start populating the fullId field for OBO and UMLS ontologies.
+            <li>Intelligent Protégé server ping and recovery
             </li>
-            <li>Updated Protégé 3.4.4 libraries
+            <li>Ability to load ontologies via a URL (including updated OBO pull that retrieves ontologies via HTTP instead of specific source control API). Tracker Item: <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1041&amp;start=0">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1041&amp;start=0</a>
             </li>
-          </ul>
-          <br/>
-          <h3>
-            Bug Fixes
-          </h3>
-          <ul type="disc">
-            <li>Updated the UMLS loader to render French and Spanish characters correctly. Tracker item: &nbsp;[#1986] Incorrect display of characters in Spanish and French. <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1986">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1986</a>
+            <li>Notification framework (email notifications). Tracker Item: <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2018&amp;start=0">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2018&amp;start=0</a>.
             </li>
-            <li>Updated the OBO loader to properly deal with OBO_REL:part_of relations.
+            <li>Added the ability to subscribe to ALL ontologies.
             </li>
-            <li>[#1998] Anonymous classes not being filtered when jumping into the middle of the tree : <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1998">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=1998</a>
+            <li>Add functionality for subscribing to an ontology and a type. &nbsp;Tracker Item: <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_id=213&amp;tracker_item_id=2304">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_id=213&amp;tracker_item_id=2304</a>
+            </li>
+            <li>Ability to specify (on a per-onotlogy basis) the type of notification the user would like to receive. Tracker Item: <a href="https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2304&amp;start=0">https://bmir-gforge.stanford.edu/gf/project/bioportal_core/tracker/?action=TrackerItemEdit&amp;tracker_item_id=2304&amp;start=0</a>
+            </li>
+            <li>Updated Admin site
+            </li>
+            <li>Numerous smaller enhancements and bug fixes
+            </li>
+            <li>Updated third-party libraries
             </li>
           </ul>
           <br/></br/>
