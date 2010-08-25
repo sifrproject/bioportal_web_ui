@@ -149,8 +149,8 @@ ActiveRecord::Schema.define(:version => 20100219205647) do
   end
 
   create_table "widget_logs", :force => true do |t|
-    t.integer "count",                 :default => 0, :null => false
-    t.string  "widget",  :limit => 50
+    t.integer "count",                  :default => 0, :null => false
+    t.string  "widget",                 :limit => 50
     t.string  "referer"
   end
 
