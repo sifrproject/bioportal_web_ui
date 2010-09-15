@@ -6,7 +6,7 @@
 
 <div style="height:800px;text-align:center;">
   <% query_params = params[:conceptid].nil? ? "" : "&conceptid=#{@conceptid}&ontologyid=#{@ontologyid}&ontologyversionid=#{@ontologyversionid}" %>
-  <iframe src="http://keg.cs.uvic.ca/seanf/BioportalTest/?url=<%="http://#{$REST_DOMAIN}"%><%=query_params%>#page:resources" width="100%" height="100%" frameborder="0">
+  <iframe src="http://ncbodev-riui1.stanford.edu/?url=<%="http://#{$REST_DOMAIN}"%><%=query_params%>#page:resources" width="100%" height="100%" frameborder="0">
     <p>Please upgrade your browser to support the Resource Index</p>
   </iframe>
 </div>
