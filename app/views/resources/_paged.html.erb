@@ -15,7 +15,7 @@
         
      <% for annotation in @resource.annotations%>
      <% # Generate a link to the Resource Element Service
-        resource_element_link = $OBR_REST_URL + "/element/" + params[:resource] + "?elementid=" + annotation.local_id
+        resource_element_link = $RESOURCE_INDEX_REST_URL + "/element/" + params[:resource] + "?elementid=" + annotation.local_id
      %>
 	 <%color = cycle("","alt") %>
        <tr class="<%=color%>" >

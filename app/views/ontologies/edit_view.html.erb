@@ -284,15 +284,8 @@
                 View Definition Language:
             </th>
             <td>
-                <SELECT id="viewDefinitionLanguage" name="ontology[viewDefinitionLanguage]">
-                    <OPTION selected value="Manual">Manual</OPTION>
-                    <OPTION value="ARQ">ARQ</OPTION>
-                    <OPTION value="RDQL">RDQL</OPTION>
-                    <OPTION value="RQL">RQL</OPTION>
-                    <OPTION value="RVL">RVL</OPTION>
-                    <OPTION value="SPARQL">SPARQL</OPTION>
-                    <OPTION value="vSPARQL">vSPARQL</OPTION>
-                </SELECT>
+                <% languages = [ "Manual", "ARQ", "RDQL", "RQL", "RVL", "SPARQL", "vSPARQL" ] %>
+                <%= select("ontology", "viewDefinitionLanguage", languages, { :include_blank => false, :selected => @ontology.viewDefinitionLanguage }, { :style => "width: 100px;" }) %>
             </td>
         </tr>
         <tr>
@@ -300,14 +293,8 @@
                 View Generation Engine:
             </th>
             <td>
-                <SELECT id="viewGenerationEngine" name="ontology[viewGenerationEngine]">
-                    <OPTION selected value=""></OPTION>
-                    <OPTION value="Jena/ARQ">Jena/ARQ</OPTION>
-                    <OPTION value="Pellet">Pellet</OPTION>
-                    <OPTION value="Redland/Rasqal">Redland/Rasqal</OPTION>
-                    <OPTION value="Sesame/SPARQL Engine">SPARQL Engine</OPTION>
-                    <OPTION value="Virtuoso SPARQL">Virtuoso SPARQL</OPTION>
-                </SELECT>
+                <% engines = [ "Jena/ARQ", "Pellet", "Redland/Rasqal", "Sesame/SPARQL Engine", "Virtuoso SPARQL" ] %>
+                <%= select("ontology", "viewGenerationEngine", engines, { :include_blank => false, :selected => @ontology.viewGenerationEngine }, { :style => "width: 200px;" }) %>
             </td>
         </tr>
         <tr>

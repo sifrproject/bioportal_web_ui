@@ -12,8 +12,8 @@ No data available for this version of the ontology.
 %>
 
     <%
-    unless @details["obs.common.beans.MgrepContextBean"].nil?
-	   @details["obs.common.beans.MgrepContextBean"].each do |key, detail|
+    unless @details["obs.common.beans.mgrepContext"].nil?
+	   @details["obs.common.beans.mgrepContext"].each do |key, detail|
     %>
 		<%if mgrep_first%>
 		    <thead>
@@ -38,8 +38,8 @@ No data available for this version of the ontology.
     %>
 
     <%
-    unless @details["obs.common.beans.ReportedContextBean"].nil?
-	   @details["obs.common.beans.ReportedContextBean"].each do |key, detail|
+    unless @details["obs.common.beans.reportedContext"].nil?
+	   @details["obs.common.beans.reportedContext"].each do |key, detail|
     %>
 		<%if reported_first%>
 		    <thead>
@@ -64,8 +64,8 @@ No data available for this version of the ontology.
     %>
 
     <%
-	unless @details["obs.common.beans.IsaContextBean"].nil?
-        @details["obs.common.beans.IsaContextBean"].each do |key, detail|
+	unless @details["obs.common.beans.isaContext"].nil?
+        @details["obs.common.beans.isaContext"].each do |key, detail|
     %>
 		<%if isa_first%>
 		    <thead>
@@ -90,8 +90,8 @@ No data available for this version of the ontology.
     %>
 
     <%
-    unless @details["obs.common.beans.MappingContextBean"].nil?
-        @details["obs.common.beans.MappingContextBean"].each do |key, detail|
+    unless @details["obs.common.beans.mappingContext"].nil?
+        @details["obs.common.beans.mappingContext"].each do |key, detail|
     %>
 		<%if mapping_first%>
 		    <thead>

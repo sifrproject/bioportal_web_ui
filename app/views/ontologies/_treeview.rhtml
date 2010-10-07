@@ -277,7 +277,7 @@ function nodeClicked(node_id,node_label) {
         // Load the resource index tab in background
         loc = new String(document.location)
         if (loc.search("#resource_index") >= 0 && loc.split("#") == "resource_index") {
-			callTab("resource_index", '/resources/@ontology@/@concept@');
+			callTab("resource_index", '/resources/@ontology@/?conceptid=@concept@');
 		}
 		
 		update_tab('<%=@ontology.to_param%>',node_id);
@@ -300,7 +300,7 @@ function nodeClicked(node_id,node_label) {
 			// Load the resource index tab in background
 			loc = new String(document.location)
             if (loc.search("#resource_index") >= 0 && loc.split("#")[1] == "resource_index") {
-				callTab('resource_index', '/resources/@ontology@/@concept@');
+				callTab('resource_index', '/resources/@ontology@/?conceptid=@concept@');
 			}
 
 			setCache(node_id,tabData);

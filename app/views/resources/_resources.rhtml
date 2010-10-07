@@ -36,7 +36,7 @@
                        if resource.name.eql?("NextBio")
                           resource_element_link = annotation.url
                        else # Generate a link to the Resource Element Service
-                          resource_element_link = $OBR_REST_URL + "/element/" + resource.shortname + "?elementid=" + annotation.local_id
+                          resource_element_link = $RESOURCE_INDEX_REST_URL + "/element/" + resource.shortname + "?elementid=" + annotation.local_id
                        end # end for NextBio check
               	  %>
               	  <%color = cycle("","alt") %>

@@ -175,7 +175,7 @@
 						<li class="tab" id="mappings_top"><a href="#mappings">Mappings (<span id="mapping_count"><%=@concept.mapping_count%></span>)</a></li>				
             <%unless !$RESOURCE_INDEX_DISABLED.nil? && $RESOURCE_INDEX_DISABLED %>
               <%if !@ontology.isView.eql?('true')%>
-                <li class="tab" id="resource_index_top" onclick="callTab('resource_index','/resources/@ontology@/@concept@');"><a href="#resource_index" alt="callTab('resource_index','/resources/<%=@ontology.id%>/<%=@concept.id%>')">Resource Index</a></li>
+                <li class="tab" id="resource_index_top" onclick="callTab('resource_index','/resources/@ontology@?conceptid=@concept@');"><a href="#resource_index" alt="callTab('resource_index','/resources/<%=@ontology.id%>/<%=@concept.id%>')">Resource Index</a></li>
 						  <% end %>
 						<%end%>
 				</ul>
@@ -217,7 +217,7 @@
 				// If we're on the resource index tab, load that specially
 		        loc = new String(document.location);
 		        if (loc.search("#resource_index") >= 0 && loc.split("#")[1] == "resource_index") {
-		            callTab("resource_index", '/resources/@ontology@/@concept@');
+		            callTab("resource_index", '/resources/@ontology@/?conceptid=@concept@');
 		        }
 			}
 			
@@ -246,16 +246,16 @@
 			
 		});
 		
-		function callTab(tab_name,url){
-				if(getCache(getConcept() + tab_name) != null) {
+		function callTab(tab_name, url) {
+				if (getCache(getConcept() + tab_name) != null) {
 			        document.getElementById(tab_name + "_content").innerHTML=getCache(getConcept() + tab_name);
-			    }else{
-					jQuery("#" + tab_name + "_content").html('<h1><img src="/images/tree/spinner.gif" /> Loading Resources...</h1>');
-		    		jQuery.get(url.replace("@ontology@",getOntology()).replace("@concept@",getConcept()),function(data){
-						jQuery("#" + tab_name + "_content").html(data);
-						setCache(getConcept() + tab_name,data);
-						jQuery.unblockUI();	
-						tb_init('a.thickbox, area.thickbox, input.thickbox');
+			  } else {
+				  jQuery("#" + tab_name + "_content").html('<h1><img src="/images/tree/spinner.gif" /> Loading Resources...</h1>');
+	    		jQuery.get(url.replace("@ontology@",getOntology()).replace("@concept@",encodeURIComponent(getConcept())),function(data){
+  					jQuery("#" + tab_name + "_content").html(data);
+  					setCache(getConcept() + tab_name,data);
+  					jQuery.unblockUI();	
+  					tb_init('a.thickbox, area.thickbox, input.thickbox');
 					});
 				}
 		}

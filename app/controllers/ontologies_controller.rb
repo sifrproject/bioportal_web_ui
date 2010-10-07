@@ -312,12 +312,14 @@ class OntologiesController < ApplicationController
       @ontology = DataAccess.createOntology(params[:ontology])
       if @ontology.kind_of?(Hash) && @ontology[:error]        
         flash[:notice]=@ontology[:longMessage]
+        
         if(params[:ontology][:ontologyId].empty?)
           @ontology = OntologyWrapper.new
         else
           @ontology = DataAccess.getLatestOntology(params[:ontology][:ontologyId])
         end
-        if(params[:ontology][:isView].to_i==1)
+        
+        if params[:ontology][:isView].to_i==1
           render :action=>'new_view'
         else
           render :action=>'new'  
@@ -350,8 +352,8 @@ class OntologiesController < ApplicationController
             Please keep in mind that it may take up to several hours before #{$SITE} users will be able to explore and search your ontology."
         end
         
-        if(@ontology.isView=='true')
-          #cleaning out the cache
+        if @ontology.isView=='true'
+          # Cleaning out the cache
           parent_ontology=DataAccess.getOntology(@ontology.viewOnOntologyVersionId)
           CACHE.delete("views::#{parent_ontology.ontologyId}")
           redirect_to '/ontologies/'+@ontology.viewOnOntologyVersionId+'#views'

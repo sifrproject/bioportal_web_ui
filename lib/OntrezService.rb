@@ -12,7 +12,7 @@ class OntrezService
   # %S_PAGE% = Page Start
   # %E_PAGE% = Page End
   
-  ONTREZ_URL = $OBR_REST_URL
+  ONTREZ_URL = $RESOURCE_INDEX_REST_URL
   
   RESOURCE_BY_CONCEPT = "/byconcept/virtual/%ONT%/false/true/0/10?conceptid=%CONC%"
   VERSIONED_RESOURCE_BY_CONCEPT = "/byconcept/%ONT%/false/true/0/10?conceptid=%CONC%"
@@ -42,19 +42,25 @@ class OntrezService
     startGet = Time.now
     doc = REXML::Document.new(open(ONTREZ_URL + RESOURCES))
     LOG.add :debug, "Resources retrieved (#{Time.now - startGet})"
-
-    doc.elements.each("/success/data/set/resource"){|resource|
-      new_resource = Resource.new
-      new_resource.name = resource.elements["resourceName"].get_text.value
-      new_resource.shortname = resource.elements["resourceID"].get_text.value
-      new_resource.url = resource.elements["resourceURL"].get_text.value
-      new_resource.resource_element_url = resource.elements["resourceElementURL"].get_text.value rescue ""
-      new_resource.description = resource.elements["resourceDescription"].get_text.value
-      new_resource.logo = resource.elements["resourceLogo"].get_text.value
-      new_resource.main_context = resource.elements["mainContext"].get_text.value
-      resources << new_resource
-    }
-    LOG.add :debug, "Resources parsed (#{Time.now - startGet})"
+    
+    if CACHE.get("ri::resources").nil?
+      doc.elements.each("/success/data/set/resource"){|resource|
+        new_resource = Resource.new
+        new_resource.name = resource.elements["resourceName"].get_text.value
+        new_resource.shortname = resource.elements["resourceId"].get_text.value
+        new_resource.url = resource.elements["resourceURL"].get_text.value
+        new_resource.resource_element_url = resource.elements["resourceElementURL"].get_text.value rescue ""
+        new_resource.description = resource.elements["resourceDescription"].get_text.value
+        new_resource.logo = resource.elements["resourceLogo"].get_text.value
+        new_resource.main_context = resource.elements["mainContext"].get_text.value
+        resources << new_resource
+      }
+      LOG.add :debug, "Resources parsed (#{Time.now - startGet})"
+      
+      CACHE.set("ri::resources", resources, 60*60*336)
+    else
+      resources = CACHE.get("ri::resources")
+    end
 
     LOG.add :debug, "Retrieve annotations for #{concept_id}"
     LOG.add :debug, ONTREZ_URL+resource_url.gsub("%ONT%",ont).gsub("%CONC%",CGI.escape(concept_id))
@@ -71,11 +77,11 @@ class OntrezService
     startGet = Time.now
     for resource in resources
       # number of annotations
-      xpath = "/success/data/list/obrResultBean[resourceID='" + resource.shortname + "']/statistics/statisticsBean/nbAnnotation"
+      xpath = "/success/data/list/result[resourceId='" + resource.shortname + "']/resultStatistics/statistics/annotationCount"
       resource.count = doc.elements[xpath].get_text.value.to_i
 
       # annotations
-      xpath = "/success/data/list/obrResultBean[resourceID='" + resource.shortname + "']/annotations"
+      xpath = "/success/data/list/result[resourceId='" + resource.shortname + "']/annotations"
       annotations_doc = doc.elements[xpath]
       parseAnnotations(annotations_doc,resource)
     end
@@ -129,7 +135,7 @@ class OntrezService
     new_resource.main_context = resource_main_context
 
     # use xpath to isolate annotations and send those as a parameter
-    xpath = "/success/data/obrResultBean/annotations"
+    xpath = "/success/data/result/annotations"
     annotations_doc = doc.elements[xpath]
     parseAnnotations(annotations_doc,new_resource)
     
@@ -197,18 +203,18 @@ private
     # To work around this, return is the annotation source xml is nil
     return if doc.nil?
 
-    xpath = "obrAnnotationBeanDetailed"
+    xpath = "annotationDetailed"
 
     doc.elements.each(xpath){ |annotationXML|
       begin
         annotation = Annotation.new
         annotation.score = annotationXML.elements["score"].get_text.value
-        annotation.local_id = CGI.escape(annotationXML.elements["localElementID"].get_text.value).strip
+        annotation.local_id = CGI.escape(annotationXML.elements["localElementId"].get_text.value).strip
         # We try to find the description with a non-reference xpath first.
         xpath = "element/elementStructure/contexts/entry[string='" + resource.main_context + "']/string[2]"
         # If that didn't work, revert to finding the description using provided relative xpath from the reference attr.
         if annotationXML.elements[xpath].nil?
-          xpath_alt = "../obrAnnotationBeanDetailed/element/elementStructure/contexts/entry[string='" + resource.main_context + "']/string[2]"
+          xpath_alt = "../annotationDetailed/element/elementStructure/contexts/entry[string='" + resource.main_context + "']/string[2]"
           annotation.description = annotationXML.elements[xpath_alt].get_text.value
         else
           annotation.description = annotationXML.elements[xpath].get_text.value
@@ -265,7 +271,7 @@ private
       details[annot_class][context_name][:contextString] = contexts.elements["entry[string='" + context_name + "']/string[2]"].get_text.value
 
       case annot_class
-      when "mgrepContextBean"
+      when "mgrepContext"
         # String that contains the annotation term
         details[annot_class][context_name][:termID] = context.elements["termID"].get_text.value
         details[annot_class][context_name][:termName] = context.elements["termName"].get_text.value
@@ -273,13 +279,13 @@ private
         details[annot_class][context_name][:offsets] = [] unless !details[annot_class][context_name][:offsets].nil?
         details[annot_class][context_name][:offsets] << context.elements["from"].get_text.value.to_i - 1 # we subtract one because the api gives the count at the actual start, not before
         details[annot_class][context_name][:offsets] << context.elements["to"].get_text.value.to_i
-      when "isaContextBean"
+      when "isaContext"
         details[annot_class][context_name][:childConceptID]= context.elements["childConceptID"].get_text.value
         details[annot_class][context_name][:level]= context.elements["level"].get_text.value
-      when "mappingContextBean"
+      when "mappingContext"
         details[annot_class][context_name][:mappedConceptID] = context.elements["mappedConceptID"].get_text.value
         details[annot_class][context_name][:mappingType] = context.elements["mappingType"].get_text.value
-      when "reportedContextBean"
+      when "reportedContext"
       end
     }
 
