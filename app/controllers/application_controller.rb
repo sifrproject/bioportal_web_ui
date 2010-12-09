@@ -1,4 +1,7 @@
 require 'uri'
+require 'open-uri'
+require 'net/http'
+
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
@@ -56,6 +59,18 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  def remote_file_exists?(url)
+    begin
+      url = URI.parse(url)
+      Net::HTTP.start(url.host, url.port) do |http|
+        response_valid = http.head(url.request_uri).code.to_i < 400
+        return response_valid
+      end
+    rescue Exception => e
+      return false
+    end
+  end
+
   def redirect_to_browse # Redirect to the browse Ontologies page
     redirect_to "/ontologies"
   end

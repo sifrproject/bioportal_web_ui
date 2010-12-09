@@ -503,6 +503,10 @@ class OntologiesController < ApplicationController
         rescue URI::InvalidURIError
           errors << "Please enter a valid URL"
         end
+        
+        if !remote_file_exists?(params[:downloadLocation])
+          errors << "The URL you provided for us to load an ontology from doesn't reference a valid file"
+        end
       end
     end
     
