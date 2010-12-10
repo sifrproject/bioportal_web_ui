@@ -113,7 +113,7 @@ class SearchController < ApplicationController
     
     response = ""
     for result in @results
-      record_type = result[:recordType].titleize.gsub("Record Type","").split(" ")
+      record_type = format_record_type(result[:recordType])
       record_type_value = ""
       for type in record_type
         record_type_value << type[0]
@@ -129,9 +129,9 @@ class SearchController < ApplicationController
       end      
       
       if params[:id] && params[:id].split(",").length == 1
-        response << "#{target_value}|#{result[:conceptIdShort]}|#{result[:recordType].titleize.gsub("Record Type","").downcase.strip}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}~!~"
+        response << "#{target_value}|#{result[:conceptIdShort]}|#{record_type}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}~!~"
       else
-        response << "#{target_value}|#{result[:conceptIdShort]}|#{result[:recordType].titleize.gsub("Record Type","").downcase.strip}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}|#{result[:ontologyDisplayLabel]}|#{result[:ontologyId]}~!~"
+        response << "#{target_value}|#{result[:conceptIdShort]}|#{record_type}|#{result[:ontologyVersionId]}|#{result[:conceptId]}|#{result[:preferredName]}|#{result[:contents]}|#{result[:ontologyDisplayLabel]}|#{result[:ontologyId]}~!~"
       end
     end        
     
@@ -148,7 +148,6 @@ class SearchController < ApplicationController
     end
 
     #dont save it if its a test
-  #  begin
     if !request.env['HTTP_REFERER'].nil? && !request.env["HTTP_REFERER"].downcase.include?("bioontology.org")
       widget_log = WidgetLog.find_or_initialize_by_referer_and_widget(request.env["HTTP_REFERER"],@widget)
       if widget_log.id.nil?
@@ -158,13 +157,25 @@ class SearchController < ApplicationController
       end
       widget_log.save
     end
-#    rescue Exception=>e
-      
-#    end
     
     
     render :text=>response
     
+  end
+  
+  private
+  
+  def format_record_type(record_type)
+    case record_type
+      when "apreferredname"
+        return "Preferred Name"
+      when "bconceptid"
+        return "Term ID"
+      when "csynonym"
+        return "Synonym"
+      when "dproperty"
+        return "Property"
+    end
   end
   
 end
