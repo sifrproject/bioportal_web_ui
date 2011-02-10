@@ -59,6 +59,7 @@ function wireTableWithData(oTableNew, aData) {
 		"aoColumns": [
 			 { "iDataSort": 1 }, // Subject link
 			 { "bVisible": false }, // Subject for sort
+			 { "bVisible": false }, // Archive for filter
 			 null, // Author
 			 null, // Type
 			 { "bVisible": false }, // Subject for sort

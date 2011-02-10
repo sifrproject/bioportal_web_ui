@@ -1,7 +1,8 @@
 <!-- Container div to hold mapping filter results -->
 <div id="mappings" style="text-align:center;overflow:hidden;">
-	<div style="float: right; margin: 5px;">
-	<input type="button" value="Export Current Results To RDF" class="blueButton" onclick="window.location='/mappings/show/<%=@ontology%>?target=<%=@destination_ont%>&user=<%=params[:user]%>&map_source=<%=params[:map_source]%>&rdf=rdf'">
+	<div style="float: right; margin: 5px; line-height: 12px; width: 200px; text-align: left;">
+		<input type="button" value="Export Current Results To RDF" class="blueButton" onclick="window.location='/mappings/show/<%=@ontology.ontologyId%>?target=<%=@target_ontology.ontologyId%>&user=<%=params[:user]%>&map_source=<%=params[:map_source]%>&rdf=rdf'">
+		<% if @mapping_pages.total_mappings > 10000 %><span style="font-size: x-small; color: grey;"><strong>Note:</strong> This export option will only return the first 10000 mappings of the <%=@mapping_pages.total_mappings%> in the result set. To retrieve all the mappings, please see the <a href="http://www.bioontology.org/wiki/index.php/BioPortal_Mappings_Service">Mappings REST Service</a>.</span><%end%>
 	</div>
 	<% form_for :mapping, nil, :url => "/mappings/show/#{@ontology}", :html => { :id=>'filter',:onsubmit => 'ajaxForm(this,"#mappings",null);return false;' } do |f| %>
 	<input type="hidden" name="target" value="<%=@destination_ont%>">
@@ -45,24 +46,24 @@
 			</tr>
 			</thead>
 			<%for mapping in @mappings%>
-			<%begin%>
+				<%begin%>
+				<tr >
+					<td class="map_source" align="right"> <%=link_to "#{mapping[1][0][:source_ont_name]} : #{mapping[1][0][:source_name]} -->",  :controller => 'visualize', :action => 'virtual', :id => to_param(params[:id]), :conceptid => encode_param(mapping[0]) %></td>
+					<td align="left">
+						<%for map in mapping[1]%>
+						<div class="map_target" style="border:1px solid #C1DAD7;background-color:#e2ebf0;color:#234979;padding:5px;margin-bottom:4px;">				
+							<%=link_to "#{map[:destination_ont_name]} : #{map[:destination_name]} (#{map[:count]})", :controller => 'visualize', :action => 'virtual', :id => map[:destination_ont].to_s, :conceptid => encode_param(map[:destination_id]) %>
+							<span class="mapped_by">Mapped By <%for user in map[:users]%> <%=user%> <%unless user.eql?map[:users].last%>,<%end%>  <%end%></span>
+						</div>
 			
-			<tr >
-				<td class="map_source" align="right"> <%=link_to "#{mapping[1][0][:source_ont_name]} : #{mapping[1][0][:source_name]} -->",  :controller => 'visualize', :action => 'virtual', :id => to_param(params[:id]), :conceptid => encode_param(mapping[0]) %></td>
-				<td align="left">
-					<%for map in mapping[1]%>
-					<div class="map_target" style="border:1px solid #C1DAD7;background-color:#e2ebf0;color:#234979;padding:5px;margin-bottom:4px;">				
-						<%=link_to "#{map[:destination_ont_name]} : #{map[:destination_name]} (#{map[:count]})", :controller => 'visualize', :action => 'virtual', :id => map[:destination_ont].to_s, :conceptid => encode_param(map[:destination_id]) %>
-						<span class="mapped_by">Mapped By <%for user in map[:users]%> <%=user%> <%unless user.eql?map[:users].last%>,<%end%>  <%end%></span>
-					</div>
-		
-					<%end%>
-		
-				</td>
-			</tr>
-			<%rescue Exception=>e%>
+						<%end%>
+			
+					</td>
+				</tr>
+				<%rescue Exception=>e%>
+				<%end%>
 			<%end%>
-			<%end%>		
+		
 		</table>
 	    <%= will_paginate @page_results,:update=>'mappings',:params=>{:target=>params[:target],:user=>params[:user],:map_source=>params[:map_source]} %>
     </div>

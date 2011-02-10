@@ -95,53 +95,56 @@ class MappingsController < ApplicationController
     @ontology = DataAccess.getLatestOntology(params[:id])
     @target_ontology = DataAccess.getLatestOntology(params[:target])
     
-    @mapping_pages = DataAccess.getBetweenOntologiesMappings(@ontology.ontologyId, @target_ontology.ontologyId, params[:page], 100, :user_id => params[:user], :sources => params[:map_source], :unidirectional => "true")
     
-    @mappings = {}
-    @map_sources = []
-    @service_users = DataAccess.getUsers.sort{|x,y| x.username.downcase <=> y.username.downcase}
-    @users = []
-    user_count = DataAccess.getMappingCountOntologyUsers(@ontology.ontologyId)
-    
-    user_count.each do |x|
-      for user in @service_users
-        if x['userId'].to_i == user.id.to_i
-          @users << user
-        end
-      end
-    end
-    
-    
-    for map in @mapping_pages
-      @map_sources << map.map_source.gsub(/(<[^>]*>)/mi, "") unless map.map_source.nil? || map.map_source.empty?
-      @map_sources.uniq!
-      
-      if @mappings[map.source_id].nil?
-        @mappings[map.source_id] = [{:source_ont_name=>map.source_ont_name,:destination_ont_name=>map.destination_ont_name,:source_ont=>map.source_ont,:source_name=>map.source_name,:destination_ont=>map.destination_ont,:destination_name=>map.destination_name,:destination_id=>map.destination_id,:users=>[map.user.username],:count=>1}]
-      else
-        @mappings[map.source_id]
-        
-        found = false
-        for mapping in @mappings[map.source_id]
-          if mapping[:destination_id].eql?(map.destination_id)
-            found = true
-            mapping[:users] << map.user.username
-            mapping[:users].uniq!
-            mapping[:count] += 1
-          end  
-        end
-        
-        unless found
-         @mappings[map.source_id]<< {:source_ont_name=>map.source_ont_name,:destination_ont_name=>map.destination_ont_name,:source_ont=>map.source_ont,:source_name=>map.source_name,:destination_ont=>map.destination_ont,:destination_name=>map.destination_name,:destination_id=>map.destination_id,:users=>[map.user.username],:count=>1}
-        end
-      end
-    end
-    
-    @mappings = @mappings.sort {|a,b| b[1].length<=>a[1].length}
-
-    # This converts the mappings into an object that can be used with the pagination plugin
-    @page_results = WillPaginate::Collection.create(@mapping_pages.page_number, @mapping_pages.page_size, @mapping_pages.total_mappings) do |pager|
-       pager.replace(@mapping_pages)
+    if params[:rdf].nil? || !params[:rdf].eql?("rdf")
+	    @mapping_pages = DataAccess.getBetweenOntologiesMappings(@ontology.ontologyId, @target_ontology.ontologyId, params[:page], 100, :user_id => params[:user], :sources => params[:map_source], :unidirectional => "true")
+	    @mappings = {}
+	    @map_sources = []
+	    @service_users = DataAccess.getUsers.sort{|x,y| x.username.downcase <=> y.username.downcase}
+	    @users = []
+	    user_count = DataAccess.getMappingCountOntologyUsers(@ontology.ontologyId)
+	    
+	    user_count.each do |x|
+	      for user in @service_users
+	        if x['userId'].to_i == user.id.to_i
+	          @users << user
+	        end
+	      end
+	    end
+	    
+	    for map in @mapping_pages
+	      @map_sources << map.map_source.gsub(/(<[^>]*>)/mi, "") unless map.map_source.nil? || map.map_source.empty?
+	      @map_sources.uniq!
+	      
+	      if @mappings[map.source_id].nil?
+	        @mappings[map.source_id] = [{:source_ont_name=>map.source_ont_name,:destination_ont_name=>map.destination_ont_name,:source_ont=>map.source_ont,:source_name=>map.source_name,:destination_ont=>map.destination_ont,:destination_name=>map.destination_name,:destination_id=>map.destination_id,:users=>[map.user.username],:count=>1}]
+	      else
+	        @mappings[map.source_id]
+	        
+	        found = false
+	        for mapping in @mappings[map.source_id]
+	          if mapping[:destination_id].eql?(map.destination_id)
+	            found = true
+	            mapping[:users] << map.user.username
+	            mapping[:users].uniq!
+	            mapping[:count] += 1
+	          end  
+	        end
+	        
+	        unless found
+	         @mappings[map.source_id] << {:source_ont_name=>map.source_ont_name,:destination_ont_name=>map.destination_ont_name,:source_ont=>map.source_ont,:source_name=>map.source_name,:destination_ont=>map.destination_ont,:destination_name=>map.destination_name,:destination_id=>map.destination_id,:users=>[map.user.username],:count=>1}
+	        end
+	      end
+	    end
+	    
+	    @mappings = @mappings.sort {|a,b| b[1].length<=>a[1].length}
+	
+	    # This converts the mappings into an object that can be used with the pagination plugin
+	    @page_results = WillPaginate::Collection.create(@mapping_pages.page_number, @mapping_pages.page_size, @mapping_pages.total_mappings) do |pager|
+	       pager.replace(@mapping_pages)
+	    end
+    else
+	    @mapping_pages = DataAccess.getBetweenOntologiesMappings(@ontology.ontologyId, @target_ontology.ontologyId, 1, 10000, :user_id => params[:user], :sources => params[:map_source], :unidirectional => "true")
     end
     
     if params[:rdf].nil? || !params[:rdf].eql?("rdf")
@@ -212,96 +215,151 @@ private
 
   def to_RDF(mappings)
     rdf_text = "<?xml version='1.0' encoding='UTF-8'?>
+    
+	<rdf:RDF
+		xmlns=\"http://bioontology.org/mappings/mappings.rdf#\"
+      	xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"
+		xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
+		xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"
+		xmlns:mappings=\"http://protege.stanford.edu/ontologies/mappings/mappings.rdfs#\">
 
-
-     <!DOCTYPE rdf:RDF [
-         <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#' >
-         <!ENTITY a 'http://protege.stanford.edu/system#' >
-         <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#' >
-         <!ENTITY mappings 'http://protege.stanford.edu/mappings#' >
-         <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' >
-     ]>
-
-
-     <rdf:RDF xmlns=\"http://bioontology.org/mappings/mappings.rdf#\"
-          xml:base=\"http://bioontology.org/mappings/mappings.rdf\"
-          xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\"
-          xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"
-          xmlns:mappings=\"http://protege.stanford.edu/mappings#\"
-          xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">
-         <rdf:Property rdf:about=\"&mappings;author\">
-             <rdfs:domain rdf:resource=\"&mappings;Mapping_Metadata\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-             <rdfs:label rdf:datatype=\"&xsd;string\">author</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;comment\">
-             <rdfs:domain rdf:resource=\"&mappings;Mapping_Metadata\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-              <rdfs:label rdf:datatype=\"&xsd;string\">comment</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;confidence\">
-             <rdfs:domain rdf:resource=\"&mappings;Mapping_Metadata\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-             <rdfs:label rdf:datatype=\"&xsd;string\">confidence</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;date\">
-             <rdfs:domain rdf:resource=\"&mappings;Mapping_Metadata\"/>
-             <rdfs:range rdf:resource=\"&xsd;date\"/>
-             <rdfs:label rdf:datatype=\"&xsd;string\">date</rdfs:label>
-         </rdf:Property>
-         <rdfs:Class rdf:about=\"&mappings;Mapping_Metadata\">
-             <rdfs:label rdf:datatype=\"&xsd;string\"
-                 >Mapping_Metadata</rdfs:label>
+         <rdfs:Class rdf:about=\"mappings:One_To_One_Mapping\">
+             <rdfs:label rdf:datatype=\"xsd:string\"
+                 >One_To_One_Mapping</rdfs:label>
          </rdfs:Class>
-         <rdf:Property rdf:about=\"&mappings;mapping_metadata\">
-             <rdfs:domain rdf:resource=\"&mappings;One_to_one_mapping\"/>
-             <rdfs:range rdf:resource=\"&mappings;Mapping_Metadata\"/>
-              <rdfs:label rdf:datatype=\"&xsd;string\"
-                 >mapping_metadata</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;mapping_source\">
-             <rdfs:domain rdf:resource=\"&mappings;Mapping_Metadata\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-              <rdfs:label rdf:datatype=\"&xsd;string\">authority</rdfs:label>
-         </rdf:Property>
-         <rdfs:Class rdf:about=\"&mappings;One_to_one_mapping\">
-             <rdfs:label rdf:datatype=\"&xsd;string\"
-                 >One_to_one_mapping</rdfs:label>
-         </rdfs:Class>
-         <rdf:Property rdf:about=\"&mappings;relation\">
-             <rdfs:domain rdf:resource=\"&mappings;One_to_one_mapping\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-              <rdfs:label rdf:datatype=\"&xsd;string\">relation</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;source\">
-             <rdfs:domain rdf:resource=\"&mappings;One_to_one_mapping\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-             <rdfs:label rdf:datatype=\"&xsd;string\">source</rdfs:label>
-         </rdf:Property>
-         <rdf:Property rdf:about=\"&mappings;target\">
-             <rdfs:domain rdf:resource=\"&mappings;One_to_one_mapping\"/>
-             <rdfs:range rdf:resource=\"&xsd;string\"/>
-             <rdfs:label rdf:datatype=\"&xsd;string\">target</rdfs:label>
-         </rdf:Property>"
          
-         count = 1
+         <rdf:Property rdf:about=\"mappings:id\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">id</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:source\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">source</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:target\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">target</rdfs:label>
+         </rdf:Property>
+
+         <rdf:Property rdf:about=\"mappings:relation\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">relation</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:source_ontology_id\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:int\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">source ontology id</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:target_ontology_id\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:int\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">target ontology id</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:created_in_source_ontology_version\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:int\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">created in source ontology version</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:created_in_target_ontology_version\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:int\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">created in target ontology version</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:date\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:datetime\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">date</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:submitted_by\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:int\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">submitted by</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_type\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:string\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping type</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:dependency\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">dependency</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:comment\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:string\"/>
+              <rdfs:label rdf:datatype=\"xsd:string\">comment</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_source\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:string\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping source</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_source_name\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:string\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping_source_name</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_source_contact_info\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:string\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping source contact info</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_source_site\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping source site</rdfs:label>
+         </rdf:Property>
+         
+         <rdf:Property rdf:about=\"mappings:mapping_source_algorithm\">
+             <rdfs:domain rdf:resource=\"mappings:One_To_One_Mapping\"/>
+             <rdfs:range rdf:resource=\"xsd:anyURI\"/>
+             <rdfs:label rdf:datatype=\"xsd:string\">mapping source algorithm</rdfs:label>
+         </rdf:Property>
+         
+         "
          
          for mapping in mappings
-          rdf_text << "<mappings:One_to_one_mapping rdf:ID=\"#{count}\">
-             <mappings:mapping_metadata rdf:resource=\"##{count+1}\"/>
-             <mappings:relation rdf:datatype=\"&xsd;string\">#{mapping.relationship_type}</mappings:relation>
-             <mappings:source rdf:resource='#{$UI_URL}/#{to_param(mapping.source_ont)}/#{mapping.source_id}'/>
-             <mappings:target rdf:resource='#{$UI_URL}/#{to_param(mapping.destination_ont)}/#{mapping.destination_id}'/>
-         </mappings:One_to_one_mapping>
-         <mappings:Mapping_Metadata rdf:ID=\"#{count+1}\">
-             <mappings:author rdf:datatype=\"&xsd;string\">#{mapping.user.username}</mappings:author>
-             <mappings:mapping_source rdf:datatype=\"&xsd;string\">#{mapping.map_source}</mappings:mapping_source>
-             <mappings:comment rdf:datatype=\"&xsd;string\">#{mapping.comment}</mappings:comment>
-             <mappings:date rdf:datatype=\"&xsd;date\">#{mapping.created_at}</mappings:date>
-         </mappings:Mapping_Metadata>"
-         
-         count +=2
-         
+          rdf_text << "<mappings:One_To_One_Mapping rdf:about=\"#{mapping.id}\">
+             <mappings:source rdf:resource='#{mapping.source}'/>
+             <mappings:target rdf:resource='#{mapping.target}'/>
+             <mappings:relation rdf:resource='#{mapping.relation}' />
+             <mappings:source_ontology_id rdf:datatype=\"xsd:int\">#{mapping.source_ontology}</mappings:source_ontology_id>
+             <mappings:target_ontology_id rdf:datatype=\"xsd:int\">#{mapping.target_ontology}</mappings:target_ontology_id>
+             <mappings:created_in_source_ontology_version rdf:datatype=\"xsd:int\">#{mapping.source_ontology_version}</mappings:created_in_source_ontology_version>
+             <mappings:created_in_target_ontology_version rdf:datatype=\"xsd:int\">#{mapping.target_ontology_version}</mappings:created_in_target_ontology_version>
+             <mappings:date rdf:datatype=\"xsd:datetime\">#{mapping.date}</mappings:date>
+             <mappings:submitted_by rdf:datatype=\"xsd:int\">#{mapping.submitted_by}</mappings:submitted_by>
+             <mappings:mapping_type rdf:datatype=\"xsd:string\">#{mapping.mapping_type}</mappings:mapping_type>
+             <mappings:dependency rdf:resource='#{mapping.dependency}' />
+             <mappings:comment rdf:datatype=\"xsd:string\">#{mapping.comment}</mappings:comment>
+             <mappings:mapping_source rdf:datatype=\"xsd:string\">#{mapping.mapping_source}</mappings:mapping_source>
+             <mappings:mapping_source_name rdf:datatype=\"xsd:string\">#{mapping.mapping_source_name}</mappings:mapping_source_name>
+             <mappings:mapping_source_contact_info rdf:datatype=\"xsd:string\">#{mapping.mapping_source_contact_info}</mappings:mapping_source_contact_info>
+             <mappings:mapping_source_site rdf:resource='#{mapping.mapping_source_site}' />
+             <mappings:mapping_source_algorithm rdf:datatype=\"xsd:string\">#{mapping.mapping_source_algorithm}</mappings:mapping_source_algorithm>
+          </mappings:One_To_One_Mapping>
+          
+          "
         end
          
          

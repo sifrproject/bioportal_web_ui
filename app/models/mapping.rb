@@ -9,6 +9,7 @@ class Mapping
   attr_accessor :mapping_type
   attr_accessor :source_ontology
   attr_accessor :target_ontology
+  attr_accessor :comment
   attr_accessor :source_ontology_version
   attr_accessor :target_ontology_version
   attr_accessor :mapping_source
@@ -32,6 +33,7 @@ class Mapping
     self.target_ontology = hash['targetOntologyId'].to_i
     self.source_ontology_version = hash['createdInSourceOntologyVersion'].to_i
     self.target_ontology_version = hash['createdInTargetOntologyVersion'].to_i
+    self.comment = hash['comment'] rescue ""
     self.mapping_source = hash['mappingSource'] rescue ""
     self.mapping_source_name = hash['mappingSourceName'] rescue ""
     self.mapping_source_name = hash['mappingSourceName'] rescue ""
@@ -93,11 +95,11 @@ class Mapping
   alias :map_source= :mapping_source_name=
   
   def source_name
-    DataAccess.getNode(self.source_ontology_version, self.source).label rescue ""
+    DataAccess.getLightNode(self.source_ontology_version, self.source).label rescue ""
   end
 
   def destination_name
-    DataAccess.getNode(self.target_ontology_version, self.target).label rescue ""
+    DataAccess.getLightNode(self.target_ontology_version, self.target).label rescue ""
   end
   
   def source_ont_name
