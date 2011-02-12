@@ -1,6 +1,7 @@
 # Methods added to this helper will be available to all templates in the application.
 
 require 'uri'
+require 'cgi'
 
 module ApplicationHelper
   
@@ -155,6 +156,7 @@ module ApplicationHelper
         if child.note_icon
           icons << "<img src='/images/notes_icon.png'style='vertical-align:bottom;'height='15px' title='Term Has Margin Notes'>"
         end
+        
         if child.map_icon
           icons << "<img src='/images/map_icon.png' style='vertical-align:bottom;' height='15px' title='Term Has Mappings'>"
         end
@@ -162,44 +164,26 @@ module ApplicationHelper
         active_style =""
         if child.id.eql?(id)
           active_style="class='active'"
-        end    
+        end
+
         open = ""
         if child.expanded
           open = "class='open'"
         end
         
-        
-        relation = ""
-        unless node.properties.nil? || node.properties.empty?
-          for key in node.properties.keys
-            concepts = node.properties[key].split(",").map{|x| x.strip}
-            if concepts.include?(child.label)
-              if key.include?("is_a")
-                relation << " <img src='/images/is_a.gif' style='vertical-align:middle;'>"
-              elsif key.include?("part_of")
-                relation << " <img src='/images/part_of.gif' style='vertical-align:middle;'>"
-              end
-            end
-          end
-        end
-        
-        
+        relation = child.relation_icon
         
         string << "<li #{open} #{draw_root}  id=\"#{child.id}\"><span #{active_style}> #{relation} #{child.label} #{icons}</span>"
         
         if child.child_size > 0 && !child.expanded
-          string << "<ul class=\"ajax\">
-  							            <li id='#{child.id}'>{url:/ajax_concepts/#{child.ontology_id}/?conceptid=#{URI.escape(child.id, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}&callback=children}</li>
-          </ul>"
-  				  elsif child.expanded
-    				  string << "<ul>"
-    		      build_tree(child,"child",string,id)
-    		      string <<"</ul>"
-    		    end
+          string << "<ul class='ajax'><li id='#{child.id}'>{url:/ajax_concepts/#{child.ontology_id}/?conceptid=#{CGI.escape(child.id)}&callback=children}</li></ul>"
+	    elsif child.expanded
+    	  string << "<ul>"
+    	  build_tree(child,"child",string,id)
+    	  string << "</ul>"
+        end
     		    
-    				string <<"</li>"
-    				
-      
+    	string <<"</li>"
       end
     end
   end

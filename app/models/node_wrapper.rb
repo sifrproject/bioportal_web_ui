@@ -17,6 +17,10 @@ class NodeWrapper
   attr_accessor :children
   attr_accessor :parent_association
   
+  # This is used to hold original concept names because we turn them into links
+  # Original names can be used for comparison if needed (like in the IS_A, PART_OF icon generation)
+  attr_accessor :original_properties
+  
   def initialize(hash = nil, params = nil)
     if hash.nil?
       return
@@ -26,6 +30,7 @@ class NodeWrapper
     self.version_id = params[:ontology_id]
     self.properties = {}
     self.children = []
+    self.original_properties = {}
     
     hash.each do |key,value|
       if key.eql?("relations")
@@ -42,6 +47,7 @@ class NodeWrapper
               end
           else
             list_values = []
+            list_values_orig = []
             
             unless relation_value.nil?
               relation_value.each do |list_item|
@@ -52,17 +58,21 @@ class NodeWrapper
                   # at this point.
                   test = !list_item['type'].nil? && !list_item['type'].eql?("individual")
                   if !list_item['label'].nil? && !list_item['id'].nil? && !list_item['id'].start_with?("@") && (!list_item['type'].nil? && !list_item['type'].eql?("individual"))
+                  	list_values_orig << list_item['label']
                     list_values << "<a href='/visualize/%ONT%/?conceptid=#{CGI.escape(list_item['id'])}'>#{list_item['label']}</a>"
                   else
+                  	list_values_orig << list_item['label']
                     list_values << list_item['label'] rescue ""
                   end
                 else
+              	  list_values_orig << list_item
                   list_values << list_item
                 end
               end
             end
             
             self.properties[relation_name] = list_values.join(" | ")
+            self.original_properties[relation_name] = list_values_orig.join(" | ")
           end
         end
       else

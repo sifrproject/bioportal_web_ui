@@ -200,7 +200,7 @@ class OntologiesController < ApplicationController
         end
       end
       
-      @root.set_children(nodes)
+      @root.set_children(nodes, @root)
       
       # get the initial concept to display
       @concept = DataAccess.getNode(@ontology.id,@root.children.first.id,view)
@@ -240,7 +240,7 @@ class OntologiesController < ApplicationController
       # Create the tree
       rootNode = @concept.path_to_root
       @root = TreeNode.new()
-      @root.set_children(rootNode.children)
+      @root.set_children(rootNode.children, rootNode)
     end
     
     # gets the initial mappings

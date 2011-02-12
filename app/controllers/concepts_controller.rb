@@ -189,7 +189,7 @@ class ConceptsController < ApplicationController
             @children =[]
             start_tree = Time.now
             for child in @concept.children
-              @children << TreeNode.new(child)
+              @children << TreeNode.new(child, @concept)
               @children.sort!{|x,y| x.label.downcase<=>y.label.downcase} unless @children.empty?
             end
             LOG.add :debug,  "Get children (#{Time.now - start_tree})"
@@ -231,7 +231,7 @@ class ConceptsController < ApplicationController
       # find path to root    
       rootNode = @concept.path_to_root
       @root = TreeNode.new()
-      @root.set_children(rootNode.children)
+      @root.set_children(rootNode.children, rootNode)
     end
  
   

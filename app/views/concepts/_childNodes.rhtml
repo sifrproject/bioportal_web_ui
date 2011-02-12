@@ -1,29 +1,30 @@
 <% if false%>
-<% #JSon format for the tree %>
-<%
-output = "{\"nodes\":["
-for child in @children
-icons = ""
- 	if(child.note_icon)
-        icons << "<img src='/images/notes_icon.png'style='vertical-align:bottom;'>"
-    end
-    if(child.map_icon)
-        icons << "<img src='/images/map_icon.png' style='vertical-align:bottom;'>"
-    end
-
-
-output << "{\"ontology_node_name\":\"#{clean(child.name)} #{icons}\""
-output <<",\"ontology_node_child_count\":#{child.child_size}"
-output << ",\"ontology_node_parent_assoc\":\"is_a\",\"ontology_node_id\":\"#{child.id}\"}"
+	<% #JSon format for the tree %>
+	<%
+	output = "{\"nodes\":["
+	for child in @children
+		icons = ""
+	 	if(child.note_icon)
+	        icons << "<img src='/images/notes_icon.png'style='vertical-align:bottom;'>"
+	    end
+	    if(child.map_icon)
+	        icons << "<img src='/images/map_icon.png' style='vertical-align:bottom;'>"
+	    end
+	    if(child.relation_icon)
+	    	icons << child.relation_icon
+	    end
 	
-	unless child.eql?(@children.last)
-		output << ","
+		output << "{\"ontology_node_name\":\"#{clean(child.name)} #{icons}\""
+		output <<",\"ontology_node_child_count\":#{child.child_size}"
+		output << ",\"ontology_node_parent_assoc\":\"is_a\",\"ontology_node_id\":\"#{child.id}\"}"
+		
+		unless child.eql?(@children.last)
+			output << ","
+		end
 	end
-
-end
-output << "]}"
-%>	  
-<%=output%>
+	output << "]}"
+	%>
+	<%=output%>
 <%end%>
 
 <%
@@ -31,35 +32,19 @@ output =""
 
 	
 for child in @children
-icons = ""
+	icons = ""
  	if(child.note_icon)
         icons << "<img src='/images/notes_icon.png'style='vertical-align:bottom;'>"
     end
     if(child.map_icon)
         icons << "<img src='/images/map_icon.png' style='vertical-align:bottom;'>"
     end
-
-relation = ""
-if @ontology.format.downcase.include?("obo")
-	for key in @concept.properties.keys
-		concepts = @concept.properties[key].split("|").map{|x| x.strip}
-		if concepts.include?(child.name.strip)
-			if key.include?("is_a")
-				relation << " <img src='/images/is_a.gif' style='vertical-align:middle;'>"
-			elsif key.include?("part_of")
-				relation << " <img src='/images/part_of.gif' style='vertical-align:middle;'>"
-			end
-		end
-	end
-end
 	
-
-	output << "<li id='#{child.id}'><span>#{relation} #{child.name} #{icons}</span>"
-		if child.child_size>0 && !child.expanded
-	  		output << "<ul class=\"ajax\">
-			            <li id='#{child.id}'>{url:/ajax_concepts/#{child.ontology_id}/?conceptid=#{encode_param(child.id)}&callback=children}</li>
-		            </ul>"
+	relation = child.relation_icon
 		
+	output << "<li id='#{child.id}'><span>#{relation} #{child.name} #{icons}</span>"
+		if child.child_size > 0 && !child.expanded
+	  		output << "<ul class=\"ajax\"><li id='#{child.id}'>{url:/ajax_concepts/#{child.ontology_id}/?conceptid=#{encode_param(child.id)}&callback=children}</li></ul>"
   		end
 	output <<"</li>"
 
