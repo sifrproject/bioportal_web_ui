@@ -29,13 +29,13 @@ try{
 var BP_FORM_COMPLETE_LOADED = true;
 
 // Set the defaults if they haven't been set yet
-if (typeof BP_SEARCH_SERVER == 'undefined') {
+if (typeof BP_SEARCH_SERVER === 'undefined') {
   var BP_SEARCH_SERVER = "http://bioportal.bioontology.org";
 }
-if (typeof BP_SITE == 'undefined') {
+if (typeof BP_SITE === 'undefined') {
   var BP_SITE = "BioPortal";
 }
-if (typeof BP_ORG == 'undefined') {
+if (typeof BP_ORG === 'undefined') {
   var BP_ORG = "NCBO";
 }
 
@@ -82,6 +82,9 @@ function formComplete_setup_functions() {
 		var target_property;
 		
 		var search_branch = jQuery(this).attr("data-bp_search_branch");
+		if (typeof search_branch === "undefined") {
+		  search_branch = "";
+		}
 		
 		jQuery(classes).each(function() {
 			if (this.indexOf("bp_form_complete") === 0) {
