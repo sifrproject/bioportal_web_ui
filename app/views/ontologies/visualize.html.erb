@@ -79,6 +79,7 @@
 		
 		jQuery(document).ready(function(){
 			jQuery("#search_box").autocomplete("/search/json_search/<%=@ontology.ontologyId%>", {
+        extraParams: { objecttypes: "class" },
 				lineSeparator: "~!~",
 				matchSubset: 0,
 				minChars: 1,
