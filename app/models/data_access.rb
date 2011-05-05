@@ -81,7 +81,7 @@ class DataAccess
     terms = CACHE.get("terms_all_ontologies")
     running = CACHE.get("running_term_calc")
     
-    if (terms.nil? || terms.length == 0) && (running.nil? || !running.eql?("true"))
+    if (terms.nil? || terms.to_s.length == 0) && (running.nil? || !running.eql?("true"))
       CACHE.set("running_term_calc", "true", 60*15)
       
       # Set a default hash either empty or based on an old calculation
