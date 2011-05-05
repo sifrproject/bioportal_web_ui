@@ -33,6 +33,9 @@ $REST_DOMAIN = "domain.com"
 # Resource Index REST service address
 $RESOURCE_INDEX_REST_URL = "http://domain.com/resource_index"
 
+# Max number of children to return when rendering a tree view
+$MAX_CHILDREN = 7500
+
 # Resource Index UI Location
 $RESOURCE_INDEX_UI_URL = "http://ncbodev-riui1.stanford.edu/stage"
 
