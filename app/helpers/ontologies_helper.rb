@@ -123,7 +123,7 @@ module OntologiesHelper
   end
   
   def terms_link(ontology, count)
-    loc = "terms"
+    loc = ontology.terms_disabled? ? "summary" : "terms"
     
     if count.nil? || count == 0
       return "0"
