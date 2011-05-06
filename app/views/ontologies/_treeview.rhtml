@@ -24,7 +24,7 @@ jQuery(document).ready(function(){
 	
 	setConcept("<%=@concept.id%>");
 	setOntology("<%=@ontology.id%>");
-	jQuery("#sd_content").scrollTo(jQuery('span.active'));
+	jQuery("#sd_content").scrollTo(jQuery('a.active'));
 	
 	// Set the cache for the first concept we retrieved
 	setCacheCurrent();
@@ -35,12 +35,12 @@ jQuery(document).ready(function(){
 	    jQuery(this).removeClass("expand-down");
 	    jQuery("#sd_content").removeClass("sd_max_height");
 	    jQuery(this).addClass("expand-up");
-      jQuery(window).scrollTo(jQuery('span.active'));
+      jQuery(window).scrollTo(jQuery('a.active'));
 	  } else {
       jQuery(this).removeClass("expand-up");
       jQuery(this).addClass("expand-down")
       jQuery("#sd_content").addClass("sd_max_height");
-      jQuery("#sd_content").scrollTo(jQuery('span.active'));
+      jQuery("#sd_content").scrollTo(jQuery('a.active'));
 	  }
 	});
 	

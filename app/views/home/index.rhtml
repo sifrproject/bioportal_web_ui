@@ -25,7 +25,7 @@ function jumpToValueOntology() {
 		if (sValue == null || sValue == "") {
 			sValue = data;
 		}
-		document.location="/virtual/"+sValue;
+		document.location="/ontologies/"+sValue;
 		jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Ontology...</h1>' });
 		return;
 	}
