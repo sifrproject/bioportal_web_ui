@@ -153,7 +153,7 @@ class OntologiesController < ApplicationController
     params.each do |key,value|
       stop_words = [ "ontology", "controller", "action" ]
       next if stop_words.include?(key.to_s) || value.nil? || value.empty?
-      params_array << "#{key}=#{value}"
+      params_array << "#{key}=#{CGI.escape(value)}"
     end
     params_string = (params_array.empty?) ? "" : "&#{params_array.join('&')}"
     
@@ -213,7 +213,7 @@ class OntologiesController < ApplicationController
       @root.set_children(nodes, @root)
       
       # get the initial concepts to display
-      @concept = DataAccess.getNode(@ontology.id, @root.children.first.id, view)
+      @concept = DataAccess.getNode(@ontology.id, @root.children.first.id, nil, view)
       
       # Some ontologies have "too many children" at their root. These will not process and are handled here.
       # TODO: This should use a proper error-handling technique with custom exceptions
