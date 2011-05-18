@@ -1,37 +1,34 @@
 <% if @ontology.metadata_only? %>
 <div id="widgets_content" style="padding: 1em;">
-  <p>Widgets are only available for ontologies stored in <%=$SITE%>.</p>
+  <p>Widgets are only available for ontologies stored in <%= $SITE%>.</p>
 </div>
 
 <% else %>
 <div id="widgets_content" style="padding: 1em;">
     <div>
-        <h1>Adding <%=$ORG%> Widgets for <%=@ontology.displayLabel %> to Your Site</h1>
+        <h1>Adding <%= $ORG%> Widgets for <%= @ontology.displayLabel %> to Your Site</h1>
         <h2>Step 1: Select a widget</h2>
         <hr/>
         <div style="margin: auto;">
-            <style>
-                #widget_table td {
-                    border: 1px solid #EFEFEF;
-                    padding: 10px;
-                }
-                
-                #widget_table th {
-                    font-size: 15px;
-                    font-weight: bold;
-                    background-color: #f5fafa;
-                    padding: 5px;
-                }
-                
-                .getcode {
-                    font-weight: bold;
-                    font-size: 15px;
-                    background-color: #f5fafa;
-                    border: 1px solid #AAAAAA;
-                    padding: 3px 10px 3px 10px;
-                    text-decoration: none;
-                }
-            </style>
+            <style>#widget_table td {
+					border: 1px solid #EFEFEF;
+					padding: 10px;
+				}
+				#widget_table th {
+					font-size: 15px;
+					font-weight: bold;
+					background-color: #f5fafa;
+					padding: 5px;
+				}
+				.getcode {
+					font-weight: bold;
+					font-size: 15px;
+					background-color: #f5fafa;
+					border: 1px solid #AAAAAA;
+					padding: 3px 10px 3px 10px;
+					text-decoration: none;
+				}
+</style>
             <table width="80%" id="widget_table">
                 <tr>
                     <th>
@@ -44,7 +41,7 @@
                 <tr>
                     <td>
                         <h2>Jump To</h2>
-                        <h4>Type a term in <%=@ontology.displayLabel %> and jump to it in <%=$SITE%></h4>
+                        <h4>Type a term in <%= @ontology.displayLabel %> and jump to it in <%= $SITE%></h4>
                         <br/>
                         <a href="#TB_inline?height=400&width=600&inlineId=jump" class="thickbox getcode">Get Code</a>
                     </td>
@@ -52,11 +49,10 @@
                     	<div id="bp_quick_jump"></div>
                   	  <script type="text/javascript">
                           // Set defaults for this installation
-                          var BP_SEARCH_SERVER = "<%=$UI_URL%>";
-                          var BP_SITE = "<%=$SITE%>";
-                          var BP_ORG = "<%=$ORG%>";
-                          var BP_ontology_id = "<%=@ontology.ontologyId%>";
-                  	  </script>
+                          var BP_SEARCH_SERVER = "<%= $UI_URL%>";
+                          var BP_SITE = "<%= $SITE%>";
+                          var BP_ORG = "<%= $ORG%>";
+                          var BP_ontology_id = "<%= @ontology.ontologyId%>";</script>
 					            <%= javascript_include_tag "/javascripts/widgets/quick_jump.js" %>
                       <div id="jump" style="display:none;">
                       <h2>Step 2: Follow the Instructions</h2>
@@ -64,7 +60,7 @@
 						<div class="enable-lists">
 	                        <ul>
 	                            <li>
-	                                Download the <a rel="nofollow" title="<%=$UI_URL%>/javascripts/widgets/quick_jump.js" class="external free" href="<%=$UI_URL%>/javascripts/widgets/quick_jump.js"><b>quick_jump.js file</b></a>
+	                                Download the <a rel="nofollow" title="<%= $UI_URL%>/javascripts/widgets/quick_jump.js" class="external free" href="<%= $UI_URL%>/javascripts/widgets/quick_jump.js"><b>quick_jump.js file</b></a>
 	                                and put it on your server
 	                            </li>
 	                            <li>
@@ -77,11 +73,15 @@
                                             	You can enter a comma-separated list of ontology ids:<br>var BP_ontology_id = "1032,1089";
 											</li>
 											<li>
-												You cans set the variable to 'all' to search all ontologies in <%=$SITE%>:<br>var BP_ontology_id = "all";
+												You cans set the variable to 'all' to search all ontologies in <%= $SITE%>:<br>var BP_ontology_id = "all";
 											</li>
 										</ul>
 									</li>
 	                            </li>
+                    <li>
+                      To include definitions in the Jump To drop-down, add the following variable in Javascript:<br/>
+                      <pre>var BP_include_definitions = true;</pre>
+                    </li>
 	                            <li>
 	                                In the code that you just pasted, make sure to change the path to the quick_jump.js file to point to the location where you put the file (relative to your HTML file)
 	                                <ul>
@@ -95,10 +95,8 @@
 <textarea rows=8 cols=70>
 <div id="bp_quick_jump"></div>
 <script type="text/javascript">
-    var BP_ontology_id = "<%=@ontology.ontologyId%>";
-</script>
-<script src="quick_jump.js" type="text/javascript" charset="utf-8">
-</script>
+    var BP_ontology_id = "<%= @ontology.ontologyId%>";</script>
+<script src="quick_jump.js" type="text/javascript" charset="utf-8"></script>
 </textarea>
                         </ul>
                         <p>
@@ -110,7 +108,7 @@
                 <tr>
                     <td>
                         <h2>Form Autocomplete</h2>
-                        <h4>Fill in a field in your form with a term from <%=@ontology.displayLabel %></h4>
+                        <h4>Fill in a field in your form with a term from <%= @ontology.displayLabel %></h4>
                         <br/>
                         <a href="#TB_inline?height=400&width=600&inlineId=form" class="thickbox getcode">Get Code</a>
                     </td>
@@ -118,20 +116,20 @@
 						<%= javascript_include_tag "/javascripts/widgets/form_complete.js" %>
 						Example 1 (start typing the term name to get its full URI)
 						<br/> 
-						<input type="text" name="a" class="bp_form_complete-<%=@ontology.ontologyId%>-uri" size="100"/><br/> 
+						<input type="text" name="a" class="bp_form_complete-<%= @ontology.ontologyId%>-uri" size="100"/><br/> 
 						Example 2 (get the ID for a term)
 						<br/> 
-						<input type="text" name="b" class="bp_form_complete-<%=@ontology.ontologyId%>-shortid" size="100"/><br/> 
+						<input type="text" name="b" class="bp_form_complete-<%= @ontology.ontologyId%>-shortid" size="100"/><br/> 
 						Example 3 (get the preferred name for a term)
 						<br/> 
-						<input type="text" name="c" class="bp_form_complete-<%=@ontology.ontologyId%>-name" size="100"/> 
+						<input type="text" name="c" class="bp_form_complete-<%= @ontology.ontologyId%>-name" size="100"/> 
                         <div id="form" style="display:none;">
 							<div class="enable-lists" >
                             <h2>Step 2: Follow the Instructions</h2>
                             <hr/>
                             <ul>
                                 <li>
-                                    Download the <a rel="nofollow" title="<%=$UI_URL%>/javascripts/widgets/form_complete.js" class="external free" href="<%=$UI_URL%>/javascripts/widgets/form_complete.js"><b>form_complete.js file</b></a>
+                                    Download the <a rel="nofollow" title="<%= $UI_URL%>/javascripts/widgets/form_complete.js" class="external free" href="<%= $UI_URL%>/javascripts/widgets/form_complete.js"><b>form_complete.js file</b></a>
                                     and put it on your server
                                 </li>
                                 <li>
@@ -151,21 +149,22 @@
                                             will use NCI Thesaurus (ontology id is 1032) and will put the term URI in the field after the user selects the term from the pull-down list.
 											<ul>
 												<li><b>Note:</b> In addition to single ontology ids, you can use a list:<br><code>bp_form_complete-1032,1089-uri</code></li>
-												<li><b>OR</b> use 'all' to search across all <%=$SITE%> ontologies:<br><code>bp_form_complete-all-uri</code></li>
+												<li><b>OR</b> use 'all' to search across all <%= $SITE%> ontologies:<br><code>bp_form_complete-all-uri</code></li>
 											</ul>
                                         </li>
+                                    </ul>
                                         <li>
                                             You can use the following parameters to select which value will be placed into the user-visible input field:
                                             <ul>
                                                 <li>
                                                     <code>
                                                         uri
-                                                    </code>put the complete URI of the term (e.g., <a rel="nofollow" title="<%=$UI_URL%>/visualize/39478/Common_Neoplasm" class="external free" href="<%=$UI_URL%>/visualize/39478/Common_Neoplasm"><%=$UI_URL%>/visualize/39478/Common_Neoplasm</a>);
+                                                    </code>put the complete URI of the term (e.g., <a rel="nofollow" title="<%= $UI_URL%>/visualize/39478/Common_Neoplasm" class="external free" href="<%= $UI_URL%>/visualize/39478/Common_Neoplasm"><%= $UI_URL%>/visualize/39478/Common_Neoplasm</a>);
                                                 </li>
                                                 <li>
                                                     <code>
                                                         shortid
-                                                    </code>put the short id of the term, as used in <%=$SITE%> (e.g., "Common_Neoplasm");
+                                                    </code>put the short id of the term, as used in <%= $SITE%> (e.g., "Common_Neoplasm");
                                                 </li>
                                                 <li>
                                                     <code>
@@ -174,20 +173,23 @@
                                                 </li>
                                             </ul>
                                         </li>
-										<li>
-											In addition to the input element you defined, there are four hidden form elements that are created and then set when a user selects a term from the list. For example, if you create a field with this code:
-											<ul>
-												<pre><%=h '<input type="text" name="a" class="bp_form_complete-all-uri" size="100"/>' %></pre>
-											</ul>
-											The 'name' attribute is used to create the four following fields (note how the 'a' from the name attribute is appended to the id attribute):
-											<ul>
-												<li><pre><%=h '<input type="hidden" id="a_bioportal_preferred_name">' %></pre></li>
-												<li><pre><%=h '<input type="hidden" id="a_bioportal_concept_id">' %></pre></li>
-												<li><pre><%=h '<input type="hidden" id="a_bioportal_ontology_id">' %></pre></li>
-												<li><pre><%=h '<input type="hidden" id="a_bioportal_full_id">' %></pre></li>
-											</ul>
-										</li>
-                                    </ul>
+                    <li>
+                      In addition to the input element you defined, there are four hidden form elements that are created and then set when a user selects a term from the list. For example, if you create a field with this code:
+                      <ul>
+                        <pre><%= h '<input type="text" name="a" class="bp_form_complete-all-uri" size="100"/>' %></pre>
+                      </ul>
+                      The 'name' attribute is used to create the four following fields (note how the 'a' from the name attribute is appended to the id attribute):
+                      <ul>
+                        <li><pre><%= h '<input type="hidden" id="a_bioportal_preferred_name">' %></pre></li>
+                        <li><pre><%= h '<input type="hidden" id="a_bioportal_concept_id">' %></pre></li>
+                        <li><pre><%= h '<input type="hidden" id="a_bioportal_ontology_id">' %></pre></li>
+                        <li><pre><%= h '<input type="hidden" id="a_bioportal_full_id">' %></pre></li>
+                      </ul>
+                    </li>
+                    <li>
+                      To include definitions in the form complete drop-down, add the following attribute to the input field:<br/>
+                      <pre>data-bp_include_definitions="true"</pre>
+                    </li>
                                 </li>
                             </ul>
 							</div>
@@ -197,11 +199,11 @@
 <textarea rows=8 cols=70>
 Example 1 (start typing the term name to get its full URI)
 <br/>
-<input type="text" name="a" class="bp_form_complete-<%=@ontology.ontologyId%>-uri" size="100"/> Example 2 (get the ID for a term)
+<input type="text" name="a" class="bp_form_complete-<%= @ontology.ontologyId%>-uri" size="100"/> Example 2 (get the ID for a term)
 <br/>
-<input type="text" name="b" class="bp_form_complete-<%=@ontology.ontologyId%>-shortid" size="100"/> Example 3 (get the preferred name for a term)
+<input type="text" name="b" class="bp_form_complete-<%= @ontology.ontologyId%>-shortid" size="100"/> Example 3 (get the preferred name for a term)
 <br/>
-<input type="text" name="c" class="bp_form_complete-<%=@ontology.ontologyId%>-name" size="100"/>
+<input type="text" name="c" class="bp_form_complete-<%= @ontology.ontologyId%>-name" size="100"/>
 </textarea>
                             </p>
                             <p>
@@ -213,15 +215,14 @@ Example 1 (start typing the term name to get its full URI)
                 <tr>
                     <td>
                         <h2>RSS Feed</h2>
-                        <h4>Get RSS feed for changes in <%=@ontology.displayLabel %></h4>
+                        <h4>Get RSS feed for changes in <%= @ontology.displayLabel %></h4>
                         <br/>
                         <a href="#TB_inline?height=400&width=600&inlineId=feed" class="thickbox getcode">Get Code</a>
                     </td>
                     <td>
 						<div id="bp_feed_container"></div>
                         <script type="text/javascript">
-                            var BP_ontology_id = "<%=@ontology.ontologyId%>"
-                        </script>
+                            var BP_ontology_id = "<%= @ontology.ontologyId%>"</script>
 						<%= javascript_include_tag "/javascripts/widgets/feed_widget.js" %>
                         <div id="feed" style="display:none;">
                             <h2>Step 2: Follow the Instructions</h2>
@@ -231,10 +232,11 @@ Example 1 (start typing the term name to get its full URI)
 <textarea rows=8 cols=70>
 <div id="bp_feed_container"></div>
 <script type="text/javascript">
-    var BP_ontology_id = "<%=@ontology.ontologyId%>"
-</script>
-<script src="<%=$UI_URL%>/javascripts/widgets/feed_widget.js" type="text/javascript" charset="utf-8">
-</script>
+    var BP_ontology_id = "<%= @ontology.ontologyId%>"</script>
+<script src="<%= $UI_URL%>/javascripts/
+  widgets/feed_widget.js" type="
+  text/javascript" charset="
+  utf-8"></script>
 </textarea>
                             <br/>
                             <h2>Referencing an ontology in your widgets</h2>
@@ -248,14 +250,14 @@ Example 1 (start typing the term name to get its full URI)
                 <tr>
                     <td>
                         <h2>Graph Visualization</h2>
-                        <h4>Visualize <%=@ontology.displayLabel %></h4>
+                        <h4>Visualize <%= @ontology.displayLabel %></h4>
                         <br/>
                         <a href="#TB_inline?height=400&width=600&inlineId=visual" class="thickbox getcode">Get Code</a>
                     </td>
                     <td>
                         <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="FlexoViz" width="500px" height="500px" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-                            <param name="movie" value="<%=$FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%=$FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" /><param name="wmode" value="opaque" />
-                            <embed src="<%=$FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%=$FLEX_VERSION%>" bgcolor="#ffffff" width="500px" height="500px" name="FlexoViz" align="middle" play="true" loop="false" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" flashVars="widget=true&ontology=<%=@ontology.id%>&server=<%= $REST_URL %>" pluginspage="http://www.adobe.com/go/getflashplayer">
+                            <param name="movie" value="<%= $FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%= $FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" /><param name="wmode" value="opaque" />
+                            <embed src="<%= $FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%= $FLEX_VERSION%>" bgcolor="#ffffff" width="500px" height="500px" name="FlexoViz" align="middle" play="true" loop="false" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" flashVars="widget=true&ontology=<%= @ontology.id%>&server=<%= $REST_URL %>" pluginspage="http://www.adobe.com/go/getflashplayer">
                             </embed>
                         </object>
                         <div id ="visual" style="display:none">
@@ -265,8 +267,8 @@ Example 1 (start typing the term name to get its full URI)
                             <br/>
 <textarea rows=4 cols=70>
 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" id="FlexoViz" width="100%" height="100%" codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">
-    <param name="movie" value="<%=$FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%=$FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" />
-    <embed src="<%=$FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%=$FLEX_VERSION%>" bgcolor="#ffffff" width="100%" height="100%" name="FlexoViz" align="middle" play="true" loop="false" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" flashVars="widget=true&ontology=<%=@ontology.id%>&server=<%= $REST_URL %>" pluginspage="http://www.adobe.com/go/getflashplayer">
+    <param name="movie" value="<%= $FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%= $FLEX_VERSION%>" /><param name="quality" value="high" /><param name="bgcolor" value="#ffffff" /><param name="allowScriptAccess" value="always" />
+    <embed src="<%= $FLEX_URL%>/flexviz/BasicFlexoViz.swf?v=<%= $FLEX_VERSION%>" bgcolor="#ffffff" width="100%" height="100%" name="FlexoViz" align="middle" play="true" loop="false" quality="high" allowScriptAccess="always" type="application/x-shockwave-flash" flashVars="widget=true&ontology=<%= @ontology.id%>&server=<%= $REST_URL %>" pluginspage="http://www.adobe.com/go/getflashplayer">
     </embed>
 </object>
 </textarea>
@@ -289,7 +291,7 @@ Example 1 (start typing the term name to get its full URI)
 				<tr>
 					<td>
                         <h2>Tree Hierarchy</h2>
-                        <h4>Display tree widget for <%=@ontology.displayLabel %></h4>
+                        <h4>Display tree widget for <%= @ontology.displayLabel %></h4>
                         <br/>
                         <a href="#TB_inline?height=400&width=600&inlineId=ontologyTree" class="thickbox getcode">Get Code</a>
 					</td>
@@ -301,14 +303,14 @@ Example 1 (start typing the term name to get its full URI)
                           <param name="quality" value="high" />
                           <param name="bgcolor" value="#ffffff" />
                           <param name="allowScriptAccess" value="always" />
-                          <param name="flashVars" value="ontology=<%=@ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true" />
+                          <param name="flashVars" value="ontology=<%= @ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true" />
                           <embed src="http://keg.cs.uvic.ca/ncbo/ontologytree/OntologyTree.swf" quality="high" bgcolor="#ffffff"
                             width="300" height="100%" name="OntologyTree" align="middle"
                             play="true"
                             loop="false"
                             allowScriptAccess="always"
                             type="application/x-shockwave-flash"
-                            flashVars="ontology=<%=@ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true"
+                            flashVars="ontology=<%= @ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true"
                             pluginspage="http://www.adobe.com/go/getflashplayer">
                           </embed>
                         </object>
@@ -325,14 +327,14 @@ Example 1 (start typing the term name to get its full URI)
 	<param name="quality" value="high" />
 	<param name="bgcolor" value="#ffffff" />
 	<param name="allowScriptAccess" value="always" />
-	<param name="flashVars" value="ontology=<%=@ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true" />
+	<param name="flashVars" value="ontology=<%= @ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true" />
 	<embed src="http://keg.cs.uvic.ca/ncbo/ontologytree/OntologyTree.swf" quality="high" bgcolor="#ffffff"
 		width="300" height="100%" name="OntologyTree" align="middle"
 		play="true"
 		loop="false"
 		allowScriptAccess="always"
 		type="application/x-shockwave-flash"
-		flashVars="ontology=<%=@ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true"
+		flashVars="ontology=<%= @ontology.ontologyId%>&alerterrors=false&canchangeontology=false&virtual=true"
 		pluginspage="http://www.adobe.com/go/getflashplayer">
 	</embed>
 </object>
@@ -356,9 +358,7 @@ Example 1 (start typing the term name to get its full URI)
     </div>
 </div>
 
-<script type="text/javascript" charset="utf-8">
-    // We need to fire the thickbox init since we're bringing in new content to the page
-    tb_init('a.thickbox, area.thickbox, input.thickbox');
-</script>
+<script type="text/javascript" charset="utf-8">// We need to fire the thickbox init since we're bringing in new content to the page
+  tb_init('a.thickbox, area.thickbox, input.thickbox');</script>
 
 <% end %>
