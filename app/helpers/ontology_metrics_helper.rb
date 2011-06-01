@@ -15,7 +15,7 @@ module OntologyMetricsHelper
     
     # Below we will use the 'send' method to call setters/getters based on the metric name we're looking for
     if metrics.send(:"#{metric}LimitPassed") != false
-      class_list_length = metrics.send(:"#{metric}LimitPassed").length rescue 0 # Count empty arrays as zero
+      class_list_length = metrics.send(:"#{metric}LimitPassed")
       markup << "#{class_list_length}"
       # Return here to avoid creating the 'details' link 
       return markup
