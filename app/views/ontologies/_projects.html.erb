@@ -13,9 +13,9 @@
   <h2 style="margin: 2em 0 0">
     <span style="font-size: x-large; margin-right: 1.5em;">Projects Using This Ontology</span>
     <%if session[:user].nil? %>
-      <a href="/login?redirect=<%=URI.escape("/ontologies/projects/new")%>">Create new project</a>
+      <a href="/login?redirect=<%=URI.escape("/projects/new")%>">Create new project</a>
     <%else %>
-      <a href="/ontologies/projects/new">Create new project</a>
+      <a href="/projects/new">Create new project</a>
     <%end %>
   </h2>
 
