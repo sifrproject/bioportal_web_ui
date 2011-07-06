@@ -14,7 +14,7 @@ module OntologyMetricsHelper
     markup = ""
     
     # Below we will use the 'send' method to call setters/getters based on the metric name we're looking for
-    if metrics.send(:"#{metric}LimitPassed") == true
+    if !metrics.send(:"#{metric}LimitPassed").nil? && metrics.send(:"#{metric}LimitPassed") != false && metrics.send(:"#{metric}LimitPassed") > 0
       class_list_length = metrics.send(:"#{metric}LimitPassed")
       markup << "#{class_list_length}"
       # Return here to avoid creating the 'details' link 
