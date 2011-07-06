@@ -173,10 +173,6 @@ class HomeController < ApplicationController
     end
   end
   
-  def owl2_help
-    render :layout => 'minimal'
-  end
-  
   def account
     if session[:user].nil?
       redirect_to :controller => 'login', :action => 'index', :redirect => "/account"

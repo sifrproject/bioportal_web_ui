@@ -170,7 +170,6 @@
                 <% ont_formats = [ "LEXGRID-XML", "OBO", "OWL", "OWL-DL", "OWL-FULL", "OWL-LITE", "PROTEGE", "RRF" ] %>
                 <% selected = @ontology.ontologyId.nil? ? "OWL" : @ontology.format %>
                 <%= select("ontology", "format", ont_formats, { :selected => selected, :style => "width: 200px;" }) %>
-                &nbsp;&nbsp;&nbsp;<a tabindex="0" onclick="popup('/owl2_help?pop=true'); return false;" href="/owl2_help">Using Protégé 4 or OWL2?</a>
 
                 <div id="format_spacing">
                 </div>

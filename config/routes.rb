@@ -32,7 +32,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/resources', :controller => 'home', :action => 'all_resources'
   map.connect '/recommender', :controller => 'home', :action => 'recommender'
   map.connect '/account', :controller => 'home', :action => 'account'
-  map.connect '/owl2_help', :controller => 'home', :action => 'owl2_help'
 
   # Ontologies
   map.connect '/exhibit/:ontology/:id', :controller => 'concepts', :action=>'exhibit'
