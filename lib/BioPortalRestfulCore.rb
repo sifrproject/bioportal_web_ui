@@ -1657,6 +1657,10 @@ private
     path = params[:path]
     return_type = params[:return_type]
     
+    if xml.nil?
+      return nil
+    end
+    
     if xml.kind_of?(String)
       parser = XML::Parser.string(xml, :options => LibXML::XML::Parser::Options::NOBLANKS)
     else

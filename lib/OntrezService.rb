@@ -13,22 +13,23 @@ class OntrezService
   # %E_PAGE% = Page End
   
   ONTREZ_URL = $RESOURCE_INDEX_REST_URL
+  APIKEY_PARAM = "&apikey=#{$APPLICATION_ID}"
   
-  RESOURCE_BY_CONCEPT = "/byconcept/virtual/%ONT%/false/true/0/10?conceptid=%CONC%"
-  VERSIONED_RESOURCE_BY_CONCEPT = "/byconcept/%ONT%/false/true/0/10?conceptid=%CONC%"
-  PAGING_RESOURCE_BY_CONCEPT = "/byconcept/virtual/%ONT%/%RESOURCE%/false/false/%S_PAGE%/10?conceptid=%CONC%"
-  VERSIONED_PAGING_RESOURCE_BY_CONCEPT = "/byconcept/%ONT%/%RESOURCE%/false/false/%S_PAGE%/10?conceptid=%CONC%"
-  RESOURCES = "/resources"
-  DETAILS = "/details/true/virtual/concept/%ONT%/resource/%RESOURCE%/?conceptid=%CONC%&elementid=%ELEMENT%"
-  VERSIONED_DETAILS = "/details/true/concept/%ONT%/resource/%RESOURCE%/?conceptid=%CONC%&elementid=%ELEMENT%"
+  RESOURCE_BY_CONCEPT = "/byconcept/virtual/%ONT%/false/true/0/10?conceptid=%CONC%#{APIKEY_PARAM}"
+  VERSIONED_RESOURCE_BY_CONCEPT = "/byconcept/%ONT%/false/true/0/10?conceptid=%CONC%#{APIKEY_PARAM}"
+  PAGING_RESOURCE_BY_CONCEPT = "/byconcept/virtual/%ONT%/%RESOURCE%/false/false/%S_PAGE%/10?conceptid=%CONC%#{APIKEY_PARAM}"
+  VERSIONED_PAGING_RESOURCE_BY_CONCEPT = "/byconcept/%ONT%/%RESOURCE%/false/false/%S_PAGE%/10?conceptid=%CONC%#{APIKEY_PARAM}"
+  RESOURCES = "/resources#{APIKEY_PARAM.sub("&", "?")}"
+  DETAILS = "/details/true/virtual/concept/%ONT%/resource/%RESOURCE%/?conceptid=%CONC%&elementid=%ELEMENT%#{APIKEY_PARAM}"
+  VERSIONED_DETAILS = "/details/true/concept/%ONT%/resource/%RESOURCE%/?conceptid=%CONC%&elementid=%ELEMENT%#{APIKEY_PARAM}"
   
-  CLASS_STRING = "/result/ontology/%ONT%/classID/from/0/number/15/metadata?conceptid=%CONC%"
-  CUI_STRING = "/result/cui/from/0/number/15/metadata?conceptid=%CONC%"
-  NEXTBIO_URL = "http://www.nextbio.com/b/api/searchcount.api?q=%CONC%&details=true&apikey=2346462a645f102ba7f2001d096b4f04&type=study"
-  PAGING_CLASS_STRING = "/result/ontology/%ONT%/classID/from/%S_PAGE%/number/%E_PAGE%/resource/%RESOURCE%/metadata?conceptid=%CONC%"
-  PAGING_CUI_STRING = "/result/cui/from/%S_PAGE%/number/%E_PAGE%/resource/%RESOURCE%/metadata?conceptid=%CONC%"
+  CLASS_STRING = "/result/ontology/%ONT%/classID/from/0/number/15/metadata?conceptid=%CONC%#{APIKEY_PARAM}"
+  CUI_STRING = "/result/cui/from/0/number/15/metadata?conceptid=%CONC%#{APIKEY_PARAM}"
+  NEXTBIO_URL = "http://www.nextbio.com/b/api/searchcount.api?q=%CONC%&details=true&type=study"
+  PAGING_CLASS_STRING = "/result/ontology/%ONT%/classID/from/%S_PAGE%/number/%E_PAGE%/resource/%RESOURCE%/metadata?conceptid=%CONC%#{APIKEY_PARAM}"
+  PAGING_CUI_STRING = "/result/cui/from/%S_PAGE%/number/%E_PAGE%/resource/%RESOURCE%/metadata?conceptid=%CONC%#{APIKEY_PARAM}"
   
-  STATS = "/statistics/all"
+  STATS = "/statistics/all#{APIKEY_PARAM.sub("&", "?")}"
   
   def self.getResourcesInfo
     resources = []
