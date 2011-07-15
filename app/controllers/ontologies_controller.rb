@@ -81,7 +81,7 @@ class OntologiesController < ApplicationController
   
   def download_latest
     @ontology = DataAccess.getLatestOntology(params[:id])
-    redirect_to $REST_URL + "/ontologies/download/#{@ontology.id}?apikey=#{$API_KEY}"
+    redirect_to $REST_URL + "/ontologies/download/#{@ontology.id}?apikey=#{APPLICATION_ID}"
   end
   
   def update
