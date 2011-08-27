@@ -8,6 +8,10 @@
         <a href="/ontologies">browse</a> them.  <a href="/login">Sign in to ' + $SITE + '</a>
         to submit a new ontology or ontology-based project, provide comments on ontologies or add ontology mappings.',
         
+      :facebook_button => '',
+      
+      :twitter_button => '',
+
       :annotate => {
         :intro => 'The ' + $ORG_SITE + ' Annotator processes text submitted by users, recognizes relevant ontology terms in the text and returns 
           the annotations to the user. Use the interface below to submit sample text to get ontology-based annotations. Hover the mouse pointer on any 

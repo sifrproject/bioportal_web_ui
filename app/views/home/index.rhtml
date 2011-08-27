@@ -150,6 +150,13 @@ function greybox(box){
 }
 </style>
 
+
+<div id="social_networking" style="position: absolute; right: 7px; padding-top: 4px;">
+	<div style="float:right;"><%=t('home.facebook_button')%></div>
+	<div style="float:right;"><%=t('home.twitter_button')%></div>
+</div>
+
+
 <% unless $FRONT_NOTICE.nil? || $FRONT_NOTICE.empty? || cookies[:front_page_notice_closed].eql?("true") %>
 	<script type="text/javascript">
 		function close_message(){
