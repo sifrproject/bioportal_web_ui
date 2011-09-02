@@ -94,20 +94,28 @@ class Mapping
   alias :map_source :mapping_source_name
   alias :map_source= :mapping_source_name=
   
+  def source_ontology_obj
+    DataAccess.getLatestOntology(self.source_ontology)
+  end
+
+  def target_ontology_obj
+    DataAccess.getLatestOntology(self.target_ontology)
+  end
+
   def source_name
-    DataAccess.getNodeLabel(self.source_ontology_version, self.source).label_html rescue "missing term"
+    DataAccess.getNodeLabel(self.source_ontology_obj.id, self.source).label_html rescue "missing term"
   end
 
   def destination_name
-    DataAccess.getNodeLabel(self.target_ontology_version, self.target).label_html rescue "missing term"
+    DataAccess.getNodeLabel(self.target_ontology_obj.id, self.target).label_html rescue "missing term"
   end
   
   def source_ont_name
-    DataAccess.getOntology(self.source_ontology_version).displayLabel rescue ""
+    self.source_ontology_obj.displayLabel rescue ""
   end
 
   def destination_ont_name
-    DataAccess.getOntology(self.target_ontology_version).displayLabel rescue ""
+    self.target_ontology_obj.displayLabel rescue ""
   end
   
   alias :source_version_id :source_ontology_version
