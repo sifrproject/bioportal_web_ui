@@ -8,10 +8,8 @@ var simpleTreeCollection;
 jQuery(document).ready(function(){
 	simpleTreeCollection = jQuery('.simpleTree').simpleTree({
 		autoclose: false, drag:false,
-		afterClick:function(node){
+    afterClick:function(node){
       History.pushState({p:"terms", conceptid:jQuery(node).children("a").attr("id")}, jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site, jQuery(node).children("a").attr("href"));
-
-			//nodeClicked(jQuery(node).attr("id"),jQuery('span:first',node).text())
 		},
 		afterDblClick:function(node){
 		},

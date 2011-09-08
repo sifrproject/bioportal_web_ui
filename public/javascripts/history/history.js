@@ -20,6 +20,7 @@
 		setTimeout = window.setTimeout,
 		clearTimeout = window.clearTimeout,
 		setInterval = window.setInterval,
+		clearInterval = window.clearInterval,
 		JSON = window.JSON,
 		History = window.History = window.History||{}, // Public History Object
 		history = window.history; // Old History Object
@@ -118,6 +119,32 @@
 		 * What is the title of the initial state
 		 */
 		History.options.initialTitle = History.options.initialTitle || document.title;
+
+
+		// ----------------------------------------------------------------------
+		// Interval record
+
+		/**
+		 * History.intervalList
+		 * List of intervals set, to be cleared when document is unloaded.
+		 */
+		History.intervalList = [];
+
+		/**
+		 * History.clearAllIntervals
+		 * Clears all setInterval instances.
+		 */
+		History.clearAllIntervals = function(){
+			var i, il = History.intervalList;
+			if (typeof il !== "undefined" && il !== null) {
+				for (i = 0; i < il.length; i++) {
+					clearInterval(il[i]);
+				}
+				History.intervalList = null;
+			}
+		};
+		History.Adapter.bind(window,"beforeunload",History.clearAllIntervals);
+		History.Adapter.bind(window,"unload",History.clearAllIntervals);
 
 
 		// ----------------------------------------------------------------------
@@ -628,7 +655,7 @@
 			var newState = {};
 			newState.normalized = true;
 			newState.title = oldState.title||'';
-			newState.url = History.getFullUrl(History.unescapeString(oldState.url||document.location.href));
+			newState.url = History.getFullUrl(oldState.url||document.location.href);
 			newState.hash = History.getShortUrl(newState.url);
 			newState.data = History.cloneObject(oldState.data);
 
@@ -984,7 +1011,7 @@
 		 * @return {string}
 		 */
 		History.getHash = function(){
-			var hash = History.unescapeHash(document.location.hash);
+			var hash = document.location.hash;
 			return hash;
 		};
 
@@ -1065,7 +1092,7 @@
 			//History.debug('History.setHash: called',hash);
 
 			// Prepare
-			var adjustedHash = History.escapeHash(hash);
+			var adjustedHash = hash;
 
 			// Make Busy + Continue
 			History.busy(true);
@@ -1138,9 +1165,6 @@
 			var hash = String(url)
 				.replace(/([^#]*)#?([^#]*)#?(.*)/, '$2')
 				;
-
-			// Unescape hash
-			hash = History.unescapeHash(hash);
 
 			// Return hash
 			return hash;
@@ -1561,7 +1585,7 @@
 				amplify.store('History.store',currentStore);
 			};
 			// For Internet Explorer
-			setInterval(History.onUnload,History.options.storeInterval);
+			History.intervalList.push(setInterval(History.onUnload,History.options.storeInterval));
 			// For Other Browsers
 			History.Adapter.bind(window,'beforeunload',History.onUnload);
 			History.Adapter.bind(window,'unload',History.onUnload);
@@ -1806,7 +1830,7 @@
 			 * Setup Safari Fix
 			 */
 			if ( History.bugs.safariPoll ) {
-				setInterval(History.safariStatePoll, History.options.safariPollInterval);
+				History.intervalList.push(setInterval(History.safariStatePoll, History.options.safariPollInterval));
 			}
 
 			/**

@@ -350,7 +350,7 @@
 						var documentHash = History.getHash();
 
 						// The Document Hash has changed (application caused)
-						if ( documentHash !== lastDocumentHash ) {
+            if ( documentHash !== lastDocumentHash ) {
 							// Equalise
 							lastDocumentHash = documentHash;
 
@@ -364,7 +364,7 @@
 				}
 
 				// Apply the checker function
-				setInterval(History.checkerFunction, History.options.hashChangeInterval);
+				History.intervalList.push(setInterval(History.checkerFunction, History.options.hashChangeInterval));
 
 				// Done
 				return true;
@@ -523,7 +523,6 @@
 				if ( newStateHash !== html4Hash && newStateHash !== History.getShortUrl(document.location.href) ) {
 					//History.debug('History.pushState: update hash', newStateHash, html4Hash);
 					History.setHash(newStateHash,false);
-					return false;
 				}
 
 				// Update HTML5 State

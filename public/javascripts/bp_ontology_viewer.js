@@ -2,7 +2,7 @@
 (function(window,undefined) {
   // Establish Variables
   var History = window.History;
-  // History.debug.enable === true;
+  // History.debug.enable = true;
   
   // Bind to State Change
   History.Adapter.bind(window, 'statechange', function() {
