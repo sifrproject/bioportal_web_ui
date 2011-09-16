@@ -51,6 +51,7 @@ class OntrezService
         new_resource.description = resource.elements["resourceDescription"].get_text.value
         new_resource.logo = resource.elements["resourceLogo"].get_text.value
         new_resource.main_context = resource.elements["mainContext"].get_text.value
+        new_resource.record_count = resource.elements["totalElements"].get_text.value
         resources << new_resource
       }
       LOG.add :debug, "Resources parsed (#{Time.now - startGet})"
