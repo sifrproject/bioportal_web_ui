@@ -1703,4 +1703,9 @@ div.chzn-drop {
 	font-style: oblique;
 }
 
-
+/************************************
+ * Social Networking Badges
+ ************************************/
+.twitter-follow-button {
+  width: 230px !important;
+}
