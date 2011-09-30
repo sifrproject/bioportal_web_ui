@@ -820,7 +820,7 @@ class BioPortalRestfulCore
   def self.searchQuery(params)
     uri_gen = BioPortalResources::Search.new(params)
     uri = uri_gen.generate_uri
-    
+
     LOG.add :debug, uri
     begin
       doc = get_xml(uri)
@@ -837,10 +837,6 @@ class BioPortalRestfulCore
     results = []
     timer = Benchmark.ms { results = generic_parse(:xml => doc, :type => "SearchResults") }
     LOG.add :debug, "SearchResults Parse Time: #{timer}ms"
-    
-    # doc.elements.each("*/data/page/contents"){ |element|  
-      # results = parseSearchResults(element)
-    # }
 
     return results
   end

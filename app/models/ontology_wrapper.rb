@@ -323,7 +323,7 @@ class OntologyWrapper
   def is_in_search_index?
     begin
       result = DataAccess.searchQuery([self.ontologyId], "testingversionforontology")
-      return result.ontology_hit_counts[self.ontologyId.to_i][:ontologyVersionId] == self.id.to_i
+      return result.ontology_hit_counts[self.ontologyId.to_i]["ontologyVersionId"] == self.id
     rescue
       false
     end

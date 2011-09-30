@@ -20,12 +20,17 @@ class SearchResults < Array
     end
 
     self.results = results.nil? || results.length == 0 ? Array.new : results.values
-    self.ontology_hit_counts = hash['contents']['ontologyHitList'].values unless hash['contents']['ontologyHitList'].nil? || hash['contents']['ontologyHitList'].length == 0
+    self.ontology_hit_counts = Hash.new unless hash['contents']['ontologyHitList'].nil? || hash['contents']['ontologyHitList'].length == 0
     self.page_size = hash['pageSize']
     self.total_results = hash['numResultsTotal']
     self.page_number = hash['pageNum']
     self.current_page_results = hash['numResultsPage']
     self.total_pages = hash['numPages']
+
+    # Populate hit list
+    hash['contents']['ontologyHitList'].each do |hit|
+      self.ontology_hit_counts[hit[1]['ontologyId'].to_i] = hit[1]
+    end
   end
   
   def hash_for_serialization

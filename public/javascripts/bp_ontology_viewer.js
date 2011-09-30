@@ -54,10 +54,9 @@
 function displayTree(data) {
   var new_concept_id = data.conceptid;
 
-  // Escape special chars so jQuery selector doesn't break, see:
-  // http://docs.jquery.com/Frequently_Asked_Questions#How_do_I_select_an_element_by_an_ID_that_has_characters_used_in_CSS_notation.3F
-  var el_new_concept_link = document.getElementById(new_concept_id);
-  var new_concept_link = jQuery(el_new_concept_link);
+  var new_concept_link = getConceptLinkEl(new_concept_id);
+
+  var concept_label;
   
   // Check to see if we're actually loading a new concept or just displaying the one we already loaded previously
   if (typeof new_concept_id === 'undefined' || new_concept_id == concept_id) {
@@ -70,11 +69,11 @@ function displayTree(data) {
     return;
   } else {
     var new_concept_param = (typeof new_concept_id === 'undefined') ? "" : "&conceptid=" + new_concept_id;
-    
+
     if (typeof new_concept_id !== 'undefined') {
       // Get label for new title
-      var concept_label = " - " + new_concept_link.html().trim();
-            
+      concept_label = (new_concept_link.html() == null) ? "" : " - " + new_concept_link.html().trim();
+
       // Retrieve new concept and display tree
       jQuery.bioportal.ont_pages["terms"] = new jQuery.bioportal.OntologyPage("terms", "/ontologies/" + ontology_id + "?p=terms" + new_concept_param, "Problem retrieving terms", ontology_name + concept_label + " - Terms", "Terms");
       
@@ -106,7 +105,7 @@ function displayTree(data) {
             
             // Make "clicked" node active
             jQuery("a.active").removeClass("active");
-            new_concept_link.addClass("active");
+            getConceptLinkEl(new_concept_id).addClass("active");
             
             // Clear the search box
             jQuery("#search_box").val("");
@@ -119,6 +118,7 @@ function displayTree(data) {
         } else {
           // Are we jumping into the ontology? If so, get the whole tree
           jQuery.bioportal.ont_pages["terms"].retrieve_and_publish();
+          getConceptLinkEl(new_concept_id)
         }
       } else {
         jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Term...</h1>', showOverlay: false }); 
@@ -131,11 +131,14 @@ function displayTree(data) {
           jQuery.bioportal.ont_pages["terms"].retrieve_and_publish();
         }
       }
-      
+
+      concept_label = (getConceptLinkEl(new_concept_id).html() == null) ? "" : " - " + getConceptLinkEl(new_concept_id).html().trim();
+      jQuery.bioportal.ont_pages["terms"].page_name =  ontology_name + concept_label + " - Terms"
       document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
     } else {
       // Retrieve new concept and display tree
-      jQuery.bioportal.ont_pages["terms"] = new jQuery.bioportal.OntologyPage("terms", "/ontologies/" + ontology_id + "?p=terms", "Problem retrieving terms", ontology_name + " - Terms", "Terms");
+      concept_label = (getConceptLinkEl(new_concept_id).html() == null) ? "" : " - " + getConceptLinkEl(new_concept_id).html().trim();
+      jQuery.bioportal.ont_pages["terms"] = new jQuery.bioportal.OntologyPage("terms", "/ontologies/" + ontology_id + "?p=terms", "Problem retrieving terms", ontology_name + concept_label + " - Terms", "Terms");
       jQuery.bioportal.ont_pages["terms"].retrieve_and_publish();
     }
 
@@ -143,6 +146,13 @@ function displayTree(data) {
       concept_id = new_concept_id;
     }
   }
+}
+
+function getConceptLinkEl(concept_id) {
+  // Escape special chars so jQuery selector doesn't break, see:
+  // http://docs.jquery.com/Frequently_Asked_Questions#How_do_I_select_an_element_by_an_ID_that_has_characters_used_in_CSS_notation.3F
+  var el_new_concept_link = document.getElementById(concept_id);
+  return jQuery(el_new_concept_link);
 }
 
 function showOntologyContent(content_section) {
@@ -243,13 +253,16 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
         this.html = data;
         jQuery("#ont_" + this.id + "_content").html("");
         jQuery("#ont_" + this.id + "_content").html(this.html);
-        jQuery.unblockUI(); 
+        var concept_label = (getConceptLinkEl(concept_id).html() == null) ? "" : " - " + getConceptLinkEl(concept_id).html().trim();
+        jQuery.bioportal.ont_pages["terms"].page_name =  ontology_name + concept_label + " - Terms"
+        document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
+        jQuery.unblockUI();
       },
       error: function(){
         this.errored = true;
         jQuery("#ont_" + this.id + "_content").html("");
         jQuery("#ont_" + this.id + "_content").html("<div style='padding: 1em;'>" + this.error_string + "</div>");
-        jQuery.unblockUI(); 
+        jQuery.unblockUI();
       }
     });
   };
@@ -257,6 +270,9 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
   this.publish = function(){
     if (this.errored === false) {
       jQuery("#ont_" + this.id + "_content").html(this.html);
+      var concept_label = (getConceptLinkEl(concept_id).html() == null) ? "" : " - " + getConceptLinkEl(concept_id).html().trim();
+      jQuery.bioportal.ont_pages["terms"].page_name =  ontology_name + concept_label + " - Terms"
+      document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
       jQuery.unblockUI(); 
     } else {
       jQuery("#ont_" + this.id + "_content").html("<div style='padding: 1em;'>" + this.error_string + "</div>");
