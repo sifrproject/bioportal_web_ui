@@ -253,8 +253,6 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
         this.html = data;
         jQuery("#ont_" + this.id + "_content").html("");
         jQuery("#ont_" + this.id + "_content").html(this.html);
-        var concept_label = (getConceptLinkEl(concept_id).html() == null) ? "" : " - " + getConceptLinkEl(concept_id).html().trim();
-        jQuery.bioportal.ont_pages["terms"].page_name =  ontology_name + concept_label + " - Terms"
         document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
         jQuery.unblockUI();
       },
@@ -270,8 +268,6 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
   this.publish = function(){
     if (this.errored === false) {
       jQuery("#ont_" + this.id + "_content").html(this.html);
-      var concept_label = (getConceptLinkEl(concept_id).html() == null) ? "" : " - " + getConceptLinkEl(concept_id).html().trim();
-      jQuery.bioportal.ont_pages["terms"].page_name =  ontology_name + concept_label + " - Terms"
       document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
       jQuery.unblockUI(); 
     } else {
