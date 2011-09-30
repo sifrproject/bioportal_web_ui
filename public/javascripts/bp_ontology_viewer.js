@@ -253,7 +253,6 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
         this.html = data;
         jQuery("#ont_" + this.id + "_content").html("");
         jQuery("#ont_" + this.id + "_content").html(this.html);
-        document.title = jQuery.bioportal.ont_pages["terms"].page_name + " | " + org_site;
         jQuery.unblockUI();
       },
       error: function(){
