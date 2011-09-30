@@ -91,7 +91,7 @@ var resultsTable;
 
               // We have to look for a span here, indicating that the term is obsolete.
               // If not, add the term to a new span to match obsolete structure so we can process them the same.
-              var label_html = (res.isObsolete == "1") ? jQuery(decodeURIComponent(res.label_html)) : jQuery("<span/>").append(res.label_html);
+              var label_html = (res.isObsolete == "1") ? jQuery(res.label_html) : jQuery("<span/>").append(res.label_html);
               label_html = jQuery("<span/>").append(label_html.html(label_html.html().substring(0, max_word_length)+elipses));
 
               var row = [

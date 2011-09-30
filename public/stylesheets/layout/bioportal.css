@@ -1831,7 +1831,7 @@ span.additional a:hover {
  ************************************/
 a.help_link {
   border-radius: 6px 6px 6px 6px;
-  background: url("images/ui-bg_glass_100_e4f1fb_1x400.png") repeat-x scroll 50% 50% #E4F1FB;
+  background: url("/themes/cupertino/css/cupertino/images/ui-bg_glass_100_e4f1fb_1x400.png") repeat-x scroll 50% 50% #E4F1FB;
   border: 1px solid #74B2E2;
   color: #0070A3;
   font-weight: bold;
