@@ -5,11 +5,11 @@ require 'cgi'
 require 'digest/sha1'
 
 module ApplicationHelper
-  
+
   def isOwner?(id)
     unless session[:user].nil?
       if session[:user].admin?
-        return true        
+        return true
       elsif session[:user].id.eql?(id)
         return true
       else
@@ -17,35 +17,35 @@ module ApplicationHelper
       end
     end
   end
-  
+
   def encode_param(string)
     return URI.escape(string, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
   end
-  
+
   def clean(string)
     string = string.gsub("\"",'\'')
     return string.gsub("\n",'')
   end
-  
+
   def clean_id(string)
     new_string = string.gsub(":","").gsub("-","_").gsub(".","_")
     return new_string
   end
-  
+
   def to_param(string)
      "#{encode_param(string.gsub(" ","_"))}"
   end
-  
+
   # Notes-related helpers that could be useful elsewhere
-  
+
   def convert_java_time(time_in_millis)
     time_in_millis.to_i / 1000
   end
-  
+
   def time_from_java(java_time)
     Time.at(convert_java_time(java_time.to_i))
   end
-  
+
   def time_formatted_from_java(java_time)
     time_from_java(java_time).strftime("%m/%d/%Y")
   end
@@ -55,26 +55,26 @@ module ApplicationHelper
     username = user.nil? ? user_id : user.username
     username
   end
-  
+
   # end Notes-related helpers
-  
+
   def remove_owl_notation(string)
     unless string.nil?
       strings = string.split(":")
       if strings.size<2
         return string.titleize
-      else  
+      else
         return strings[1].titleize
       end
     end
   end
-  
+
   def draw_note_tree(notes,key)
     output = ""
     draw_note_tree_leaves(notes,0,output,key)
     return output
   end
-  
+
   def draw_note_tree_leaves(notes,level,output,key)
     for note in notes
       name="Anonymous"
@@ -85,18 +85,18 @@ module ApplicationHelper
       notetext=""
       if note.note_type.eql?(5)
         headertext<< "<div class=\"header\" onclick=\"toggleHide('note_body#{note.id}','');compare('#{note.id}')\">"
-        notetext << " <input type=\"hidden\" id=\"note_value#{note.id}\" value=\"#{note.comment}\"> 
+        notetext << " <input type=\"hidden\" id=\"note_value#{note.id}\" value=\"#{note.comment}\">
                   <span class=\"message\" id=\"note_text#{note.id}\">#{note.comment}</span>"
       else
         headertext<< "<div onclick=\"toggleHide('note_body#{note.id}','')\">"
-        
+
         notetext<< "<span class=\"message\" id=\"note_text#{note.id}\">#{simple_format(note.comment)}</span>"
       end
-      
-      
+
+
       output << "
         <div style=\"clear:both;margin-left:#{level*20}px;\">
-        <div  style=\"float:left;width:100%\">  
+        <div  style=\"float:left;width:100%\">
           #{headertext}
               <div>
                 <span class=\"sender\" style=\"float:right\">#{name} at #{note.created_at.strftime('%m/%d/%y %H:%M')}</span>
@@ -105,7 +105,7 @@ module ApplicationHelper
               </div>
 
           </div>
-        
+
           <div name=\"hiddenNote\" id=\"note_body#{note.id}\" >
           <div class=\"messages\">
             <div>
@@ -115,7 +115,7 @@ module ApplicationHelper
         output << "<div id=\"insert\"><a href=\"\/login?redirect=/visualize/#{@ontology.to_param}/?conceptid=#{@concept.id}#notes\">Reply</a></div>"
       else
         if @modal
-          output << "<div id=\"insert\"><a href=\"#\"  onclick =\"document.getElementById('m_noteParent').value='#{note.id}';document.getElementById('m_note_subject#{key}').value='RE:#{note.subject}';jQuery('#modal_form').html(jQuery('#modal_comment').html());return false;\">Reply</a></div>"                
+          output << "<div id=\"insert\"><a href=\"#\"  onclick =\"document.getElementById('m_noteParent').value='#{note.id}';document.getElementById('m_note_subject#{key}').value='RE:#{note.subject}';jQuery('#modal_form').html(jQuery('#modal_comment').html());return false;\">Reply</a></div>"
         else
           output << "<div id=\"insert\"><a href=\"#TB_inline?height=400&width=600&inlineId=commentForm\" class=\"thickbox\" onclick =\"document.getElementById('noteParent').value='#{note.id}';document.getElementById('note_subject#{key}').value='RE:#{note.subject}';\">Reply</a></div>"
         end
@@ -132,47 +132,47 @@ module ApplicationHelper
       end
     end
   end
-  
+
   def draw_tree(root, id=nil,type="Menu")
-    string =""  
+    string =""
     if id.nil?
       id = root.children.first.id
     end
-    
+
     build_tree(root,nil,string,id)
-    
+
     return string
   end
-  
+
   def draw_tree(root, id=nil,type="Menu")
-    string =""  
+    string =""
     if id.nil?
       id = root.children.first.id
     end
-    
+
     build_tree(root,nil,string,id)
-    
+
     return string
   end
-  
+
   def build_tree(node,parent,string,id)
     if parent.nil?
       draw_root = ''
     else
       draw_root = ""
     end
-    
+
     unless node.children.nil? || node.children.length < 1
       for child in node.children
         icons = ""
         if child.note_icon
           icons << "<img src='/images/notes_icon.png'style='vertical-align:bottom;'height='15px' title='Term Has Margin Notes'>"
         end
-        
+
         if child.map_icon
           icons << "<img src='/images/map_icon.png' style='vertical-align:bottom;' height='15px' title='Term Has Mappings'>"
         end
-        
+
         active_style =""
         if child.id.eql?(id)
           active_style="class='active'"
@@ -182,21 +182,21 @@ module ApplicationHelper
         if child.expanded
           open = "class='open'"
         end
-        
+
         relation = child.relation_icon
 
         # This fake root will be present at the root of "flat" ontologies, we need to keep the id intact
         li_id = child.id.eql?("bp_fake_root") ? "bp_fake_root" : short_uuid
-        
+
         # Return different result for too many children
         if child.label.eql?("*** Too many children...")
           number_of_terms = id.eql?("root") ? DataAccess.getLightNode(child.ontology_id, "root", 1).child_size : node.child_size
-          retry_link = "<a class='too_many_children_override' href='/ajax_concepts/#{child.ontology_id}/?conceptid=#{CGI.escape(id)}&callback=children&too_many_children_override=true'>Get all terms</a>"      
+          retry_link = "<a class='too_many_children_override' href='/ajax_concepts/#{child.ontology_id}/?conceptid=#{CGI.escape(id)}&callback=children&too_many_children_override=true'>Get all terms</a>"
           string << "<div style='background: #eeeeee; padding: 5px; width: 80%;'>There are #{number_of_terms} terms at this level. Retrieving these may take several minutes. #{retry_link}</div>"
         else
           string << "<li #{open} #{draw_root} id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ontologies/#{child.ontology_id}/?p=terms&conceptid=#{CGI.escape(child.id)}' #{active_style}> #{relation} #{child.label_html} #{icons}</a>"
           if child.child_size > 0 && !child.expanded
-            string << "<ul class='ajax'><li id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ajax_concepts/#{child.ontology_id}/?conceptid=#{CGI.escape(child.id)}&callback=children&child_size=#{child.child_size}'>child.label_html</a></li></ul>"
+            string << "<ul class='ajax'><li id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ajax_concepts/#{child.ontology_id}/?conceptid=#{CGI.escape(child.id)}&callback=children&child_size=#{child.child_size}'>#{child.label_html}</a></li></ul>"
           elsif child.expanded
             string << "<ul>"
             build_tree(child,"child",string,id)
@@ -204,11 +204,11 @@ module ApplicationHelper
           end
           string << "</li>"
         end
-    		    
+
       end
     end
   end
-  
+
   def loading_spinner(padding = false, include_text = true)
     loading_text = include_text ? " loading..." : ""
     if padding
@@ -217,21 +217,21 @@ module ApplicationHelper
       '<img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;">' + loading_text
     end
   end
-  
+
   def virtual_id?(ontology_id)
     return ontology_id.to_i < 2900
   end
-  
+
   def version_id?(ontology_id)
     return ontology_id.to_i > 2900
   end
-  
+
   # This gives a very hacky short code to use to uniquely represent a class
   # based on its parent in a tree. Used for unique ids in HTML for the tree view
   def short_uuid
     rand(36**8).to_s(36)
   end
-  
+
   def help_icon(link, title = "Help", top_padding = -2)
     return <<-BLOCK
           <a title="#{title}" style='font-size: x-small; margin-top: #{top_padding}px;' target="_blank" href='#{link}' class='pop_window help_link'>
@@ -239,7 +239,7 @@ module ApplicationHelper
           </a>
     BLOCK
   end
-  
+
   def init_ontology_picker
     ontologies = DataAccess.getOntologyList
     groups = DataAccess.getGroups.to_a
@@ -296,15 +296,15 @@ module ApplicationHelper
       @categories_for_js << "#{cat_id}: [ #{cat.join(", ")} ]"
     end
   end
-  
-  
-  
-  
+
+
+
+
   # BACKPORTED RAILS 3 HELPERS
-  
+
   DECIMAL_UNITS = {0 => :unit, 1 => :ten, 2 => :hundred, 3 => :thousand, 6 => :million, 9 => :billion, 12 => :trillion, 15 => :quadrillion,
     -1 => :deci, -2 => :centi, -3 => :mili, -6 => :micro, -9 => :nano, -12 => :pico, -15 => :femto}.freeze
-  
+
   def number_to_human(number, options = {})
     options.symbolize_keys!
 
@@ -317,10 +317,10 @@ module ApplicationHelper
         return number
       end
     end
-    
+
     units = { :unit => "", :ten => "", :hundred => "", :thousand => "Thousand", :million => "Million", :billion => "Billion", :trillion => "Trillion", :quadrillion => "Quadrillion" }
     units.merge!(options.delete :units)
-    options[:units] = units 
+    options[:units] = units
 
     defaults = I18n.translate('number.format''number.format', :locale => options[:locale], :default => {})
     human    = I18n.translate('number.human.format''number.human.format', :locale => options[:locale], :default => {})
@@ -359,5 +359,5 @@ module ApplicationHelper
     formatted_number = number_with_precision(number, options)
     decimal_format.gsub(/%n/, formatted_number).gsub(/%u/, unit).strip
   end
-  
+
 end
