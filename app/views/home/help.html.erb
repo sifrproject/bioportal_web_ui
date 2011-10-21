@@ -7,7 +7,7 @@
 
       <style type="text/css">
         /* hide extra wiki content */
-        #siteSub, #jump-to-nav, #contentSub, #printfooter,
+        #siteSub, #jump-to-nav, #contentSub, .printfooter,
         #catlinks, .visualClear {
           display: none;
         }
@@ -48,6 +48,21 @@
           padding: 10px 0 0 10px;
           margin-bottom: 0;
         }
+
+        dd {
+          line-height: 1.5em;
+          margin-left: 2em;
+          margin-bottom: 0.1em;
+        }
+
+        dt {
+          font-weight: bold;
+          margin-bottom: 0.1em;
+        }
+
+        li.toclevel-1 > a > span.tocnumber {
+          display: none;
+        }
       </style>
 
       <h1><%=$SITE%> Help</h1>
@@ -64,25 +79,25 @@
         <p>
           <%=t('about.welcome')%>
         </p>
-        
+
         <h1>Getting Started</h1>
         <p>
           <%=t('about.getting_started')%>
         </p>
-        
+
         <h1>Browse The Library</h1>
         <%=t('about.browse')%>
-        
+
         <h1>Web services</h1>
         <p>
             Documentation and examples of the <a href="http://www.bioontology.org/wiki/index.php/NCBO_REST_services">BioPortal 2.0 Web services.</a>
         </p>
-        
+
         <h1>Announce List</h1>
         <p>
           <%=t('about.announce_list')%>
         </p>
-        
+
         <h1>How to Cite BioPortal</h1>
         <p>
           Noy, N.F., Shah, N.H., Whetzel, P.L., Dai, B., Dorf, M., Griffith, N., Jonquet, C., Rubin, D.L., Storey, M.A., Chute, C.G., Musen, M.A. <b>BioPortal: ontologies and integrated data resources at the click of a mouse.</b> Nucleic Acids Res. 2009 Jul 1;37(Web Server issue):W170-3. PMID: 19483092. doi:10.1093/nar/gkp440
@@ -91,7 +106,8 @@
         <%=t('about.release_notes')%>
 
       <%end%>
-      
+
       <div style="clear:both; height: 50em;">
     </div>
 </div>
+
