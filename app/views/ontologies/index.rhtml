@@ -19,7 +19,7 @@ function filterBySelection(selectbox){
 	} else {
 		ontologies_table.fnFilter(selectbox.value, 11);
 	}
-	
+
 }
 
 
@@ -29,7 +29,7 @@ function filterByGroup(selectbox){
 	} else {
 		ontologies_table.fnFilter(selectbox.value, 12, true, false);
 	}
-	
+
 	jQuery("#filterlink").attr("href","/ontologies/?filter="+selectbox.value)
 }
 
@@ -39,19 +39,19 @@ jQuery.fn.dataTableExt.afnFiltering.push(
     var groups = aData[12];
     var filter = document.getElementById("select_groups").value;
     var re = new RegExp("," + filter + ",", "gm");
-    
+
     if (filter == "" || filter == 0) {
       return true;
     } else if (re.test(groups)) {
       return true;
     }
-    
+
     return false;
   }
 );
 
 function filterByParam(param){
-	ontologies_table.fnFilter(param, 12);	
+	ontologies_table.fnFilter(param, 12);
 }
 
 
@@ -85,17 +85,17 @@ jQuery(document).ready(function() {
 			"fnRowCallback": function( nRow, aData, iDisplayIndex ) {
 						/* Append the grade to the default row class name */
 						var children = jQuery(nRow).children();
-						jQuery(children[0]).children("div.ont_link").tooltip({ 
+						jQuery(children[0]).children("div.ont_link").tooltip({
 							bodyHandler: function() {return aData[7]},
-						    track: true, 
-						    delay: 0, 
-						    showURL: false, 
-						    opacity: 1, 
-						    fixPNG: true, 
-						    showBody: " - ", 
-						    extraClass: "pretty fancy", 
-						    top: 10, 
-						    left: 5 
+						    track: true,
+						    delay: 0,
+						    showURL: false,
+						    opacity: 1,
+						    fixPNG: true,
+						    showBody: " - ",
+						    extraClass: "pretty fancy",
+						    top: 10,
+						    left: 5
 						});
 
           	// Set the table width back to 90% after it gets jacked by jQuery DataTable
@@ -107,11 +107,11 @@ jQuery(document).ready(function() {
 					}
 
 	});
-	
+
 	<%if params[:filter]%>
 	  setTimeout('filterByParam("<%=params[:filter]%>")',2000);
 	<%end%>
-	
+
 });
 
 
@@ -120,7 +120,7 @@ jQuery(document).ready(function() {
 
 <h1 class="tab_header">Browse</h1>
 <p class="tab_description">
-  <% intro_text = "Browse the library of ontologies"%> 
+  <% intro_text = "Browse the library of ontologies"%>
   <%=t('ontologies.intro').nil? || t('ontologies.intro').empty? ? "#{intro_text}  #{help_icon("/help#Browse_Tab")}" : t('ontologies.intro')%>
 </p>
 
