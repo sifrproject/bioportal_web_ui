@@ -78,9 +78,10 @@
 
     <%=render :partial => "shared/ontology_picker"%>
 
+    <!-- Options used for testing on stage UI
     <h2>Hierarchy</h2><%=radio_button_tag :hierarchy, "0"%> <%=label_tag :hierarchy_0, "0"%>&nbsp;&nbsp;&nbsp;<%=radio_button_tag :hierarchy, 5, true%> <%=label_tag :hierarchy_5, "5"%><br/><br/>
     <h2>Normalization</h2><%=radio_button_tag :normalization, "0", true%> <%=label_tag :normalization_0, "None"%>&nbsp;&nbsp;&nbsp;<%=radio_button_tag :normalization, "1", true%> <%=label_tag :normalization_1, "Size of ontology"%>&nbsp;&nbsp;&nbsp;<%=radio_button_tag :normalization, "2"%> <%=label_tag :normalization_2, "log10(size of ontology)"%><br/>
-
+    -->
 
     <input type="button" id="recommender_button" value="Get Recommendations" style="margin-top: 10px;">
     <span class="recommender_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>
@@ -93,5 +94,6 @@
   <div id="not_enough_text_error" style="color: red; margin-bottom: 7px;"></div>
   <table id="recommendations" style="display: inline-block;" class="zebra"></table>
 </div>
+
 
 
