@@ -7,7 +7,7 @@ class OBDWrapper
   def self.getResourcesInfo
     if CACHE.get("resource_index_info").nil?
       resource_info = OntrezService.getResourcesInfo
-      CACHE.set("resource_index_info", info, 60*60*24*14)
+      CACHE.set("resource_index_info", resource_info, 60*60*24*14)
     else
       resource_info = CACHE.get("resource_index_info")
     end
