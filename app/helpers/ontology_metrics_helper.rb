@@ -23,6 +23,19 @@ module OntologyMetricsHelper
       markup << "<h2>#{title}</h2><p>"
       markup << metric.join("<br/>")
       markup << "</p></div></div>"
+    elsif metric.kind_of?(Hash)
+      counts = []
+      metric.each do |cls, count|
+        counts << "#{cls} (#{count})"
+      end
+
+      metric = counts
+
+      markup << "<a class='thickbox' href='#TB_inline?height=600&width=800&inlineId=#{metric.object_id}'>#{metric.length}</a>"
+      markup << "<div id='#{metric.object_id}' style='display: none;'><div class='metrics'>"
+      markup << "<h2>#{title}</h2><p>"
+      markup << metric.join("<br/>")
+      markup << "</p></div></div>"
     else
       markup = metric.to_s
     end
