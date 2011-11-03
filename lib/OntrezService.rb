@@ -60,6 +60,8 @@ class OntrezService
     else
       resources = CACHE.get("ri::resources")
     end
+    
+    resources
   end
 
   def self.gatherResources(ontology_id,concept_id,latest,version_id)

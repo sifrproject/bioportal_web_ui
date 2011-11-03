@@ -5,29 +5,30 @@
 
   <!-- Force IE to use latest rendering engine -->
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-  
+
   <!-- Google Webmaster Tools verifications -->
   <meta name="google-site-verification" content="IBxfKu6VbYH9atd5OLu2zXVD2ZRWi9SgMKTi8nvw3ks" />
-  
+
   <title><%if @title.nil?%><%=$ORG_SITE%><%else%><%="#{$ORG_SITE}: #{@title}"%><%end%></title>
-  <!-- Dependency source files --> 
+  <!-- Dependency source files -->
   <%=stylesheet_link_tag 'layout/bioportal'%>
   <%=stylesheet_link_tag 'layout/thickbox'%>
   <link rel="stylesheet" type="text/css" href="/themes/cupertino/css/cupertino/jquery-ui-1.8.1.custom.css">
-  
-  <%=javascript_include_tag "jquery.js"%>  
-  <%=javascript_include_tag "JqueryPlugins/jquery.blockUI.js"%>  
-  <%=javascript_include_tag "jquery.thickbox.compressed.js"%> 
-  <%=javascript_include_tag "JqueryPlugins/bbq/jquery.bbq.min.js"%> 
-  <%=javascript_include_tag "bioportal"%>  
+
+  <%=javascript_include_tag "jquery.js"%>
+  <%=javascript_include_tag "JqueryPlugins/jquery.blockUI.js"%>
+  <%=javascript_include_tag "jquery.thickbox.compressed.js"%>
+  <%=javascript_include_tag "JqueryPlugins/bbq/jquery.bbq.min.js"%>
+  <%=javascript_include_tag "jquery-ui.js" %>
+  <%=javascript_include_tag "bioportal"%>
 
 </head>
 <body style="min-width: 800px;">
-    
+
   <div style="background: url(/images/layout/header_bg.png) repeat-x;; width: 100%;"><center><img src="/images/layout/nav_logo.png"></center></div>
-  
+
   <div style="clear: both;"></div>
-    
+
   <%if flash[:notice] %>
   <div style="margin: 1em; padding: 5px; border: 1px solid gray; font-size:14px; background-color: #ffffcc;">
       <p style="text-align: left; margin-bottom: 0;">
@@ -38,7 +39,7 @@
 
   <div id="bd">
     <% message_name = "" %>
-    <% unless $SITE_NOTICE.nil? || $SITE_NOTICE.empty? %> 
+    <% unless $SITE_NOTICE.nil? || $SITE_NOTICE.empty? %>
       <% $SITE_NOTICE.each_key { |k| message_name = k } %>
       <% unless cookies[message_name.to_sym].eql?("true") %>
         <script type="text/javascript">
@@ -54,8 +55,8 @@
         </div>
       <% end %>
     <% end %>
-  
-    <%=yield%>  
+
+    <%=yield%>
   </div>
 
 

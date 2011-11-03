@@ -103,7 +103,7 @@ class HomeController < ApplicationController
     resources.each do |resource|
       @ri_record_count += resource.record_count.to_i rescue 0
     end
-    @ri_record_count = @ri_record_count == 0 ? 0 : 3212530
+    @ri_record_count = @ri_record_count == 0 ? 3212530 : @ri_record_count
 
     ri_stats = OBDWrapper.getResourceStats
     @direct_annotations = ri_stats[:mgrepAnnotations].to_i == 0 ? 1011241184 : ri_stats[:mgrepAnnotations]

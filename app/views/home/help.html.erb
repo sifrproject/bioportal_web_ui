@@ -1,5 +1,11 @@
 <%@title = "Help"%>
 
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+    jQuery("#wiki_text a.external").attr("target", "_blank");
+  });
+</script>
+
 <div style="margin:20px;">
     <span style="font-size:15px;font-weight:bold;color:green;"><%=flash[:notice] %></span>
     <div style="float:left;width:95%;" class="enable-lists">
@@ -71,7 +77,9 @@
 
       <% if !help_text.nil? && !help_text.empty? %>
 
-        <%= help_text %>
+        <div id="wiki_text">
+          <%= help_text %>
+        </div>
 
       <%else%>
 
