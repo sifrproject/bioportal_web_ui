@@ -159,7 +159,7 @@ class OntologyWrapper
     self.displayLabel = params[:displayLabel]
     self.id= params[:id]
     self.ontologyId= params[:ontologyId]
-    self.userId= params[:userId]
+    self.userId= params[:userIds]
     self.parentId= params[:parentId]
     self.format= params[:format]
     self.versionNumber= params[:versionNumber]
@@ -211,10 +211,12 @@ class OntologyWrapper
   # For use with select lists, always includes the admin by default
   def useracl_select
     select_opts = []
-    return select_opts if self.userId.nil? and (self.useracl.nil? or self.useracl.empty?)
+    return select_opts if self.userId.nil? || self.userId.empty? and (self.useracl.nil? or self.useracl.empty?)
 
     if self.useracl.nil? || self.useracl.empty?
-      select_opts << [DataAccess.getUser(self.userId).username, self.userId]
+      self.userId.each do |userId|
+        select_opts << [DataAccess.getUser(userId).username, userId]
+      end
     else
       self.useracl.each do |user|
         select_opts << [DataAccess.getUser(user).username, user]
