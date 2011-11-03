@@ -18,7 +18,7 @@ var resultsTable;
       oLanguage: {
         sZeroRecords: "No search results found"
       },
-      "aoColumn": [
+      "aoColumns": [
             { "sWidth": "30%" },
             { "sWidth": "20%" },
             { "sWidth": "50%" }
@@ -348,10 +348,12 @@ var filter_matched = {
             </div>
           </span>
         </th>
-        <th style="width: 325px;">Ontology <span class="popup_container" style="padding-left: 1.7em;"><span class="bp_popup_link_container"><a href="javascript:void(0);" id="filter_ontologies" class="bp_popup_link">filter</a></span><div id="ontology_filter_list" class="bp_popup_list" style="display: none;"></div></span></th>
+        <th style="width: 325px;">
+          Ontology <span class="popup_container" style="padding-left: 1.7em;"><span class="bp_popup_link_container"><a href="javascript:void(0);" id="filter_ontologies" class="bp_popup_link">filter</a></span><div id="ontology_filter_list" class="bp_popup_list" style="display: none;"></div></span>
+        </th>
       </thead>
-      <tbody id="search_results_body">
-      </tbody>
+
+      <tbody id="search_results_body"></tbody>
     </table>
   </div>
 </div>
@@ -359,3 +361,4 @@ var filter_matched = {
 
 <div id="flexviz" style="display: none;">
 </div>
+
