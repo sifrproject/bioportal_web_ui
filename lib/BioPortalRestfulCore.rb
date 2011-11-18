@@ -1,6 +1,6 @@
 require "date"
 require "net/http"
-require 'libxml'
+require 'xml'
 require "rexml/document"
 require 'open-uri'
 require 'uri'
