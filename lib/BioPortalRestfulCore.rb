@@ -1,6 +1,6 @@
 require "date"
 require "net/http"
-require 'xml'
+require 'libxml'
 require "rexml/document"
 require 'open-uri'
 require 'uri'
@@ -1174,7 +1174,11 @@ private
   # Gets XML from the rest service. Used to include a user-agent in one location.
   def self.get_xml(uri, timeout = 60)
     apikey = uri.include?("?") ? "&apikey=" + API_KEY  : "?apikey=" + API_KEY
-    uri << apikey
+    uri << apikey unless uri.include?("apikey=")
+
+    request = Thread.current[:request]
+    useragent = uri.include?("?") ? "&trackinguseragent=#{CGI.escape(request.user_agent)}" : "?trackinguseragent=#{CGI.escape(request.user_agent)}" unless request.nil?
+    uri << useragent unless request.nil?
 
     begin
       open(uri, "User-Agent" => "BioPortal-UI")

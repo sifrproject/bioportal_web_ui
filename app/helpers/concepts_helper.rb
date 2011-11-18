@@ -6,7 +6,7 @@ module ConceptsHelper
     # Show or hide property based on the property and ontology settings
     if ontology
       # Hide owl:deprecated if a user has set class or property based obsolete checking
-      if !ontology.obsoleteParent.nil? || !ontology.obsoleteProperty.nil? && relation_to_check.include?("owl:deprecated")
+      if !ontology.obsoleteParent.nil? && relation_to_check.include?("owl:deprecated") || !ontology.obsoleteProperty.nil? && relation_to_check.include?("owl:deprecated")
         return true
       end
     end
