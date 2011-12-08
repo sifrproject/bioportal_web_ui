@@ -109,6 +109,16 @@
                   <%= @ontology.description %>
               </td>
           </tr>
+          <% if @ontology.ontologyId.to_i == 1422 %>
+            <tr>
+              <th>License Information:</th>
+              <td>
+                The MedDRA ontology is maintained and distributed by the <a href="http://www.meddramsso.com/" target="_blank">MedDRA MSSO</a>.
+                This ontology is freely accessible on this site for academic and other
+                non-commercial uses. Users anticipating any commercial use of MedDRA must contact the MSSO to obtain a license.
+              </td>
+            </tr>
+          <% end %>
       </table>
   </div>
 </div>
