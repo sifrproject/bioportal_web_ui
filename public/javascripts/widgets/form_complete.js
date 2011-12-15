@@ -167,7 +167,7 @@ function formComplete_setup_functions() {
         extraParams: extra_params,
         lineSeparator: "~!~",
         matchSubset: 0,
-        mustMatch: true,
+        // mustMatch: true,
         sortRestuls: false,
         minChars: 3,
         maxItemsToShow: 20,
