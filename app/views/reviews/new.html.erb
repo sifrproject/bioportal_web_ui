@@ -1,7 +1,9 @@
-<script src="/javascripts/jquery.rating.pack.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="/stylesheets/layout/jquery.rating.css" type="text/css" media="screen" title="no title" charset="utf-8">
-
 <script type="text/javascript">
+  jQuery.rloader([
+    {type:'css',src:'/stylesheets/layout/jquery.rating.css'},
+    {type:'js',src:'/javascripts/jquery.rating.pack.js'}
+  ]);
+
   submitReview = function() {
     tb_remove();
     jQuery('input.star').rating();
@@ -12,6 +14,10 @@
     }
     jQuery("#review_data_temp").html("");
   }
+
+  jQuery(document).ready(function(){
+    jQuery('input.star').rating();
+  });
 </script>
 
 <% form_for(:review,:url=>reviews_path,:html=>{:onsubmit=>"ajaxForm(this, '#review_data_temp', submitReview); return false;"}) do  %>
@@ -28,18 +34,18 @@
 			<%rating_count = 0%>
 			<%for rating in @rating_types%>
 			<div style="padding:2px;border-top:1px solid gray;">
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="1" /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="2" /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="3" /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="4" /> 
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="1" />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="2" />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="3" />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="4" />
 				<input name="star_<%=rating.id%>" type="radio" class="star" value="5" />
 
 			<b>&nbsp;<%=rating.name%></b>
-			
+
 			<%rating_count += 1%>
 			</div>
 			<%end%>
-			
+
 			</td>
 	</tr>
 	<tr>
@@ -50,8 +56,13 @@
 
 
 
-    <%=submit_tag "Submit Reviews",:class=>"blueButton"%>
+    <%=submit_tag "Submit Review",:class=>"blueButton"%>
   </p>
 <%end%>
+
+<script>
+  // Do this after the HTML above loads
+  jQuery('input.star').rating();
+</script>
 
 

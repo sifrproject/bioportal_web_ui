@@ -1,11 +1,12 @@
-<script src="/javascripts/jquery.rating.pack.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="/stylesheets/layout/jquery.rating.css" type="text/css" media="screen" title="no title" charset="utf-8">
-
 <script type="text/javascript">
   editReview = function() {
     tb_remove();
     jQuery('input.star').rating();
   }
+
+  jQuery(document).ready(function(){
+    jQuery('input.star').rating();
+  });
 </script>
 
 <% form_for(:review, :url=>review_path(@review), :html=>{:onsubmit=>"ajaxForm(this, '#review_table_container_#{@review.id}', editReview); return false;"}) do  %>
@@ -22,18 +23,18 @@
 			<%rating_count = 0%>
 			<%for rating in @review.ratings%>
 			<div style="padding:2px;border-top:1px solid gray;">
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="1" <%if rating.value.eql?(1)%>checked="checked"<%end%> /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="2" <%if rating.value.eql?(2)%>checked="checked"<%end%> /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="3" <%if rating.value.eql?(3)%>checked="checked"<%end%> /> 
-				<input name="star_<%=rating.id%>" type="radio" class="star" value="4" <%if rating.value.eql?(4)%>checked="checked"<%end%> /> 
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="1" <%if rating.value.eql?(1)%>checked="checked"<%end%> />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="2" <%if rating.value.eql?(2)%>checked="checked"<%end%> />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="3" <%if rating.value.eql?(3)%>checked="checked"<%end%> />
+				<input name="star_<%=rating.id%>" type="radio" class="star" value="4" <%if rating.value.eql?(4)%>checked="checked"<%end%> />
 				<input name="star_<%=rating.id%>" type="radio" class="star" value="5" <%if rating.value.eql?(5)%>checked="checked"<%end%> />
 
 			<b>&nbsp;<%=rating.rating_type.name%></b>
-			
+
 			<%rating_count += 1%>
 			</div>
 			<%end%>
-			
+
 			</td>
 	</tr>
 	<tr>
@@ -48,4 +49,8 @@
   </p>
 <%end%>
 
+<script>
+  // Do this after the HTML above loads
+  jQuery('input.star').rating();
+</script>
 

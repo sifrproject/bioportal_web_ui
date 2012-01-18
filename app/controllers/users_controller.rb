@@ -85,7 +85,8 @@ class UsersController < ApplicationController
         @user = DataAccess.createUser(params[:user])
         if @user.kind_of?(Hash) && @user[:error]
           @errors << @user[:longMessage]
-          @user = UserWrapper.from_params(params[:user])
+          @user = UserWrapper.new
+          @user.from_params(params[:user])
           format.html { render :action => "new" }
         else
           unless survey_params.nil?
@@ -106,7 +107,8 @@ class UsersController < ApplicationController
           format.xml  { head :created, :location => user_url(@user) }
         end
       else
-        @user = UserWrapper.from_params(params[:user])
+        @user = UserWrapper.new
+        @user.from_params(params[:user])
         format.html { render :action => "new" }
       end
     end
