@@ -101,6 +101,14 @@ ENV['RECAPTCHA_PRIVATE_KEY'] = ''
 require 'log'
 $REMOTE_LOGGING = false
 
+# The Web UI allows you to use a virtual or version id in URLs. However there is no system on the REST side
+# that would prevent range collisions. Generally you can set the version ids to be much higher than the virtual.
+# In practice you may end up with version ids in the virtual range which you can identify with the $VERSIONS_IN_VIRTUAL_SPACE
+# set. In combination with the $VIRTUAL_ID_UPPER_LIMIT option the Web UI should be able to disambiguate the two id
+# types based on a single input.
+$VERSIONS_IN_VIRTUAL_SPACE = Set.new([])
+$VIRTUAL_ID_UPPER_LIMIT = 9999
+
 ##
 # Flex Options
 ##
