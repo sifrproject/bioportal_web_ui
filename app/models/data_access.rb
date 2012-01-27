@@ -206,8 +206,10 @@ class DataAccess
   def self.getOntologyPropertiesHash(ontology_id, key = "fullId")
     properties = self.getOntologyProperties(ontology_id)
     properties_hash = {}
-    properties.each do |prop|
-      properties_hash[prop.send(key)] = prop
+    unless properties.nil? || properties.empty?
+      properties.each do |prop|
+        properties_hash[prop.send(key)] = prop
+      end
     end
     properties_hash
   end
