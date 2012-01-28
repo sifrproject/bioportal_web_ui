@@ -363,11 +363,13 @@ class OntologyWrapper
 
   # Ontology Helper Methods
   def self.virtual_id?(ontology_id)
-    return ontology_id.to_i < $VIRTUAL_ID_UPPER_LIMIT && !$VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
+    ontology_id = ontology_id.to_i
+    return ontology_id < $VIRTUAL_ID_UPPER_LIMIT && !$VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
   end
 
   def self.version_id?(ontology_id)
-    return ontology_id.to_i > $VIRTUAL_ID_UPPER_LIMIT || $VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
+    ontology_id = ontology_id.to_i
+    return ontology_id > $VIRTUAL_ID_UPPER_LIMIT || $VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
   end
 
 end
