@@ -116,7 +116,7 @@
                           <%= view.versionNumber %>
                       </td>
                       <td>
-                          <%= get_view_ontology_version(view.viewOnOntologyVersionId) %>
+                          <%= get_view_ontology_version(view.viewOnOntologyVersionId) rescue "unknown" %>
                       </td>
                       <td>
                           <%= view.dateReleased %>
