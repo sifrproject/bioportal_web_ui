@@ -1198,8 +1198,10 @@ private
     uri << apikey unless uri.include?("apikey=")
 
     request = Thread.current[:request]
-    useragent = uri.include?("?") ? "&trackinguseragent=#{CGI.escape(request.user_agent)}" : "?trackinguseragent=#{CGI.escape(request.user_agent)}" unless request.nil?
-    uri << useragent unless request.nil?
+    unless request.nil? || request.user_agent.nil?
+      useragent = uri.include?("?") ? "&trackinguseragent=#{CGI.escape(request.user_agent)}" : "?trackinguseragent=#{CGI.escape(request.user_agent)}"
+      uri << useragent
+    end
 
     begin
       open(uri, "User-Agent" => "BioPortal-UI")
