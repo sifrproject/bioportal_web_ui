@@ -74,6 +74,8 @@ class ApplicationController < ActionController::Base
       else
         session[:user_ontologies] = nil
       end
+    else
+      @subdomain_filter = { :active => false, :name => "", :acronym => "" }
     end
   end
 
