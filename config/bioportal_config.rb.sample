@@ -53,9 +53,10 @@ $RELEASE_VERSION = ""
 
 # Pairing a name with an array of ontology virtual ids will allow you to filter ontologies based on a subdomain.
 # If your main UI is hosted at example.org and you add custom.example.org pointing to the same Rails installation
-# you could filter the ontologies visible at custom.example.org by adding this to the hash: "custom" => { :name => "Custom Site", :ontologies => [1032, 1054, 1099] }
-# Any number of custom subdomains can be added. Groups are added automatically using the group acronym as the subdomain.
-$ONTOLOGIES_BY_SUBDOMAIN = {}
+# you could filter the ontologies visible at custom.example.org by adding this to the hash: "custom" => { :name => "Custom Slice", :ontologies => [1032, 1054, 1099] }
+# Any number of slices can be added. Groups are added automatically using the group acronym as the subdomain.
+$ENABLE_SLICES = false
+$ONTOLOGY_SLICES = {}
 
 # Enables a help page maintained elsewhere that is read and displayed. Content is stored in a div with id 'bodyContent'.
 $WIKI_HELP_PAGE = ""

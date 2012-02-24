@@ -111,8 +111,10 @@ class DataAccess
       metrics = self.getAllOntologyMetrics
 
       ontology_terms = {}
-      metrics.each do |metric|
-        ontology_terms[self.getOntology(metric.id).ontologyId.to_i] = metric.numberOfClasses.to_i
+      unless metrics.nil?
+        metrics.each do |metric|
+          ontology_terms[self.getOntology(metric.id).ontologyId.to_i] = metric.numberOfClasses.to_i
+        end
       end
 
       CACHE.set("terms_all_ontologies", ontology_terms, LONG_CACHE_EXPIRE_TIME)
