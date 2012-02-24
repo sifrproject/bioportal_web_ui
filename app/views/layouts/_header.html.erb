@@ -48,7 +48,7 @@
   <%end %>
 
   <%do_not_display_subdomain_info_here = Set.new(["homeall_resources"])%>
-  <%if !@subdomain_filter[:active].nil? && @subdomain_filter[:active] == true && !do_not_display_subdomain_info_here.include?("#{controller.controller_name}#{controller.action_name}")%>
+  <%if !@subdomain_filter.nil? && !@subdomain_filter[:active].nil? && @subdomain_filter[:active] == true && !do_not_display_subdomain_info_here.include?("#{controller.controller_name}#{controller.action_name}")%>
     <div style="margin: 13px; padding: 5px; border: 1px solid gray; font-size:14px; background-color: #ffffcc;">
       <p style="text-align: left; margin-bottom: 0;">
         <% query_string = request.query_string.empty? ? "" : "?#{request.query_string}" %>

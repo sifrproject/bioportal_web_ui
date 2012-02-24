@@ -48,30 +48,32 @@ class ApplicationController < ActionController::Base
   end
 
   def domain_ontology_set
-    host = request.host
-    host_parts = host.split(".")
-    subdomain = host_parts[0]
+    if !$ENABLE_SLICES.nil? && $ENABLE_SLICES = true
+      host = request.host
+      host_parts = host.split(".")
+      subdomain = host_parts[0]
 
-    groups = DataAccess.getGroupsWithOntologies
-    groups_hash = {}
-    groups.group_list.each do |group_id, group|
-      groups_hash[group[:acronym].downcase.gsub(" ", "-")] = { :name => group[:name], :ontologies => group[:ontologies] }
-    end
-    $ONTOLOGIES_BY_SUBDOMAIN.merge!(groups_hash)
+      groups = DataAccess.getGroupsWithOntologies
+      groups_hash = {}
+      groups.group_list.each do |group_id, group|
+        groups_hash[group[:acronym].downcase.gsub(" ", "-")] = { :name => group[:name], :ontologies => group[:ontologies] }
+      end
+      $ONTOLOGY_SLICES.merge!(groups_hash)
 
-    @subdomain_filter = { :active => false, :name => "", :acronym => "" }
+      @subdomain_filter = { :active => false, :name => "", :acronym => "" }
 
-    # Set custom ontologies if we're on a subdomain that has them
-    # Else, make sure user ontologies are set appropriately
-    if $ONTOLOGIES_BY_SUBDOMAIN.include?(subdomain)
-      session[:user_ontologies] = { :virtual_ids => Set.new($ONTOLOGIES_BY_SUBDOMAIN[subdomain][:ontologies]), :ontologies => nil }
-      @subdomain_filter[:active] = true
-      @subdomain_filter[:name] = $ONTOLOGIES_BY_SUBDOMAIN[subdomain][:name]
-      @subdomain_filter[:acronym] = subdomain
-    elsif session[:user]
-      session[:user_ontologies] = user_ontologies(session[:user])
-    else
-      session[:user_ontologies] = nil
+      # Set custom ontologies if we're on a subdomain that has them
+      # Else, make sure user ontologies are set appropriately
+      if $ONTOLOGY_SLICES.include?(subdomain)
+        session[:user_ontologies] = { :virtual_ids => Set.new($ONTOLOGY_SLICES[subdomain][:ontologies]), :ontologies => nil }
+        @subdomain_filter[:active] = true
+        @subdomain_filter[:name] = $ONTOLOGY_SLICES[subdomain][:name]
+        @subdomain_filter[:acronym] = subdomain
+      elsif session[:user]
+        session[:user_ontologies] = user_ontologies(session[:user])
+      else
+        session[:user_ontologies] = nil
+      end
     end
   end
 
