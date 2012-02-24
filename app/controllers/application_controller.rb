@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def domain_ontology_set
-    if !$ENABLE_SLICES.nil? && $ENABLE_SLICES = true
+    if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true
       host = request.host
       host_parts = host.split(".")
       subdomain = host_parts[0]
