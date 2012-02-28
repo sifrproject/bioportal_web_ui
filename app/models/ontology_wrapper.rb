@@ -275,7 +275,7 @@ class OntologyWrapper
   end
 
   def admin?(user)
-    return !user.nil? && (user.admin? || self.userId.include?(user.id.to_s))
+    return !user.nil? && (user.admin? || self.userId.include?(user.id.to_i))
   end
 
   def archived?

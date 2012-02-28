@@ -244,10 +244,8 @@ class OntologiesController < ApplicationController
       @concept = DataAccess.getNode(@ontology.id, @root.children.first.id, nil, view)
 
       # Some ontologies have "too many children" at their root. These will not process and are handled here.
-      # TODO: This should use a proper error-handling technique with custom exceptions
       if @concept.nil?
-        @error = "The requested term could not be found."
-        return
+        raise Error404
       end
 
       LOG.add :info, 'visualize_ontology', request, :ontology_id => @ontology.id, :virtual_id => @ontology.ontologyId, :ontology_name => @ontology.displayLabel, :concept_name => @concept.label, :concept_id => @concept.id
@@ -275,10 +273,8 @@ class OntologiesController < ApplicationController
       # if the id is coming from a param, use that to get concept
       @concept = DataAccess.getNode(@ontology.id,params[:conceptid],view)
 
-      # TODO: This should use a proper error-handling technique with custom exceptions
       if @concept.nil?
-        @error = "The requested term could not be found."
-        return
+        raise Error404
       end
 
       # Did we come from the Jump To widget, if so change logging
