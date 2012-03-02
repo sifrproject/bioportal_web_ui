@@ -1,4 +1,4 @@
-// jQuery check, if it's not present then include it 
+// jQuery check, if it's not present then include it
 try {
 	jQuery.fn.jquery;
 } catch(e) {
@@ -24,7 +24,7 @@ try {
 }
 
 // Widget-specific code
-    
+
 // Set the defaults if they haven't been set yet
 if (typeof BP_SEARCH_SERVER === 'undefined') {
   var BP_SEARCH_SERVER = "http://bioportal.bioontology.org";
@@ -55,7 +55,7 @@ if (typeof BP_include_definitions === 'undefined' || BP_include_definitions !== 
 }
 
 
-// Process after document is fully loaded 
+// Process after document is fully loaded
 jQuery(document).ready(function(){
 	// Install any CSS we need (check to make sure it hasn't been loaded)
 	if (jQuery('link[href$="' + BP_SEARCH_SERVER + '/javascripts/JqueryPlugins/autocomplete/jquery.autocomplete.css"]')) {
@@ -71,12 +71,12 @@ jQuery(document).ready(function(){
 	jQuery("#bp_quick_jump").append("Jump To: <input type=\"textbox\" id=\"BP_search_box\" size=\"30\"> <input type=\"button\" value=\"Go to " + BP_SITE + "\" onclick=\"jumpTo_jump_clicked();\">");
 	jQuery("#bp_quick_jump").append("<input type='hidden' id='jump_to_concept_id'>");
 	jQuery("#bp_quick_jump").append("<input type='hidden' id='jump_to_ontology_id'>");
-	
+
 	// Grab the specific scripts we need and fires it start event
 	jQuery.getScript(BP_SEARCH_SERVER + "/javascripts/JqueryPlugins/autocomplete/crossdomain_autocomplete.js",function(){
 		jumpTo_setup_functions();
 	});
-	
+
 });
 
 function jumpTo_jumpToValue(li) {
@@ -106,7 +106,7 @@ function jumpTo_formatItem(row, position, count) {
   // Results
   var result_type = row[2];
   var result_term = row[0];
-  
+
   // Set wider term name column
   if (BP_include_definitions) {
     term_name_width = "150px";
@@ -131,35 +131,35 @@ function jumpTo_formatItem(row, position, count) {
     var result_def = row[9];
 
 		result += "<div class='result_term' style='width: "+term_name_width+";'>" + result_term.replace(regex, "<b><span class='result_term_highlight'>$1</span></b>") + "</div>"
-    
+
     if (BP_include_definitions) {
       result += "<div class='result_definition'>" + truncateText(decodeURIComponent(result_def.replace(/\+/g, " ")), 75) + "</div>"
     }
-  
+
     result += "<div>" + " <div class='result_type'>" + result_type + "</div><div class='result_ontology' style='overflow: hidden;'>" + truncateText(result_ont, 30) + "</div></div>";
 	}
-	
+
 	return result;
 }
 
 function jumpTo_setup_functions() {
   var extra_params = { subtreerootconceptid: encodeURIComponent(BP_search_branch), includedefinitions: BP_include_definitions };
-  
+
   var result_width = 350;
-  
+
   // Add extra space for definition
   if (BP_include_definitions) {
     result_width += 300;
   }
-  
+
   // Add space for ontology name
   if (BP_ontology_id === "") {
     result_width += 250;
   } else {
     result_width += 100;
   }
-  
-  jQuery("#BP_search_box").autocomplete(BP_SEARCH_SERVER + "/search/json_search/" + BP_ontology_id, {
+
+  jQuery("#BP_search_box").bioportal_autocomplete(BP_SEARCH_SERVER + "/search/json_search/" + BP_ontology_id, {
   	extraParams: extra_params,
   	lineSeparator: "~!~",
   	matchSubset: 0,
@@ -171,7 +171,7 @@ function jumpTo_setup_functions() {
   	footer: '<div style="color: grey; font-size: 8pt; font-family: Verdana; padding: .8em .5em .3em;">Results provided by <a style="color: grey;" href="' + BP_SEARCH_SERVER + '">' + BP_ORG_SITE + '</a></div>',
   	formatItem: jumpTo_formatItem
   });
-  
+
   jumpTo_searchbox = jQuery("#BP_search_box")[0].autocompleter;
 }
 
@@ -191,9 +191,9 @@ function truncateText(text, max_length) {
   if (typeof max_length === 'undefined' || max_length == "") {
     max_length = 70;
   }
-  
+
   var more = '...';
-  
+
   var content_length = $.trim(text).length;
   if (content_length <= max_length)
     return text;  // bail early if not overlong
@@ -205,13 +205,13 @@ function truncateText(text, max_length) {
   text = text.replace(/^ /, '');  // node had trailing whitespace.
 
   var text_short = text.slice(0, max_length);
-  
+
   // Ensure HTML entities are encoded
   // http://debuggable.com/posts/encode-html-entities-with-jquery:480f4dd6-13cc-4ce9-8071-4710cbdd56cb
   text_short = $('<div/>').text(text_short).html();
-  
+
   var other_text = text.slice(max_length, text.length);
-  
+
   text_short += "<span class='expand_icon'><b>"+more+"</b></span>";
   text_short += "<span class='long_text'>" + other_text + "</span>";
   return text_short;

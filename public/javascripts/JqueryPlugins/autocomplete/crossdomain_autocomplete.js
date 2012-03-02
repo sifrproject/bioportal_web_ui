@@ -3,7 +3,7 @@
 // To avoid re-writing this script we'll use a wrapper.
 (function($) {
   $(function() {
-    jQuery.autocomplete = function(input, options) {
+    jQuery.bioportal_autocomplete = function(input, options) {
       // Create a link to self
       var me = this;
 
@@ -478,7 +478,7 @@
       }
     }
 
-    jQuery.fn.autocomplete = function(url, options, data) {
+    jQuery.fn.bioportal_autocomplete = function(url, options, data) {
       // Make sure options exists
       options = options || {};
       // Set url as option
@@ -507,15 +507,15 @@
       options.width = parseInt(options.width, 10) || 0;
       this.each(function() {
         var input = this;
-        new jQuery.autocomplete(input, options);
+        new jQuery.bioportal_autocomplete(input, options);
       });
 
       // Don't break the chain
       return this;
     }
 
-    jQuery.fn.autocompleteArray = function(data, options) {
-      return this.autocomplete(null, options, data);
+    jQuery.fn.bioportal_autocompleteArray = function(data, options) {
+      return this.bioportal_autocomplete(null, options, data);
     }
 
     jQuery.fn.indexOf = function(e){

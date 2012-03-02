@@ -163,7 +163,7 @@ function formComplete_setup_functions() {
       result_width += 200;
     }
 
-    jQuery(this).autocomplete(BP_SEARCH_SERVER + "/search/json_search/"+ontology_id, {
+    jQuery(this).bioportal_autocomplete(BP_SEARCH_SERVER + "/search/json_search/"+ontology_id, {
         extraParams: extra_params,
         lineSeparator: "~!~",
         matchSubset: 0,

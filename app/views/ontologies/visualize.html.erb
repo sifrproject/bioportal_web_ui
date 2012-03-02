@@ -96,7 +96,7 @@
     }
 
     jQuery(document).ready(function(){
-      jQuery("#search_box").autocomplete("/search/json_search/<%=@ontology.ontologyId%>", {
+      jQuery("#search_box").bioportal_autocomplete("/search/json_search/<%=@ontology.ontologyId%>", {
         extraParams: { objecttypes: "class" },
         width: "400px",
         selectFirst: true,
