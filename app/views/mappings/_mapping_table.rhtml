@@ -34,7 +34,7 @@
         <%if map.target_missing?%>
           <%="<span title='This term cannot be viewed because the id cannot be found in the most recent version of the ontology' style='cursor: help;'>#{map.destination_name} (#{map.destination_ont_name})</span>"%>
         <%else%>
-          <%= link_to "#{map.destination_name} (#{map.destination_ont_name})", :controller => 'visualize', :action => 'virtual', :id => map.destination_ont.to_s, :conceptid => map.destination_id.to_s %>>
+          <%= link_to "#{map.destination_name} (#{map.destination_ont_name})", :controller => 'visualize', :action => 'virtual', :id => map.destination_ont.to_s, :conceptid => map.destination_id.to_s %>
         <%end%>
       </td>
       <td><%=map.map_source%></td>
