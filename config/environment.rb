@@ -64,7 +64,7 @@ Rails::Initializer.run do |config|
   config.gem "rest-client", :version => "~> 1.6.1"
   config.gem "mysql", :version => "~> 2.8.1"
   config.gem "ncbo_annotator", :version => ">= 1.0.13"
-  config.gem "memcache-client", :version => "~> 1.8.5"
+  config.gem "memcache-client", :lib => "memcache", :version => "~> 1.8.5"
   config.gem "i18n", :version => "~> 0.5.0"
   config.gem "airbrake"
 end
