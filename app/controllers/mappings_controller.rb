@@ -125,7 +125,7 @@ class MappingsController < ApplicationController
     @ontology = DataAccess.getOntology(params[:ontologyid])
     @concept = DataAccess.getNode(@ontology.id, params[:conceptid])
 
-    @mappings = DataAccess.getConceptMappings(@ontology.ontologyId, @concept.id)
+    @mappings = DataAccess.getConceptMappings(@ontology.ontologyId, @concept.fullId)
 
     # check to see if user should get the option to delete
     @delete_mapping_permission = check_delete_mapping_permission(@mappings)
