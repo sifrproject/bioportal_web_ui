@@ -187,6 +187,8 @@ class ApplicationController < ActionController::Base
       id = params[:id].to_i
     end
 
+    id.map! {|i| i.to_i} if id.kind_of?(Array)
+
     if session[:user].nil?
       redirect_to_home
     else
