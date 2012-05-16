@@ -192,13 +192,17 @@ class HomeController < ApplicationController
 
   def robots
     if @subdomain_filter[:active]
-      robots = <<-EOF
+      robots = <<-EOF.gsub(/^\s+/, "")
         User-agent: *\n
         Disallow: /
       EOF
       render :text => robots, :content_type => 'text/plain'
     else
-      render :text => "", :content_type => 'text/plain'
+      robots = <<-EOF.gsub(/^\s+/, "")
+        User-Agent: *
+        Disallow: 
+      EOF
+      render :text => robots, :content_type => 'text/plain'
     end
   end
 
