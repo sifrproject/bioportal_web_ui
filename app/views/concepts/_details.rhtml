@@ -92,7 +92,7 @@
         <tr>
           <td nowrap class="label"> <span class="concept_property" title="<%=property_title(key)%>"><%="#{remove_owl_notation(key)}"%></span> </td>
           <td>
-            <%=auto_link("<p>#{h(@concept.properties[key]).split("||%||").join("<\/p><p>")}</p>", :all, :target => "_blank")%>
+            <%=auto_link("<p>#{sanitize(@concept.properties[key]).split("||%||").join("<\/p><p>")}</p>", :all, :target => "_blank")%>
           </td>
         </tr>
       <%end%>
@@ -107,7 +107,7 @@
         <tr>
           <td nowrap class="label"> <span class="concept_property" title="<%=property_title(key)%>"><%="#{remove_owl_notation(key)}"%></span> </td>
           <td>
-            <%=auto_link("<p>#{h(@concept.properties[key]).split("||%||").join("<\/p><p>").gsub("%ONT%", @concept.ontology.id)}</p>", :all, :target => "_blank")%>
+            <%=auto_link("<p>#{sanitize(@concept.properties[key]).split("||%||").join("<\/p><p>").gsub("%ONT%", @concept.ontology.id)}</p>", :all, :target => "_blank")%>
           </td>
         </tr>
       <%end%>
