@@ -49,7 +49,7 @@
 
   <%do_not_display_subdomain_info_here = Set.new(["homeall_resources"])%>
   <%if at_slice? && !do_not_display_subdomain_info_here.include?("#{controller.controller_name}#{controller.action_name}")%>
-    <div style="margin: 13px; padding: 5px; border: 1px solid gray; font-size:14px; background-color: #ffffcc;">
+    <div class="subdomain_info" style="margin: 13px; padding: 5px; border: 1px solid gray; font-size:14px; background-color: #ffffcc;">
       <p style="text-align: left; margin-bottom: 0;">
         <% query_string = request.query_string.empty? ? "" : "?#{request.query_string}" %>
         You are viewing the <b><%=@subdomain_filter[:name]%></b> <a target="_blank" href="help?pop=true#slice_definition" class="pop_window"><%=$SITE%> Slice</a> at <b><%=request.host%></b>. To see all of the ontologies in <%=$SITE%> <a href="<%="#{$UI_URL}#{request.path}#{query_string}"%>">visit the full site</a>.

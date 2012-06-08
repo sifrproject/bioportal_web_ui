@@ -46,7 +46,9 @@ class SearchController < ApplicationController
     filter_ontologies = params[:ontology_ids].nil? || params[:ontology_ids].eql?("") ? nil : params[:ontology_ids]
 
     # Temporary hack to figure out which results are exact matches
+    start_time = Time.now
     exact_results = DataAccess.searchQuery(params[:ontology_ids], params[:query], params[:page], params.merge({:exact_match => true}))
+    LOG.add :debug, "Get exact matches: #{Time.now - start_time}s"
     exact_results.results = filter_advanced_options(exact_results.results, params)
     filter_private_results(exact_results)
     exact_count = exact_results.results.length
@@ -54,20 +56,28 @@ class SearchController < ApplicationController
     if params[:exact_match].eql?("true")
       results = exact_results
     else
+      start_time = Time.now
       results = DataAccess.searchQuery(params[:ontology_ids], params[:query], params[:page], params)
+      LOG.add :debug, "Get other matches: #{Time.now - start_time}s"
     end
 
     # Filter out ontologies using user-provided parameters
+    start_time = Time.now
     results.results = filter_advanced_options(results.results, params)
+    LOG.add :debug, "Filter advanced options: #{Time.now - start_time}s"
 
     # Store the total results counts before aggregation
     results.disaggregated_current_page_results = results.current_page_results
 
     # TODO: It would be nice to include a delete command in the iteration above so we don't
     # iterate over the results twice, but it wasn't working and no time to troubleshoot
+    start_time = Time.now
     filter_private_results(results)
+    LOG.add :debug, "Filter private ontologies: #{Time.now - start_time}s"
 
+    start_time = Time.now
     results.results = results.rank_results(exact_count)
+    LOG.add :debug, "Rank search results: #{Time.now - start_time}s"
 
     results.current_page_results = results.results.length + results.obsolete_results.length
 

@@ -1,0 +1,37 @@
+-@title = "NCBO Virtual Appliance Download"
+
+%div{:style => "padding: 13px; max-width: 800px;", :class => "enable-lists"}
+  %h1 NCBO Virtual Appliance Download
+  -if @virtual_appliance_access == false
+    %p Please contact support@bioontology.org for access to the NCBO Virtual Appliance
+  -else
+    %p The NCBO Virtual Appliance image contains a pre-installed, pre-configured version of commonly-used open source NCBO software running on a Linux operating system. The image was created using VMWare and is available for download at the links below.
+    %p The following software is included on the image:
+    %ul
+      %li BioPortal Ontology Services (BioPortal Core)</li
+      %li BioPortal Web User Interface (including ontology visualization, Flex widgets, Annotator and Resource Index UIs)</li
+      %li BioPortal Admin (a UI for administering BioPortal Ontology Services)</li
+      %li Annotator</li
+      %li Resource Index</li
+    %p Please see our <a href="http://www.bioontology.org/wiki/index.php/Category:NCBO_Virtual_Appliance"> documentation</a> for more information on working with the Appliance.
+    %h2 Download
+    %ul
+      %li Version 0.6 <a href="http://www.bioontology.org/ncbo-appliance/ncbo-appliance-0.6.0.zip"> OVF</a> | <a target="_blank" href="http://www.bioontology.org/wiki/index.php/Virtual_Appliance_FAQ#How_can_I_use_the_Appliance_on_Amazon_EC2.3F">Amazon EC2</a>
+      %li Version 0.5 <a href="http://www.bioontology.org/ncbo-appliance/ncbo-appliance-0.5.zip"> OVF</a>
+
+  -if @user.admin?
+    %div{:style => "margin: 2em 0 0; padding: 1em 1em; border: solid thin gray; background-color: lightGray;"}
+      %h1{:style => "margin-bottom: 15px;"} Admin: Add Users
+      -unless flash[:admin_error].nil? || flash[:admin_error].empty?
+        %div{:style => 'color: red; padding: 4px; margin: 0 0 1em; background: white; border: thin solid darkGray;'}
+          = flash[:admin_error]
+      -form_for :appliance_user do |f|
+        = f.label :user_id, "Account Name: "
+        = f.text_field :user_id
+        &nbsp;&nbsp;
+        = f.submit "Add User"
+
+      %h2{:style => "margin-top: 1em;"} Accounts with access:
+      %ul
+        -@users_with_access.each do |user|
+          %li= user.username

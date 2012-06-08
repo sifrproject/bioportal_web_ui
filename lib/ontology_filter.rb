@@ -4,7 +4,7 @@
 class OntologyFilter
 
   USER_ONTOLOGY_FILTER_PRE = {
-    :searchQuery => lambda { |args, user_ontologies| args[0][:ontologies] = user_ontologies[:virtual_ids].to_a if args[0][:ontologies].nil? || args[0][:ontologies].empty? },
+    :searchQuery => lambda { |args, user_ontologies| args[0][:ontologies] = user_ontologies[:virtual_ids].to_a if args[0][:ontologies].nil? || args[0][:ontologies].empty? || (args[0][:ontologies].length == 1 && args[0][:ontologies][0].empty?)},
     :getNodeNameContains => lambda { |args, user_ontologies| args[0] = user_ontologies[:virtual_ids].to_a if args[0].nil? || args[0].join("").empty? },
     :createRecommendation => lambda { |args, user_ontologies| args[0][:ontologyids] = user_ontologies[:virtual_ids].to_a.join(",") if args[0][:ontologyids].nil? || args[0][:ontologyids].empty? },
     :annotator => lambda { |args, user_ontologies| args[:ontologiesToKeepInResult] = user_ontologies[:virtual_ids].to_a if args[:ontologiesToKeepInResult].nil? || args[:ontologiesToKeepInResult].empty? }

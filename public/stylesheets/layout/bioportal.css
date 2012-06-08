@@ -1919,6 +1919,9 @@ div.additional_results_link {
 .pop_window {
   font-size: x-small;
 }
+div.subdomain_info a.pop_window {
+  font-size: inherit;
+}
 
 /************************************
  * Social Networking Badges
