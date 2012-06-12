@@ -1,0 +1,18 @@
+%div{:style => "padding: 2em;"}
+  %h1 Ontology Submitted Successfully
+  %br/
+  -if @ontology.metadata_only?
+    %p Thank you for submitting your ontology to #{$SITE}.
+    %p Users can now see your ontology in our ontology list but they cannot explore or search it. To enable exploring and searching, please upload a full version of your ontology.
+  -else
+    -if @ontology.isView.eql?("true")
+      %p Thank you for submitting your ontology view to #{$SITE}.
+    -else
+      %p Thank you for submitting your ontology to #{$SITE}.
+    %p We will now put your ontology in the queue to be processed. Please keep in mind that it may take up to several hours before #{$SITE} users will be able to explore and search your ontology.
+    %p
+      When your ontology is ready for viewing, it will be available here:
+      %br/
+      %a{:href => "#{$UI_URL}/ontologies/#{@ontology.ontologyId}"} #{$UI_URL}/ontologies/#{@ontology.ontologyId}
+    %p If you have any questions or problems, please email the #{$SITE} support team at <a href="mailto:#{$SUPPORT_EMAIL}">#{$SUPPORT_EMAIL}</a>
+

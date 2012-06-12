@@ -376,7 +376,6 @@ class OntologiesController < ApplicationController
           render :action=>'new'
         end
       else
-
         # Adds ontology to syndication
         # Don't break here if we encounter problems, the RSS feed isn't critical
         begin
@@ -388,32 +387,15 @@ class OntologiesController < ApplicationController
         rescue
         end
 
-        # Display message to user
-        if @ontology.metadata_only?
-          flash[:notice] = "Thank you for submitting your ontology to #{$SITE}.
-            Users can now see your ontology in our ontology list but they cannot explore or search it.
-            To enable exploring and searching, please upload a full version of your ontology."
-        elsif @ontology.isView.eql?("true")
-          flash[:notice] = "Thank you for submitting your ontology view to #{$SITE}.
-            We will now put your ontology in the queue to be processed.
-            Please keep in mind that it may take up to several hours before #{$SITE} users will be able to explore and search your ontology."
-        else
-          flash[:notice] = "Thank you for submitting your ontology to #{$SITE}.
-            We will now put your ontology in the queue to be processed.
-            Please keep in mind that it may take up to several hours before #{$SITE} users will be able to explore and search your ontology."
-        end
-
         if @ontology.isView=='true'
           # Cleaning out the cache
           parent_ontology=DataAccess.getOntology(@ontology.viewOnOntologyVersionId)
           CACHE.delete("views::#{parent_ontology.ontologyId}")
-          redirect_to "/ontologies/#{@ontology.ontologyId}"
+          redirect_to "/ontologies/success/#{@ontology.ontologyId}"
         else
-          redirect_to ontology_path(@ontology)
+          redirect_to "/ontologies/success/#{@ontology.ontologyId}"
         end
       end
-
-
     else
       if(params[:ontology][:ontologyId].empty?)
         @ontology = OntologyWrapper.new
@@ -431,7 +413,11 @@ class OntologiesController < ApplicationController
         render :action=>'new'
       end
     end
+  end
 
+  def submit_success
+    @ontology = DataAccess.getOntology(params[:id])
+    render :partial => "submit_success", :layout => "ontology"
   end
 
 
