@@ -78,9 +78,10 @@ ActionController::Routing::Routes.draw do |map|
   map.connect "/ajax/recaptcha", :controller => "ajax_proxy", :action => "recaptcha"
 
   # User
-  map.logout '/logout', :controller => 'login',:action => 'destroy'
+  map.logout '/logout', :controller => 'login', :action => 'destroy'
   map.lost_pass '/lost_pass', :controller => 'login', :action => 'lost_password'
   map.custom_ontologies '/accounts/:id/custom_ontologies', :controller => 'users', :action => 'custom_ontologies'
+  map.connect '/login_as/:login_as', :controller => 'login', :action => 'login_as'
 
   # Visualize
   map.virtual_visualize '/visualize/virtual/:ontology', :controller => 'concepts', :action => 'virtual', :requirements => { :id => %r([^/?]+), :conceptid => %r([^/?]+) }

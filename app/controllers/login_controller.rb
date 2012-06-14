@@ -40,11 +40,39 @@ class LoginController < ApplicationController
     end
   end
 
+  # Login as the provided username (only for admin users)
+  def login_as
+    unless session[:user] && session[:user].admin?
+      redirect_to "/"
+      return
+    end
+
+    user = params[:login_as]
+    new_user = DataAccess.getUserByUsername(user)
+
+    if new_user
+      session[:admin_user] = session[:user]
+      session[:user] = new_user
+      session[:user].apikey = session[:admin_user].apikey
+      session[:user_ontologies] = user_ontologies(session[:user])
+    end
+
+    redirect_to request.referer rescue redirect_to "/"
+  end
+
   # logs out a user
   def destroy
-    session[:user] = nil
-    session[:user_ontologies] = nil
-    flash[:notice] = "Logged out"
+    if session[:admin_user]
+      old_user = session[:user]
+      session[:user] = session[:admin_user]
+      session.delete(:admin_user)
+      session[:user_ontologies] = user_ontologies(session[:user])
+      flash[:notice] = "Logged out <b>#{old_user.username}</b>, returned to <b>#{session[:user].username}</b>"
+    else
+      session[:user] = nil
+      session[:user_ontologies] = nil
+      flash[:notice] = "Logged out"
+    end
     redirect_to request.referer
   end
 

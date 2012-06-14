@@ -846,7 +846,7 @@ class BioPortalRestfulCore
     begin
       doc = REXML::Document.new(get_xml(BASE_URL + SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%", CGI.escape(search)) + "&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}#{object_types}#{include_definitions}"))
     rescue Exception=>e
-      doc =  REXML::Document.new(e.io.read)
+      doc = REXML::Document.new(e.io.read)
     end
 
     results = errorCheck(doc)
@@ -993,7 +993,7 @@ class BioPortalRestfulCore
     return user
   end
 
-  def self.authenticateUser(username,password)
+  def self.authenticateUser(username, password)
     uri_gen = BioPortalResources::Auth.new(:username => username, :password => password)
     uri = uri_gen.generate_uri
 
@@ -1197,8 +1197,7 @@ private
 
   # Gets XML from the rest service. Used to include a user-agent in one location.
   def self.get_xml(uri, timeout = 60)
-    apikey = uri.include?("?") ? "&apikey=" + API_KEY  : "?apikey=" + API_KEY
-    uri << apikey unless uri.include?("apikey=")
+    uri = append_apikey(uri)
 
     request = Thread.current[:request]
     unless request.nil? || request.user_agent.nil?
@@ -1207,6 +1206,7 @@ private
     end
 
     begin
+      LOG.add :debug, "Getting xml from:\n#{uri}"
       open(uri, "User-Agent" => "BioPortal-UI")
     rescue OpenURI::HTTPError => e
       LOG.add :debug, "Problem retrieving xml for #{uri}: #{e.message}"
@@ -1660,6 +1660,15 @@ private
     node.properties = {}
 
     return node
+  end
+
+  def self.append_apikey(uri)
+    apikey = uri.include?("?") ? "&apikey=" + API_KEY  : "?apikey=" + API_KEY
+    uri << apikey unless uri.include?("apikey=")
+    if Thread.current[:session] && Thread.current[:session][:user]
+      uri << "&userapikey=#{Thread.current[:session][:user].apikey}" unless uri.include?("userapikey=")
+    end
+    uri
   end
 
   ###################### Generic Parser #########################

@@ -217,7 +217,7 @@ class SearchController < ApplicationController
     if !private
       return false
     else
-      return !(session[:user] && session[:user].acl.include?(ontology_id))
+      return !(session[:user] && session[:user].acl.include?(ontology_id.to_i))
     end
   end
 
