@@ -42,6 +42,10 @@ class AjaxProxyController < ApplicationController
     render_json DataAccess.getLightNode(DataAccess.getOntology(params[:ontologyid]).id, params[:conceptid], max_children, no_relations).to_json
   end
   
+  def loading_spinner
+    render :partial => "loading_spinner"
+  end
+
   private
 
   def render_json(json, options={})  

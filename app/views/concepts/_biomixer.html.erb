@@ -3,6 +3,6 @@
 
 
 <div style="padding-left: .5%; width: 99.5%;">
-<iframe src="http://bioportal-integration.bio-mixer.appspot.com/?mode=embed&embed_mode=paths_to_root&virtual_ontology_id=<%=@ontology.ontologyId%>&full_concept_id=<%=CGI.escape(@concept.fullId)%>&userapikey=<%=user_api_key%>"
-  style="min-height: 500px;" height="100%" width="100%" frameborder="0"></iframe>
+  <iframe id="biomixer_iframe" src="/ajax/loading_spinner" data-src="http://bioportal-integration.bio-mixer.appspot.com/?mode=embed&embed_mode=paths_to_root&virtual_ontology_id=<%=@ontology.ontologyId%>&full_concept_id=<%=CGI.escape(@concept.fullId)%>&userapikey=<%=user_api_key%>"
+    style="min-height: 500px;" height="100%" width="100%" frameborder="0"></iframe>
 </div>

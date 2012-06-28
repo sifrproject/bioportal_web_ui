@@ -93,7 +93,16 @@
         jQuery("#" + tabId + "_top").addClass("selected");
         jQuery(document).trigger("terms_tab_visible");
       }
+
+      jQuery(document).trigger("visualize_tab_change", [{tabType: tabId}]);
     }
+
+    // Only show BioMixer when tab is clicked
+    jQuery(document).live("visualize_tab_change", function(event, data){
+      if (data.tabType == "visualization") {
+        jQuery("#biomixer_iframe").attr("src", jQuery("#biomixer_iframe").data("src"));
+      }
+    });
 
     function callTab(tab_name, url) {
         if (getCache(getConcept() + tab_name) != null) {

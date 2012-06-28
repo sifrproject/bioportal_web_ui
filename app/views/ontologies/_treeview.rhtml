@@ -80,9 +80,10 @@ function nodeClicked(node_id) {
   jQuery("#purl_link_container").hide();
   var concept_uri = (node_id.indexOf("http://") == 0 || node_id.indexOf(encodeURIComponent("http://")) == 0 );
   var purl_anchor = concept_uri ? "?conceptid="+node_id : "/"+node_id;
+  var selectedTab = jQuery("#bd_content div.tabs li.selected a").attr("href").slice(1);
   jQuery("#purl_input").val(purl_prefix + purl_anchor);
 
-  if(getCache(node_id)!=null){
+  if (getCache(node_id) != null) {
     var tabData = getCache(node_id);
     var loc;
 
@@ -105,10 +106,9 @@ function nodeClicked(node_id) {
     if (loc.search("#resource_index") >= 0 && loc.split("#") == "resource_index") {
      callTab("resource_index", '/resources/@ontology@/?conceptid=@concept@');
     }
-    jQuery.unblockUI();
-    tb_init('a.thickbox, area.thickbox, input.thickbox');
-    jQuery(document).trigger("tree_changed");
-  }else{
+
+    wrapupTabChange(selectedTab);
+  } else {
     jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Term...</h1>', showOverlay: false });
     jQuery.get('/ajax_concepts/<%=@ontology.to_param%>/?conceptid='+node_id+'&callback=load',
       function(data){
@@ -130,11 +130,18 @@ function nodeClicked(node_id) {
         }
 
         setCache(node_id,tabData);
-        jQuery.unblockUI();
-        tb_init('a.thickbox, area.thickbox, input.thickbox');
-        jQuery(document).trigger("tree_changed");
-      });
+        wrapupTabChange(selectedTab);
+      }
+    );
   }
+
+}
+
+function wrapupTabChange(selectedTab) {
+  jQuery.unblockUI();
+  tb_init('a.thickbox, area.thickbox, input.thickbox');
+  jQuery(document).trigger("visualize_tab_change", [{tabType: selectedTab}]);
+  jQuery(document).trigger("tree_changed");
 }
 
 function setCacheCurrent() {

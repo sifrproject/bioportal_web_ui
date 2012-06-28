@@ -76,6 +76,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect "/ajax/json_term", :controller => "ajax_proxy", :action => "json_term"
   map.connect "/ajax/jsonp", :controller => "ajax_proxy", :action => "jsonp"
   map.connect "/ajax/recaptcha", :controller => "ajax_proxy", :action => "recaptcha"
+  map.connect "/ajax/loading_spinner", :controller => "ajax_proxy", :action => "loading_spinner"
 
   # User
   map.logout '/logout', :controller => 'login', :action => 'destroy'
