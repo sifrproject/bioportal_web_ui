@@ -1,4 +1,36 @@
 <%@title = "Project Listing"%>
+<script type="text/javascript" src="/javascripts/JqueryPlugins/datatables/js/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/javascripts/JqueryPlugins/datatables/plugins/datatables.formatted.number.js"></script>
+<script type="text/javascript" src="/javascripts/JqueryPlugins/tooltip/jquery.tooltip.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="/javascripts/JqueryPlugins/tooltip/jquery.tooltip.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#projects").dataTable({   
+		    "bAutoWidth": false,
+		    "bLengthChange": false,
+		    "bFilter": false,
+		    "bInfo": false,
+		    "bPaginate": false,
+		    "bSort": false,
+		    "asStripClasses":["","alt"],
+		});
+	    // Set the table width after it gets altered by jQuery DataTable
+	    jQuery("#projects").css("width","100%");
+	});
+	
+	function descriptionDialog(title, body) {
+		jQuery("#DescriptionDialog").text(body);
+		jQuery("#DescriptionDialog").css("display:block")
+		jQuery("#DescriptionDialog").dialog({ dialogClass: "alert" });
+	};
+	
+</script>
+
+<div id="DescriptionDialog" title="project description" style="display: none" >
+	<p>Description text</p>
+</div>
+
 
 <h1 class="tab_header">Projects</h1>
 <p class="tab_description">
@@ -7,38 +39,86 @@
 </p>
 
 <div style="padding:10px;">
-
-<%if session[:user].nil?%>
-  <%=button_to "Create New Project", "/login", :method => :get%>
-<%else%>
-  <span><%=button_to "Create New Project", new_project_path, :method => :get%></span>
-<%end%>
-</div>
-
-<br>
-<br>
-<table class="zebra" style="border:0px;margin-left:12px;" width="90%" cellpadding="0" cellspacing="0">
-  <%for project in @projects%>
-  <tr>
-    <td colspan="2" class="pheader"><strong><%=link_to project.name, project,:style=>"text-decoration:none;"%></strong> <span style="font-size: 75%; vertical-align: middle; padding-left: 1em;"><%if isOwner?(project.id)%><%=link_to "Edit Project",edit_project_path(project)%>&nbsp;&nbsp;<%= link_to 'Delete Project', project, :confirm => 'Are you sure?', :method => :delete %><%end%></span></td>
-  </tr>
-  <tr style="background-color:#EFEFEF">
-    <td  colspan="2" style="padding:10px;border-bottom:1px solid #9F9F9F"><%=project.description%></td>
-  </tr>
-  <tr>
-    <th style="width:100px;text-align:left;padding:5px;">People:</th><td align="left"style="padding-top:5px;width:100%;"><%=project.people%></td>
-  </tr>
-  <tr>
-    <th style="width:100px;text-align:left;padding:5px;">Institution:</th><td align="left"style="padding-top:5px;width:100%;"><%=project.institution%></td>
-  </tr>
-  <tr>
-    <th style="width:100px;text-align:left;padding:5px;">Homepage:</th><td align="left"style="padding-top:5px;width:100%;"><%=link_to project.homepage, project.homepage%></td>
-  </tr>
-  
-  <tr style="border: none;">
-    <td colspan="2" style="width:100%; margin-bottom:15px; border: none;">&nbsp;</td>
-  </tr>
-  <%end%>
-</table>
-
+	
+	<span>
+		<%if session[:user].nil?%>
+		  <%=button_to "Create New Project", "/login", :method => :get%>
+		<%else%>
+		  <%=button_to "Create New Project", new_project_path, :method => :get%>
+		<%end%>
+	</span>
+	<br>
+	<br>
+	<table id="projects" class="zebra" cellpadding="0" cellspacing="0">
+	  <thead>
+	    <tr>
+	      <th>Project</th>
+	      <th>Description</th>
+	      <th>Contacts</th>
+	      <th>Institutions</th>
+	      <th>Ontologies</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+		<%for project in @projects%>
+			<tr>
+				<!-- Project name, home page, and controls for editors -->
+				<td width="30%" style="vertical-align:top;">
+					<strong><%= link_to(project.name, project) %></strong>
+					<br>
+					<span style="font-size:75%; vertical-align:bottom;">
+						<%= link_to("Home Page", project.homepage, :target => "_blank") %> 
+						<span class="ui-icon ui-icon-extlink" style="display: inline-block; vertical-align: text-bottom;"></span>
+						&nbsp;&nbsp;
+						<%if isOwner?(project.id)%>
+							<%= link_to("Edit Project", edit_project_path(project))%>&nbsp;&nbsp;
+							<%= link_to("Delete Project", project, :confirm => "Are you sure?", :method => :delete) %>
+						<%end%>
+					</span>
+				</td>
+				<!-- Project description (may be truncated with a dialog) -->
+				<td width="50%" style="vertical-align:top;">
+			        <%if ! project.description.nil? %>
+			            <%descLength = 250%>
+			            <%if project.description.length < descLength%>
+			                <%= project.description%>
+			            <%else%>
+			                <%descShort = smart_truncate(project.description, :words => 20) %>
+			                <span title="<%= project.description%>" style="cursor:help;" >
+			                	<%= descShort%>
+			                </span>
+			            <%end%>
+			        <%end%>
+				</td>
+				<!-- Contacts -->
+				<td width="10%" style="vertical-align:top;">
+					<%= project.people%>
+				</td>
+				<!-- Institutions -->
+				<td width="8%" style="vertical-align:top;">
+					<%= project.institution%>
+				</td>
+				<!-- Ontologies -->
+				<td width="2%" style="vertical-align:top;">
+					<%ontologyCount = 0%>
+					<%ontologyLabels = ""%>
+				    <%for uses in project.uses%>
+					    <% if ! uses.ontology.nil? %>
+			        		<!-- <%# ontologyLabels += "<tr><td><a href='/virtual/#uses.ontology_id'>#uses.ontology.displayLabel></a></td></tr>"%> -->
+			        		<% ontologyLabels += uses.ontology.displayLabel + "\n"%>
+							<%ontologyCount += 1%>
+						<%end%>
+					<%end%>
+					
+					<%if ontologyCount > 0 %>
+		                <span title="<%= ontologyLabels%>" style="cursor:help;"><%= ontologyCount %></span>
+			        <%else%>
+						<%= ontologyCount %>
+					<%end%>
+				</td>
+			</tr>
+		<%end%>
+	  </tbody>
+	</table>
+	
 </div>
