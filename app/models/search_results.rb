@@ -187,7 +187,7 @@ class SearchResults < Array
         if not_ranked[ont_id].nil?
           not_ranked[ont_id] = result
         else
-          not_ranked[ont_id]['additional_results'] = [] if not_ranked['additional_results'].nil?
+          not_ranked[ont_id]['additional_results'] = [] if not_ranked[ont_id]['additional_results'].nil?
           not_ranked[ont_id]['additional_results'] << result
         end
       end
