@@ -49,7 +49,9 @@ var orgSite = <%=$ORG_SITE.to_json%>
     </div>
 
     <!-- hidden form input to use for tracking ontologies selected for filtering -->
-    <div style="position: absolute; left: -9999999999999px;"><%= render :partial => "shared/ontology_picker", :locals => { :sel_text => "Ontologies", :custom_ontologies => @ri_ontologies }%></div>
+    <div style="position: absolute; left: -99999px;">
+      <%= render :partial => "shared/ontology_picker", :locals => { :sel_text => "Ontologies", :custom_ontologies => @ri_ontologies }%>
+    </div>
     <%=render_advanced_picker(nil, @ri_ontologies, "resource_index_terms_chzn")%>
 
     <span style='color: red;' id="resource_index_error" class='resource_index_error'></span>
