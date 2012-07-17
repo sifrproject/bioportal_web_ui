@@ -212,7 +212,6 @@ jQuery(document).ready(function(){
 // This function will poll to see if term information exists
 function applyTermLabel(link, params, calledAgain) {
   var term_info = bp_term_cache[params.ontologyid+"/"+params.conceptid];
-  if (typeof calledAgain !== "undefined" && calledAgain > 1) console.log("recurse " + calledAgain)
 
   if (term_info === "getting") {
     if (typeof calledAgain !== "undefined") calledAgain = 0

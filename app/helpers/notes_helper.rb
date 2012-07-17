@@ -210,10 +210,20 @@ module NotesHelper
       params = "data-bp_ontology_id='#{ontology_id}' data-bp_is_subbed='#{subbed_to_ont?(ontology_id, subs)}' data-bp_user_id='#{user.id}'"
       spinner = '<span class="notes_subscribe_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>'
       error = "<span style='color: red;' class='notes_sub_error'></span>"
-      return "<a href='javascript:void(0);' style='font-size: .9em;' class='subscribe_to_notes' #{params}>#{sub_text} to notes emails</a> #{spinner} #{error}"
+      return "<a href='javascript:void(0);' class='subscribe_to_notes link_button' #{params}>#{sub_text} to notes emails</a> #{spinner} #{error}"
     else
       return ""
     end
+  end
+
+  def delete_button
+    user = session[:user]
+    return "" if user.nil?
+
+    params = "data-bp_user_id='#{user.id}'"
+    spinner = '<span class="delete_notes_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>'
+    error = "<span style='color: red;' class='delete_notes_error'></span>"
+    return "<a href='#' onclick='deleteNotes(this);return false;' style='display: inline-block !important;' class='notes_delete link_button' #{params}>Delete selected notes</a> #{spinner} #{error}"
   end
 
   def subbed_to_ont?(ontology_id, subscriptions)

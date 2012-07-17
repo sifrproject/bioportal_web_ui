@@ -211,14 +211,16 @@ class BioPortalResources
     class NotesForOntology < BioPortalResources
       def initialize(params)
         super(params)
-        @uri << "/notes/%ONT%/?toplevelonly=true"
+        @uri << "/notes/%ONT%/"
+        @uri << "?threaded=true" if params[:threaded]
       end
     end
 
     class NotesForOntologyVirtual < BioPortalResources
       def initialize(params)
         super(params)
-        @uri << "/virtual/notes/%ONT_VIRTUAL%?toplevelonly=true"
+        @uri << "/virtual/notes/%ONT_VIRTUAL%"
+        @uri << "?threaded=true" if params[:threaded]
       end
     end
 

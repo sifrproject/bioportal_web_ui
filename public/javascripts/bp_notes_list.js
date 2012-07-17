@@ -3,6 +3,7 @@
  */
 
 var BP_NOTES_LIST_LOADED = true;
+var columns = { archived: 3, date: 6, subjectSort: 2 };
 
 jQuery(document).ready(function(){
 	jQuery(".notes_list_link").live('click', function(event){
@@ -51,25 +52,29 @@ function insert_note(link, note_id) {
 // This will wire up a table with the dataTables config.
 function wireTableWithData(notesTableNew, aData) {
 	// Wire up table if it hasn't been done yet
-	notesTable = notesTableNew.dataTable({
+	notesTable = notesTableNew;
+  notesTable.dataTable({
 		"aaData": aData,
 		"iDisplayLength": 50,
 		"sPaginationType": "full_numbers",
-		"aaSorting": [[5, 'desc']],
+		"aaSorting": [[columns.date, 'desc']],
 		"aoColumns": [
-			{ "iDataSort": 1 }, // Subject link
+      { "bVisible": false }, // Delete
+			{ "iDataSort": columns.subjectSort }, // Subject link
 			{ "bVisible": false }, // Subject for sort
 			{ "bVisible": false }, // Archive for filter
 			null, // Author
 			null, // Type
-			{ "bVisible": false }, // Subject for sort
+			{ "bVisible": false }, // Date for sort
 			null // Created
 		],
 		"fnDrawCallback": function(){
 			jQuery(".highlighted_row").removeClass("highlighted_row");
+      showDeleteInfo();
 		},
-		"fnInitComplete": function(){
-		}
+    "fnInitComplete": function(){
+      showDeleteInfo();
+    }
 	});
 }
 
@@ -77,13 +82,15 @@ function wireTableWithData(notesTableNew, aData) {
 // Needs to stay inline because IE won't recognize it in an external file.
 function wireTable(notesTableNew) {
   // Wire up table if it hasn't been done yet
-  notesTable = notesTableNew.dataTable({
+  notesTable = notesTableNew;
+  notesTable.dataTable({
   	"bDestroy": true,
     "iDisplayLength": 50,
     "sPaginationType": "full_numbers",
-    "aaSorting": [[5, 'desc']],
+    "aaSorting": [[columns.date, 'desc']],
     "aoColumns": [
-       { "iDataSort": 1 }, // Subject link
+       { "bVisible": false }, // Delete
+       { "iDataSort": columns.subjectSort }, // Subject link
        { "bVisible": false }, // Subject for sort
        { "bVisible": false }, // Archived for filter
        null, // Author
@@ -93,24 +100,24 @@ function wireTable(notesTableNew) {
     ],
     "fnDrawCallback": function(){
       jQuery(".highlighted_row").removeClass("highlighted_row");
+      showDeleteInfo();
     },
     "fnInitComplete": function(){
+      showDeleteInfo();
     }
   });
 
   // Important! Table is somehow getting set to zero width. Reset here.$
   jQuery(notesTable).css("width", "100%");
-
-  //notesTable.fnFilter('false', 2);
 }
 
 function hideOrUnhideArchivedNotes() {
     if (jQuery("#hide_archived:checked").val() !== undefined) {
       // Checked
-      notesTable.fnFilter('false', 2);
+      notesTable.fnFilter('false', columns.archived);
     } else {
       // Unchecked
-      notesTable.fnFilter('', 2, true, false);
+      notesTable.fnFilter('', columns.archived, true, false);
     }
 }
 

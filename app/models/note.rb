@@ -51,6 +51,14 @@ class Note
     self.id.nil?
   end
 
+  def deletable?(user)
+    return false unless user
+    return true if user.admin?
+    return false if self.associated.length > 0
+    return true if user.id.to_i == self.author.to_i
+    return false
+  end
+
   def ontology
     DataAccess.getOntology(self.createdInOntologyVersion)
   end

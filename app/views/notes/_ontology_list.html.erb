@@ -1,14 +1,22 @@
 
 <%
+
+  #######################################################################################
+  #####    WARNING
+  #####    Changes in this file need to be reflected in _list.html.erb
+  #####    WARNING
+  #######################################################################################
+
+
+
   # Check to see if we have notes, if not then try to get them
   if @notes.nil? && @concept && @ontology
-    @notes = DataAccess.getNotesForConcept(@ontology.ontologyId, @concept.fullId_proper, false, true) rescue nil
     @note_link = "/notes/virtual/#{@ontology.ontologyId}/?noteid="
     @context = "ontology"
   end
 
   @ont_semi_uuid = (1000 * Time.now.to_f).to_i
-  ont_note_colspan = "5"
+  ont_note_colspan = "6"
 %>
 
 <script type="text/javascript">
@@ -20,13 +28,17 @@
 
 <div class="notes_list_container">
 
-	<div class="subscribe_to_notes" style="float: right;">
-		<%= subscribe_button(@ontology.ontologyId) %>
-	</div>
-
   <% unless @notes_for.nil? %>
     <h1>Notes for <%=link_to @notes_for, @notes_for_link %></h1>
   <% end %>
+
+  <div class="subscribe_to_notes" style="float: left;">
+    <%= subscribe_button(@ontology.ontologyId) %>
+  </div>
+
+  <div class="notes_delete" style="float: left; margin-left: 1em;">
+    <%= delete_button %>
+  </div>
 
   <div class="ont_notes_table_container" style="clear: both;">
     <div style="margin: auto 35% -2.5em; padding-top: 3em; text-align: center; width: 100px;">
@@ -45,6 +57,9 @@
     <table id="<%=@ont_semi_uuid%>_notes_list" class="zebra notes_ont_list_table" width="100%" style="width: 100%; clear: both;">
       <thead>
         <tr>
+          <th class="notes_delete">
+            Delete
+          </th>
           <th>
             Subject
           </th>
@@ -78,10 +93,16 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
           </tr>
         <% else %>
           <% @notes.each do |note| %>
-            <tr id="<%=note.id%>_tr">
+            <tr id="<%=note.id%>_tr" class="<%=note.id%>_tr">
+              <td class="notes_delete">
+                <%if note.deletable?(session[:user])%>
+                  <input type="checkbox" id="delete_<%=note.id%>" class="delete_note_checkbox" value="<%=note.id%>" data-applies_to="<%=note.appliesTo%>">
+                <%end%>
+              </td>
               <td>
                 <%= link_to note.subject, "#{@note_link}#{note.id}", :id => "row_#{note.id}", :class => "ont_notes_list_link" %>
                 &nbsp;&nbsp;&nbsp;<span id="<%=note.id%>_row_archived" style="font-size: x-small; color: grey;"><%if note.archived.eql?("true")%>archived<%end%></span>
@@ -99,7 +120,7 @@
                 <%= get_note_type_text(note.type) %>
               </td>
               <td>
-                <%= get_applies_to_link note.createdInOntologyVersion, note.appliesTo['type'], note.appliesTo['id'] %> (<%= note.appliesTo['type'] %>)
+                <%= get_applies_to_link note.createdInOntologyVersion, note.appliesTo['type'], note.appliesTo['id'] %> (<%= note.appliesTo['type'] rescue "unknown" %>)
               </td>
               <td>
                 <%= time_formatted_from_java(note.created) %>
@@ -124,26 +145,31 @@
 if (typeof BP_NOTES_ONT_LIST_LOADED == 'undefined') jQuery.getScript("/javascripts/bp_notes_ont_list.js");
 
 // Global data
-var ontNotesTable = null;
+var ontNotesTable;
 var ont_target = <%= (@context && @context.eql?("concept")) ? "{ 'bVisible': false }" : "null" %>;
+var bp_notesDeletable = <%=@notes_deletable.to_json%>;
 
 // Data needed in the external JS file stored in the body 'cache'
 jQuery.data(document.body, "ont_note_colspan", "<%=ont_note_colspan%>");
 jQuery.data(document.body, "ontology_id", "<%=@ontology.ontologyId%>");
 jQuery.data(document.body, "ont_semi_uuid", "<%=@ont_semi_uuid%>");
 
+var ont_columns = { archived: 3, date: 6, subjectSort: 2 };
+
 // This will wire up a table with the dataTables config.
 // Needs to stay inline because IE won't recognize it in an external file.
 function wireOntTable(ontNotesTableNew) {
   // Wire up table if it hasn't been done yet
-  ontNotesTable = ontNotesTableNew.dataTable({
+  ontNotesTable = ontNotesTableNew;
+  ontNotesTable.dataTable({
     "iDisplayLength": 50,
     "sPaginationType": "full_numbers",
-    "aaSorting": [[5, 'desc']],
+    "aaSorting": [[ont_columns.date, 'desc']],
     "aoColumns": [
-       { "iDataSort": 1 }, // Subject link
+       null, // Delete
+       { "iDataSort": ont_columns.subjectSort }, // Subject link
        { "bVisible": false }, // Subject for sort
-           { "bVisible": false }, // Archived for filter
+       { "bVisible": false }, // Archived for filter
        null, // Author
        null, // Type
        ont_target, // Target
@@ -151,24 +177,26 @@ function wireOntTable(ontNotesTableNew) {
     ],
     "fnDrawCallback": function(){
       jQuery(".highlighted_row").removeClass("highlighted_row");
+      showDeleteInfo();
     },
     "fnInitComplete": function(){
+      showDeleteInfo();
     }
   });
 
   // Important! Table is somehow getting set to zero width. Reset here.
   jQuery(ontNotesTable).css("width", "100%");
 
-  ontNotesTable.fnFilter('false', 2);
+  ontNotesTable.fnFilter('false', ont_columns.archived);
 }
 
 function hideOrUnhideArchivedOntNotes() {
     if (jQuery("#hide_archived_ont:checked").val() !== undefined) {
       // Checked
-      ontNotesTable.fnFilter('false', 2);
+      ontNotesTable.fnFilter('false', ont_columns.archived);
     } else {
       // Unchecked
-      ontNotesTable.fnFilter('', 2, true, false);
+      ontNotesTable.fnFilter('', ont_columns.archived, true, false);
     }
 }
 

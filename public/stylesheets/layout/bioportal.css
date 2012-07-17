@@ -1196,6 +1196,9 @@ textarea.create_note_inputs {
   border-bottom: medium solid #234979 !important;
   border-left: medium solid #234979 !important;
 }
+.notes_delete {
+  display: none;
+}
 
 /********************
 ## TREE VIEW

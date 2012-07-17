@@ -553,7 +553,9 @@ class OntologiesController < ApplicationController
 
   def notes
     @ontology = DataAccess.getOntology(params[:id])
-    @notes = DataAccess.getNotesForOntology(@ontology.ontologyId, false)
+    @notes = DataAccess.getNotesForOntology(@ontology.ontologyId, true)
+    @notes_deletable = false
+    @notes.each {|n| @notes_deletable = true if n.deletable?(session[:user])} if @notes.kind_of?(Array)
     @note_link = "/notes/virtual/#{@ontology.ontologyId}/?noteid="
     if request.xhr?
       render :partial => 'notes', :layout => false

@@ -819,6 +819,23 @@ class BioPortalRestfulCore
     return note
   end
 
+  def self.deleteNote(params)
+    # Convert param names to match Core
+    params[:ontologyid] = params[:ontology_virtual_id]
+    params.each { |k,v| params[k.to_s.downcase.to_sym] = v }
+
+    uri_gen = BioPortalResources::NoteVirtual.new(params)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Delete note"
+    LOG.add :debug, uri
+    doc = deleteToRestlet(uri, params)
+
+    note = errorCheckLibXML(doc)
+
+    return note
+  end
+
   def self.archiveNote(params)
     uri_gen = BioPortalResources::ArchiveNote.new(params)
     uri = uri_gen.generate_uri
@@ -1205,15 +1222,18 @@ private
       uri << useragent
     end
 
+    xml = nil
     begin
       LOG.add :debug, "Getting xml from:\n#{uri}"
-      open(uri, "User-Agent" => "BioPortal-UI")
+      xml = open(uri, "User-Agent" => "BioPortal-UI")
     rescue OpenURI::HTTPError => e
       LOG.add :debug, "Problem retrieving xml for #{uri}: #{e.message}"
       if !e.io.status.nil? && e.io.status[0].to_i == 404
         raise Error404
       end
     rescue Timeout::Error => e
+      LOG.add :debug, "Timed out on URL:"
+      LOG.add :debug, uri
       url_parts = uri.split("?")
       # parse out the parameters in the query string
       params = CGI::parse(url_parts[1]) if url_parts[1]
@@ -1225,7 +1245,8 @@ private
       # parse the remaining URL
       parsed_url = URI.parse(url_parts[0])
       # make sure concept id isn't nil
-      concept_id = !params.nil? && params["conceptid"] ? params["conceptid"] : ""
+      concept_id = !params.nil? && params["conceptid"] ? "'#{params["conceptid"]}'" : "null"
+      concept_id =  concept_id.length == 0 || concept_id.strip.eql?("") ? "null" : concept_id
       # log the error
       mysql_conn = Mysql.new(@mysql_config["host"], @mysql_config["username"], @mysql_config["password"], @mysql_config["database"])
       mysql_conn.query("INSERT INTO timeouts
@@ -1235,6 +1256,8 @@ private
     rescue Exception => e
       return nil
     end
+
+    xml
   end
 
   def self.postMultiPart(url, paramsHash)
@@ -1333,8 +1356,16 @@ private
     end
 
     uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host, $REST_PORT)
-    response = Net::HTTP.post_form(uri, paramsHash)
+    uri.port = $REST_PORT
+
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req.form_data = paramsHash
+    req.content_type = "application/x-www-form-urlencoded"
+    response = nil
+    Net::HTTP.new(uri.host, uri.port).start {|http|
+      response = http.request(req)
+    }
+
     return response.body
   end
 

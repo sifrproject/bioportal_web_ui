@@ -275,27 +275,38 @@ class DataAccess
     return metrics
   end
 
-  def self.getNote(ontology_id, note_id, threaded = false, virtual = false)
+  def self.getNote(ontology_id, note_id, threaded = true, virtual = false)
     threaded_token = threaded ? "::threaded" : ""
     return self.cache_pull("#{note_id}#{threaded_token}", "getNote", { :ontology_id => ontology_id, :note_id => note_id, :threaded => threaded, :virtual => virtual }, EXTENDED_CACHE_EXPIRE_TIME)
   end
 
-  def self.getNotesForConcept(ontology_id, concept_id, threaded = false, virtual = false)
-    return self.cache_pull("#{concept_id}::notes", "getNotesForConcept", { :ontology_id => ontology_id, :concept_id => concept_id, :threaded => threaded, :virtual => virtual }, 60*15)
+  def self.getNotesForConcept(ontology_id, concept_id, threaded = true, virtual = false)
+    return self.cache_pull("#{concept_id}::notes::threaded=#{threaded}::virtual=#{virtual}", "getNotesForConcept", { :ontology_id => ontology_id, :concept_id => concept_id, :threaded => threaded, :virtual => virtual }, 60*15)
   end
 
-  def self.getNotesForIndividual(ontology_virtual_id, individual_id, threaded = false)
-    return self.cache_pull("#{individual_id}::notes", "getNotesForIndividual", { :ontology_virtual_id => ontology_virtual_id, :individual_id => individual_id, :threaded => threaded }, 60*15)
+  def self.getNotesForIndividual(ontology_virtual_id, individual_id, threaded = true)
+    return self.cache_pull("#{individual_id}::notes::threaded=#{threaded}", "getNotesForIndividual", { :ontology_virtual_id => ontology_virtual_id, :individual_id => individual_id, :threaded => threaded }, 60*15)
   end
 
-  def self.getNotesForOntology(ontology_virtual_id, threaded = false)
-    return self.cache_pull("#{ontology_virtual_id}::notes", "getNotesForOntology", { :ontology_virtual_id => ontology_virtual_id, :threaded => threaded }, 60*15)
+  def self.getNotesForOntology(ontology_virtual_id, threaded = true)
+    return self.cache_pull("#{ontology_virtual_id}::notes::threaded=#{threaded}", "getNotesForOntology", { :ontology_virtual_id => ontology_virtual_id, :threaded => threaded }, 60*15)
   end
 
   def self.updateNote(ontology_id, params, virtual = false)
     note = SERVICE.updateNote(ontology_id, params, virtual)
     CACHE.set("#{note.id}", note, CACHE_EXPIRE_TIME)
     CACHE.delete("#{params[:appliesTo]}::notes") if params[:appliesToType].eql?("Class")
+    CACHE.delete("#{ontology_id}::notes")
+    note
+  end
+
+  def self.deleteNote(note_id, ontology_id, appliesTo)
+    params = { :note_id => note_id, :ontology_virtual_id => ontology_id }
+    note = SERVICE.deleteNote(params) rescue nil
+    CACHE.delete("#{note_id}")
+    CACHE.delete("#{appliesTo}::notes")
+    CACHE.delete("#{appliesTo}::notes::threaded=true::virtual=true")
+    CACHE.delete("#{ontology_id}::notes::threaded=true")
     CACHE.delete("#{ontology_id}::notes")
     note
   end
@@ -562,6 +573,7 @@ class DataAccess
   end
 
   def self.getUser(user_id)
+    return nil if user_id.nil?
     return self.cache_pull("user::#{user_id}", "getUser", { :user_id => user_id })
   end
 

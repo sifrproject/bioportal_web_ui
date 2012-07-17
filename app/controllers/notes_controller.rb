@@ -110,7 +110,8 @@ class NotesController < ApplicationController
         :author => Class.new.extend(ApplicationHelper).get_username(@note.author),
         :type => Class.new.extend(NotesHelper).get_note_type_text(@note.type),
         :appliesTo => Class.new.extend(NotesHelper).get_applies_to_link(@note.createdInOntologyVersion, @note.appliesTo['type'], @note.appliesTo['id']) + " (#{@note.appliesTo['type']})",
-        :created => time_formatted_from_java(@note.created)
+        :created => time_formatted_from_java(@note.created),
+        :id => @note.id
     }
 
     render :json => @note_row
@@ -180,13 +181,24 @@ class NotesController < ApplicationController
   # DELETE /notes/1
   # DELETE /notes/1.xml
   def destroy
-    @note = Note.find(params[:id])
-    @note.destroy
+    note_ids = params[:noteids].kind_of?(String) ? params[:noteids].split(",") : params[:noteids]
 
-    respond_to do |format|
-      format.html { redirect_to(notes_url) }
-      format.xml  { head :ok }
+    ontology = DataAccess.getOntology(params[:ontologyid])
+
+    errors = []
+    successes = []
+    note_ids.each do |note_id|
+      begin
+        result = DataAccess.deleteNote(note_id, ontology.ontologyId, params[:concept_id])
+        raise Exception if !result.nil? && result["errorCode"]
+      rescue Exception => e
+        errors << note_id
+        next
+      end
+      successes << note_id
     end
+
+    render :json => { :success => successes, :error => errors }
   end
 
   # POST /notes

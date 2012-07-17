@@ -424,5 +424,5 @@ module ApplicationHelper
     n = opts[:words]
     a[0...n].join(' ') + (a.size > n ? '...' : '')
   end
-  
+
 end

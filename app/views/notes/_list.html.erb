@@ -1,22 +1,34 @@
 
 <%
+  #######################################################################################
+  #####    WARNING
+  #####    Changes in this file need to be reflected in _ontology_list.html.erb
+  #####    WARNING
+  #######################################################################################
+
+
+
   # Check to see if we have notes, if not then try to get them
   if @notes.nil? && @concept && @ontology
-    @notes = DataAccess.getNotesForConcept(@ontology.ontologyId, @concept.fullId_proper, false, true) rescue nil
+    @notes = DataAccess.getNotesForConcept(@ontology.ontologyId, @concept.fullId_proper, true, true) rescue nil
+    @notes_deletable = false
+    @notes.each {|n| @notes_deletable = true if n.deletable?(session[:user])} unless @notes.nil?
     @note_link = "/notes/virtual/#{@ontology.ontologyId}/?noteid="
     @context = "concept"
   end
 
   @semi_uuid = (1000 * Time.now.to_f).to_i
-  note_colspan = (@context && @context.eql?("concept")) ? "4" : "5"
+  note_colspan = (@context && @context.eql?("concept")) ? "5" : "6"
 %>
-
-
 
 <div class="notes_list_container" style="padding: 1%; width: 98%;">
 
-  <div class="subscribe_to_notes" style="float: right;">
+  <div class="subscribe_to_notes" style="float: left;">
     <%= subscribe_button(@ontology.ontologyId) %>
+  </div>
+
+  <div class="notes_delete" style="float: left; margin-left: 1em;">
+    <%= delete_button %>
   </div>
 
   <% unless @notes_for.nil? %>
@@ -40,6 +52,9 @@
     <table id="<%=@semi_uuid%>_notes_list" class="zebra notes_list_table" width="100%" style="width: 100%;">
       <thead>
         <tr>
+          <th class="notes_delete">
+            Delete
+          </th>
           <th>
             Subject
           </th>
@@ -73,10 +88,16 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
           </tr>
         <% else %>
           <% @notes.each do |note| %>
-            <tr id="<%=note.id%>_tr">
+            <tr id="<%=note.id%>_tr" class="<%=note.id%>_tr">
+              <td class="notes_delete">
+                <%if note.deletable?(session[:user])%>
+                  <input type="checkbox" class="delete_note_checkbox" id="delete_<%=note.id%>" value="<%=note.id%>" data-applies_to="<%=note.appliesTo%>">
+                <%end%>
+              </td>
               <td>
                 <%= link_to note.subject, "#{@note_link}#{note.id}", :id => "row_#{note.id}", :class => "notes_list_link" %>
                 &nbsp;&nbsp;&nbsp;<span id="<%=note.id%>_row_archived" style="font-size: x-small; color: grey;"><%if note.archived.eql?("true")%>archived<%end%></span>
@@ -116,6 +137,9 @@
   <table id="notes_list_table_clone" class="zebra notes_list_table notes_list_table_clone" width="100%">
     <thead>
       <tr>
+        <th class="notes_delete">
+          Delete
+        </th>
         <th>
           Subject
         </th>
@@ -145,6 +169,7 @@
 </div>
 
 
+
 <!-- Move JS to end to avoid issues with getting via AJAX -->
 <script type="text/javascript">
   jQuery.rloader([
@@ -156,8 +181,9 @@
 if (typeof BP_NOTES_LIST_LOADED == 'undefined') jQuery.getScript("/javascripts/bp_notes_list.js");
 
 // Global data
-var notesTable = null;
+var notesTable;
 var target = <%= (@context && @context.eql?("concept")) ? "{ 'bVisible': false }" : "null" %>;
+var bp_notesDeletable = <%=@notes_deletable.to_json%>;
 
 // Data needed in the external JS file stored in the body 'cache'
 <% if @concept %>
