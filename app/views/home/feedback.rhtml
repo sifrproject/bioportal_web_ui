@@ -68,7 +68,7 @@ Errors On Form
 		<th class="top">Comment:*</th>
 		<td class="top"><textarea name="comment" cols='60' rows=8><%=params[:comment]%></textarea></td>
 	</tr>
-    <% if ENV['USE_RECAPTCHA'] == 'true' %>
+    <% if ENV['USE_RECAPTCHA'] == 'true' && !session[:user]%>
         <tr>
             <%# recaptcha_tags is a method provided by the recaptcha plugin which displays a recaptcha %>
             <th>Please enter the following text:*</th><td><%= recaptcha_tags :display => { "theme" => "clean" } %></td>

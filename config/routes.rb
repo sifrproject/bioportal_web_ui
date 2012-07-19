@@ -40,6 +40,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/help', :controller => 'home', :action => 'help'
   map.connect '/robots.txt', :controller => 'home', :action => 'robots'
 
+  # Analytics endpoint
+  map.connect '/analytics', :controller => 'analytics', :action => 'track'
+
   # Ontologies
   map.connect '/exhibit/:ontology/:id', :controller => 'concepts', :action=>'exhibit'
   map.connect '/ontologies/view/edit/:id', :controller => 'ontologies', :action => 'edit_view', :requirements => { :id => %r([^/?]+) }

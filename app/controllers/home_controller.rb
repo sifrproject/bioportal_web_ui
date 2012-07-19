@@ -186,7 +186,7 @@ class HomeController < ApplicationController
       @errors << "Please include your comment"
     end
     # verify_recaptcha is a method provided by the recaptcha plugin, returns true or false.
-    if ENV['USE_RECAPTCHA'] == 'true'
+    if ENV['USE_RECAPTCHA'] == 'true' && !session[:user]
       if !verify_recaptcha
         @errors << "Please fill in the proper text from the supplied image"
       end

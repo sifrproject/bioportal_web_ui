@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  segment: MyString
+  action: MyString
+  slice: MyString
+  ip: MyString
+  user: 1
+  params: MyText
+
+two:
+  segment: MyString
+  action: MyString
+  slice: MyString
+  ip: MyString
+  user: 1
+  params: MyText

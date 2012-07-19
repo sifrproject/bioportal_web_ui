@@ -84,7 +84,6 @@ jQuery(document).ready(function(){
         ontology_ids: onts
       },
       dataType: "json",
-      async: false,
       success: function(data){
         var results = [];
         var ontologies = {};
@@ -117,15 +116,15 @@ jQuery(document).ready(function(){
         jQuery("a[rel*=facebox]").facebox();
         jQuery("#search_results").show();
         jQuery("#search_spinner").hide();
+        getAllDefinitions();
       },
       error: function(){
         jQuery("#search_spinner").hide();
         jQuery("#search_results").hide();
         jQuery("#search_messages").html("<span style='color: red'>Problem searching, please try again");
+        getAllDefinitions();
       }
     });
-
-    getAllDefinitions();
   });
 
   // Search on enter
@@ -240,7 +239,7 @@ function processSearchResult(res) {
   }
 
   var row = [
-    "<div class='search_result' data-bp_ont_name='"+res.ontologyDisplayLabel+"'>",
+    "<div class='search_result' data-bp_ont_name='"+res.ontologyDisplayLabel+"' data-bp_ontology_id='"+res.ontologyId+"'>",
     termHTML(res, label_html, true),
     definitionHTML(res),
     "<div class='search_result_links'>"+resultLinksHTML(res) + additional_results_link+"</div>",
@@ -417,7 +416,7 @@ function currentOntologiesCount() {
 
 function termHTML(res, label_html, displayOntologyName) {
   var ontologyName = displayOntologyName ? " - " + res.ontologyDisplayLabel : "";
-  return "<div class='term_link'><a title='"+res.preferredName+"' href='/ontologies/"+res.ontologyId+"?p=terms&conceptid="+encodeURIComponent(res.conceptId)+"'>"+jQuery(label_html).html()+ontologyName+"</a></div>";
+  return "<div class='term_link'><a title='"+res.preferredName+"' data-bp_conceptid='"+encodeURIComponent(res.conceptId)+"' href='/ontologies/"+res.ontologyId+"?p=terms&conceptid="+encodeURIComponent(res.conceptId)+"'>"+jQuery(label_html).html()+ontologyName+"</a></div>";
 }
 
 function resultLinksHTML(res) {
