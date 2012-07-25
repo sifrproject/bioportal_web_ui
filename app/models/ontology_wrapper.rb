@@ -197,7 +197,21 @@ class OntologyWrapper
     self.viewDefinition = params[:viewDefinition]
     self.viewDefinitionLanguage = params[:viewDefinitionLanguage]
     self.viewGenerationEngine = params[:viewGenerationEngine]
+  end
 
+  def to_params_hash
+    hash = {}
+    self.instance_variables.each {|var| hash[var.to_s.delete("@")] = self.instance_variable_get(var) }
+
+    # Cleanup param names
+    categories = hash['categories'].kind_of?(Array) ? hash['categories'].join(",") : hash['categories']
+    groups = hash['groups'].kind_of?(Array) ? hash['groups'].join(",") : hash['groups']
+    hash['categoryId'] = categories
+    hash['groupId'] = groups
+    hash.delete('categories')
+    hash.delete('groups')
+
+    hash
   end
 
   def map_count

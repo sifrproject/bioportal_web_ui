@@ -16,19 +16,25 @@ $TO_PORT = "8080"
 $ONTOLOGY_OWNER = "1"
 
 # Ontology ids to include in the import (leaving commented will import all ontologies)
-# $INCLUDE_ONTOLOGIES = [ 1104 ]
+# $INCLUDE_ONTOLOGIES = [ 1104, 1032 ]
 
 require 'rubygems'
 require 'rexml/document'
 require 'open-uri'
 require 'rest_client'
-require 'optparse'
-require 'active_support/core_ext/benchmark'
+require 'active_support'
 require 'bioportal/BioPortalRestfulCore'
 require 'bioportal/ontology_wrapper'
 require 'bioportal/log'
 require 'bioportal/remote_file'
 require 'xml'
+
+# Custom 404 handling
+class Error404 < StandardError; end
+
+# Handle bad virtual ids
+$VERSIONS_IN_VIRTUAL_SPACE = Set.new([3905, 4525, 4531, 8056])
+$VIRTUAL_ID_UPPER_LIMIT = 9999
 
 class ImportOntologies
  
@@ -41,17 +47,22 @@ class ImportOntologies
     if !(defined? $INCLUDE_ONTOLOGIES).nil? && !$INCLUDE_ONTOLOGIES.nil? && !$INCLUDE_ONTOLOGIES.empty?
       ont_list = []
       $INCLUDE_ONTOLOGIES.each do |ont_id|
-        if OntologyWrapper.virtual_id?(ont_id)
-          ont_list << REST.getLatestOntology(:ontology_virtual_id => ont_id)
-        else
-          ont_list << REST.getOntology(:ontology_id => ont_id)
+        begin
+          if OntologyWrapper.virtual_id?(ont_id)
+            ont_list << REST.getLatestOntology(:ontology_virtual_id => ont_id)
+          else
+            ont_list << REST.getOntology(:ontology_id => ont_id)
+          end
+        rescue Exception => e
+          puts "Could not get ontology information for ontology with id #{ont_id}: #{e.message}"
+          next
         end
       end
     else
       ont_list = REST.getOntologyList
     end
     
-    puts "Total onts: #{ont_list.size}"
+    puts "Total ontologies for import: #{ont_list.size}"
     
     error_onts = []
     ont_list.each do |ont|
@@ -62,7 +73,17 @@ class ImportOntologies
         # Get filename, prefer abbreviation
         filename = ont.abbreviation.nil? ? ont.displayLabel.downcase : ont.abbreviation.downcase
       
-        ont_file = RemoteFile.new("#{$FROM}/ontologies/download/#{ont.id}?apikey=#{$API_KEY}", "#{filename}.#{ont.format.downcase}")
+        begin
+          ont_file = RemoteFile.new("#{$FROM}/ontologies/download/#{ont.id}?apikey=#{$API_KEY}", "#{filename}.#{ont.format.downcase}")
+        rescue OpenURI::HTTPError => e
+          if e.io && e.io.status && e.io.status[0].to_i == 403
+            puts "Your API Key does not have access to this private/licensed ontology: #{ont.displayLabel} (id: #{ont.ontologyId})"
+          else
+            puts "Could not retrieve ontology file: #{e.message}"
+          end
+          next
+        end
+
         ont_hash = ont_full.to_params_hash
         
         # Add file
@@ -83,11 +104,8 @@ class ImportOntologies
       end   
     end
     
-    
-    
     puts "\n\n\nerrors" unless error_onts.empty?
     error_onts.each { |ont| puts "#{ont[0]}\t#{ont[1]}\t#{ont[2]}" }
-    
   end
   
   def self.setup_from

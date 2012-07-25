@@ -62,7 +62,7 @@ class LOG
     if defined? RAILS_DEFAULT_LOGGER
       RAILS_DEFAULT_LOGGER.send(level, message)
     else
-      puts message
+      # puts message
     end
   end
   

@@ -5,12 +5,9 @@ require "rexml/document"
 require 'open-uri'
 require 'uri'
 require 'cgi'
-require 'bioportal/BioPortalResources'
+require File.expand_path('../BioPortalResources', __FILE__)
 
 class BioPortalRestfulCore
-
-  # Resources
-  BASE_URL = $REST_URL
 
   # Search URL
   SEARCH_PATH = "/search/?query=%query%%ONT%"
@@ -18,18 +15,18 @@ class BioPortalRestfulCore
   # Constants
   SUPERCLASS = "SuperClass"
   SUBCLASS = "SubClass"
-  CHILDCOUNT = "ChildCount"
-  API_KEY = $API_KEY
+  CHILDCOUNT = "ChildCount"  
 
   # Track paths that have already been processed when building a path to root tree
   @seen_paths = {}
 
+  # MySQL connection for debugging timeout errors
+  @mysql_config = Rails.configuration.database_configuration[Rails.configuration.environment] if defined? Rails
 
   def self.createMapping(params)
     # Default values
-    params[:relation] = "http://www.w3.org/2004/02/skos/core#exactMatch"
     params[:type] = "Manual"
-    params[:mappingsource] = "application"
+    params[:mappingsource] = "Application"
     params[:mappingsourcename] = "BioPortal UI"
     params[:mappingsourcecontactinfo] = "support@bioontology.org"
     params[:mappingsourcesite] = "http://bioportal.bioontology.org"
@@ -37,7 +34,7 @@ class BioPortalRestfulCore
     uri_gen = BioPortalResources::CreateMapping.new
     uri = uri_gen.generate_uri
 
-    #uri = "http://localhost:8080/bioportal/virtual/mappings/concepts"
+    # uri = "http://localhost:8080/bioportal/virtual/mappings/concepts"
 
     begin
       mapping = postToRestlet(uri, params)
@@ -50,6 +47,19 @@ class BioPortalRestfulCore
     end
 
     mapping = generic_parse(:xml => mapping, :type => "Mapping")
+
+    return mapping
+  end
+
+  def self.deleteMapping(params)
+    uri_gen = BioPortalResources::DeleteMapping.new
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Delete mapping"
+    LOG.add :debug, uri
+    doc = deleteToRestlet(uri, params)
+
+    mapping = errorCheckLibXML(doc) unless doc.nil?
 
     return mapping
   end
@@ -403,7 +413,7 @@ class BioPortalRestfulCore
   # Gets a concept node.
   ##
   def self.getNode(params)
-    uri_gen = BioPortalResources::Concept.new(params, params[:max_children])
+    uri_gen = BioPortalResources::Concept.new(params, params[:max_children], params[:no_relations])
     uri = uri_gen.generate_uri
 
     LOG.add :debug, "Retrieve node"
@@ -430,7 +440,7 @@ class BioPortalRestfulCore
   # Gets a light version of a concept node. Used for tree browsing.
   ##
   def self.getLightNode(params)
-    uri_gen = BioPortalResources::Concept.new(params, params[:max_children], true)
+    uri_gen = BioPortalResources::Concept.new(params, params[:max_children], true, params[:no_relations])
     uri = uri_gen.generate_uri
 
     LOG.add :debug, "Retrieve light node"
@@ -449,6 +459,37 @@ class BioPortalRestfulCore
     return node
   end
 
+  # Super-fast method to get just the label for a node
+  def self.getNodeLabel(params)
+    uri_gen = BioPortalResources::Concept.new(params, 0, true)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Retrieve node label"
+    LOG.add :debug, uri
+    doc = get_xml(uri, 360)
+
+    node = errorCheck(doc)
+
+    unless node.nil?
+      return node
+    end
+
+    if doc.kind_of?(String)
+      parser = XML::Parser.string(doc, :options => LibXML::XML::Parser::Options::NOBLANKS)
+    else
+      parser = XML::Parser.io(doc, :options => LibXML::XML::Parser::Options::NOBLANKS)
+    end
+
+    doc = parser.parse
+
+    node = NodeLabel.new
+
+    node.label = doc.find("/success/data/classBean/label").first.content
+    node.obsolete = doc.find("/success/data/classBean/isObsolete").first.content rescue ""
+
+    return node
+  end
+
   def self.getTopLevelNodes(params)
     params[:concept_id] = "root"
 
@@ -458,7 +499,6 @@ class BioPortalRestfulCore
     LOG.add :debug, "Retrieve top level nodes"
     LOG.add :debug, uri
     doc = get_xml(uri)
-    #doc = REXML::Document.new(get_xml(uri))
 
     node = errorCheck(doc)
 
@@ -472,7 +512,7 @@ class BioPortalRestfulCore
     return node.children
   end
 
-  def self.getOntologyList()
+  def self.getOntologyList(params = {})
     uri_gen = BioPortalResources::Ontologies.new
     uri = uri_gen.generate_uri
 
@@ -486,15 +526,12 @@ class BioPortalRestfulCore
 
     timer = Benchmark.ms { ontologies = generic_parse(:xml => doc, :type => "OntologyWrapper") }
 
-    # ontologies = []
-    # doc.elements.each("*/data/list/ontologyBean"){ |element|
-      # ontologies << parseOntology(element)
-    # }
+    ontologies = Array.new if ontologies.nil? || !ontologies.kind_of?(Array)
 
     return ontologies
   end
 
-  def self.getActiveOntologyList()
+  def self.getActiveOntologyList(params = {})
     uri_gen = BioPortalResources::ActiveOntologies.new
     uri = uri_gen.generate_uri
 
@@ -508,10 +545,7 @@ class BioPortalRestfulCore
 
     timer = Benchmark.ms { ontologies = generic_parse(:xml => doc, :type => "OntologyWrapper") }
 
-    # ontologies = []
-    # doc.elements.each("*/data/list/ontologyBean"){ |element|
-      # ontologies << parseOntology(element)
-    # }
+    ontologies = Array.new if ontologies.nil? || !ontologies.kind_of?(Array)
 
     return ontologies
   end
@@ -529,11 +563,6 @@ class BioPortalRestfulCore
     end
 
     timer = Benchmark.ms { ontologies = generic_parse(:xml => doc, :type => "OntologyWrapper") }
-
-    # ontologies = []
-    # doc.elements.each("*/data/list/ontologyBean"){ |element|
-      # ontologies << parseOntology(element)
-    # }
 
     return ontologies
   end
@@ -554,13 +583,39 @@ class BioPortalRestfulCore
 
     timer = Benchmark.ms { ont = generic_parse(:xml => doc, :type => "OntologyWrapper") }
 
-    # doc.elements.each("*/data/ontologyBean"){ |element|
-      # begin
-        # ont = parseOntology(element)
-      # rescue Exception => e
-        # puts "Problem parsing ontology"
-      # end
-    # }
+    return ont
+  end
+
+  def self.getLatestOntology(params)
+    uri_gen = BioPortalResources::LatestOntology.new(params)
+    uri = uri_gen.generate_uri
+
+    doc = get_xml(uri)
+
+    ont = errorCheck(doc)
+
+    unless ont.nil?
+      return ont
+    end
+
+    ont = generic_parse(:xml => doc, :type => "OntologyWrapper")
+
+    return ont
+  end
+
+  def self.getOntologyProperties(params)
+    uri_gen = BioPortalResources::OntologyProperties.new(params)
+    uri = uri_gen.generate_uri
+
+    doc = get_xml(uri)
+
+    ont = errorCheck(doc)
+
+    unless ont.nil?
+      return ont
+    end
+
+    ont = generic_parse(:xml => doc, :type => "NodeWrapper")
 
     return ont
   end
@@ -575,43 +630,41 @@ class BioPortalRestfulCore
 
     LOG.add :debug, "Retrieving ontology metrics"
     LOG.add :debug, uri
-    begin
-      doc = REXML::Document.new(get_xml(uri))
-    rescue Exception=>e
-      LOG.add :debug, "getOntologyMetrics error: #{e.message}"
-      return ont
+    doc = get_xml(uri)
+
+    metrics = errorCheck(doc)
+
+    unless metrics.nil?
+      return metrics
     end
 
-    ont = errorCheck(doc)
+    timer = Benchmark.ms { metrics = generic_parse(:xml => doc, :type => "OntologyMetricsWrapper") }
+    LOG.add :debug, "Parsed ontology metrics (#{timer}ms)"
 
-    unless ont.nil?
-      return ont
-    end
-
-    doc.elements.each("*/data/ontologyMetricsBean"){ |element|
-      ont = parseOntologyMetrics(element)
-    }
-
-    return ont
+    metrics
   end
 
-  def self.getLatestOntology(params)
-    uri_gen = BioPortalResources::LatestOntology.new(params)
+  def self.getAllOntologyMetrics
+    uri_gen = BioPortalResources::AllMetrics.new
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(get_xml(uri))
+    LOG.add :debug, "Retrieving all ontology metrics"
+    LOG.add :debug, uri
 
-    ont = errorCheck(doc)
+    doc = get_xml(uri)
 
-    unless ont.nil?
-      return ont
+    metrics = errorCheck(doc)
+
+    unless metrics.nil?
+      return metrics
     end
 
-    doc.elements.each("*/data/ontologyBean"){ |element|
-      ont = parseOntology(element)
-    }
+    timer = Benchmark.ms { metrics = generic_parse(:xml => doc, :type => "OntologyMetricsWrapper") }
+    LOG.add :debug, "Parsed all ontology metrics (#{timer}ms)"
 
-    return ont
+    metrics = metrics.kind_of?(Array) ? metrics : nil
+
+    metrics
   end
 
   ##
@@ -762,6 +815,23 @@ class BioPortalRestfulCore
     return note
   end
 
+  def self.deleteNote(params)
+    # Convert param names to match Core
+    params[:ontologyid] = params[:ontology_virtual_id]
+    params.each { |k,v| params[k.to_s.downcase.to_sym] = v }
+
+    uri_gen = BioPortalResources::NoteVirtual.new(params)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Delete note"
+    LOG.add :debug, uri
+    doc = deleteToRestlet(uri, params)
+
+    note = errorCheckLibXML(doc)
+
+    return note
+  end
+
   def self.archiveNote(params)
     uri_gen = BioPortalResources::ArchiveNote.new(params)
     uri = uri_gen.generate_uri
@@ -785,11 +855,11 @@ class BioPortalRestfulCore
     object_types = params[:objecttypes].nil? ? "" : "&objecttypes=#{params[:objecttypes]}"
     include_definitions = params[:includedefinitions].nil? || !params[:includedefinitions].eql?("true") ? "" : "&includedefinitions=true"
 
-    LOG.add :debug, BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",CGI.escape(search))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}#{object_types}#{include_definitions}"
+    LOG.add :debug, $REST_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",CGI.escape(search))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}#{object_types}#{include_definitions}"
     begin
-      doc = REXML::Document.new(get_xml(BASE_URL + SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%", CGI.escape(search)) + "&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}#{object_types}#{include_definitions}"))
+      doc = REXML::Document.new(get_xml($REST_URL + SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%", CGI.escape(search)) + "&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}#{object_types}#{include_definitions}"))
     rescue Exception=>e
-      doc =  REXML::Document.new(e.io.read)
+      doc = REXML::Document.new(e.io.read)
     end
 
     results = errorCheck(doc)
@@ -812,19 +882,14 @@ class BioPortalRestfulCore
   end
 
   def self.searchQuery(params)
-    ontologies = params[:ontologies]
-    search = params[:query]
-    page = params[:page]
-    subtreerootconceptid = params[:subtreerootconceptid]
+    uri_gen = BioPortalResources::Search.new(params)
+    uri = uri_gen.generate_uri
 
-    ontologies = ontologies.nil? || ontologies.empty? ? "" : "&ontologyids=#{ontologies.join(",")}"
-    search_branch = subtreerootconceptid.nil? ? "" : "&subtreerootconceptid=#{subtreerootconceptid}"
-
-    LOG.add :debug, BASE_URL+SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%",CGI.escape(search))+"&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}"
+    LOG.add :debug, uri
     begin
-     doc = REXML::Document.new(get_xml(BASE_URL + SEARCH_PATH.gsub("%ONT%",ontologies).gsub("%query%", CGI.escape(search)) + "&isexactmatch=0&pagesize=50&pagenum=#{page}&includeproperties=0&maxnumhits=15#{search_branch}"))
+      doc = get_xml(uri)
     rescue Exception=>e
-      doc =  REXML::Document.new(e.io.read)
+      doc = e.io.read
     end
 
     results = errorCheck(doc)
@@ -834,45 +899,101 @@ class BioPortalRestfulCore
     end
 
     results = []
-    doc.elements.each("*/data/page/contents"){ |element|
-      results = parseSearchResults(element)
-    }
+    timer = Benchmark.ms { results = generic_parse(:xml => doc, :type => "SearchResults") }
+    LOG.add :debug, "SearchResults Parse Time: #{timer}ms"
 
     return results
+  end
+
+  def self.getUserSubscriptions(params)
+    uri_gen = BioPortalResources::Subscriptions.new(params)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Retrieve subscriptions for user"
+    LOG.add :debug, uri
+    doc = get_xml(uri)
+
+    subscriptions = errorCheck(doc)
+
+    unless subscriptions.nil?
+      return subscriptions
+    end
+
+    timer = Benchmark.ms { subscriptions = generic_parse(:xml => doc) }
+
+    return subscriptions
+  end
+
+  def self.createUserSubscriptions(params)
+    params[:ontologyid] = params[:ontology_ids]
+    params[:notificationtype] = params[:notification_type]
+
+    uri_gen = BioPortalResources::Subscriptions.new(params)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Create subscriptions for user"
+    LOG.add :debug, uri
+    doc = postToRestlet(uri, params)
+
+    subscriptions = errorCheck(doc)
+
+    unless subscriptions.nil?
+      return subscriptions
+    end
+
+    timer = Benchmark.ms { subscriptions = generic_parse(:xml => doc) }
+
+    return subscriptions
+  end
+
+  def self.deleteUserSubscriptions(params)
+    params[:ontologyid] = params[:ontology_ids]
+    params[:notificationtype] = params[:notification_type]
+
+    uri_gen = BioPortalResources::Subscriptions.new(params)
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Delete subscriptions for user"
+    LOG.add :debug, uri
+    doc = deleteToRestlet(uri, params)
+
+    subscriptions = errorCheck(doc)
+
+    unless subscriptions.nil?
+      return subscriptions
+    end
+
+    timer = Benchmark.ms { subscriptions = generic_parse(:xml => doc) }
+
+    return subscriptions
   end
 
   def self.getUsers()
     uri_gen = BioPortalResources::Users.new
     uri = uri_gen.generate_uri
 
-    doc = REXML::Document.new(get_xml(uri))
+    LOG.add :debug, "Get all users"
+    LOG.add :debug, uri
+    doc = get_xml(uri)
 
-    results = errorCheck(doc)
+    users = errorCheck(doc)
 
-    unless results.nil?
-      return results
+    unless users.nil?
+      return users
     end
 
-    results = []
-    doc.elements.each("*/data/list/userBean"){ |element|
-      results << parseUser(element)
-    }
+    timer = Benchmark.ms { users = generic_parse(:xml => doc, :type => "UserWrapper") }
 
-    return results
+    return users
   end
 
   def self.getUser(params)
     uri_gen = BioPortalResources::User.new(params)
     uri = uri_gen.generate_uri
 
-    begin
-      doc = REXML::Document.new(get_xml(uri))
-    rescue Error404 => e
-      user = UserWrapper.new
-      user.id = 1
-      user.username = "Unknown"
-      return user
-    end
+    LOG.add :debug, "Get user"
+    LOG.add :debug, uri
+    doc = get_xml(uri)
 
     user = errorCheck(doc)
 
@@ -880,22 +1001,18 @@ class BioPortalRestfulCore
       return user
     end
 
-    doc.elements.each("*/data/userBean"){ |element|
-      user = parseUser(element)
-    }
+    timer = Benchmark.ms { user = generic_parse(:xml => doc, :type => "UserWrapper") }
 
     return user
   end
 
-  def self.authenticateUser(username,password)
+  def self.authenticateUser(username, password)
     uri_gen = BioPortalResources::Auth.new(:username => username, :password => password)
     uri = uri_gen.generate_uri
 
-    begin
-      doc = REXML::Document.new(get_xml(uri))
-    rescue Exception=>e
-      doc = REXML::Document.new(e.io.read)
-    end
+    LOG.add :debug, "Get user"
+    LOG.add :debug, uri
+    doc = get_xml(uri)
 
     user = errorCheck(doc)
 
@@ -903,9 +1020,7 @@ class BioPortalRestfulCore
       return user
     end
 
-    doc.elements.each("*/data/session/attributes/entry/securityContext"){ |element|
-      user = parseAuthenticatedUser(element)
-    }
+    timer = Benchmark.ms { user = generic_parse(:xml => doc, :path => "/success/data/session/attributes/entry/securityContext", :type => "UserWrapper") }
 
     return user
   end
@@ -963,14 +1078,10 @@ class BioPortalRestfulCore
     LOG.add :debug, "Creating ontology using #{uri}"
 
     begin
-      response = postMultiPart(uri, params)
-      doc = REXML::Document.new(response)
+      doc = postMultiPart(uri, params)
     rescue Exception=>e
-      p "Problem creating ontology: #{e.message}"
-      doc = REXML::Document.new(e.io.read)
+      doc = e.io.read
     end
-
-    LOG.add :debug, "Ontology created"
 
     ontology = errorCheck(doc)
 
@@ -978,9 +1089,7 @@ class BioPortalRestfulCore
       return ontology
     end
 
-    doc.elements.each("*/data/ontologyBean"){ |element|
-      ontology = parseOntology(element)
-    }
+    ontology = generic_parse(:xml => doc, :type => "OntologyWrapper")
 
     return ontology
   end
@@ -990,10 +1099,9 @@ class BioPortalRestfulCore
     uri = uri_gen.generate_uri
 
     begin
-      doc = REXML::Document.new(putToRestlet(uri, params))
+      doc = putToRestlet(uri, params)
     rescue Exception=>e
-      doc = REXML::Document.new(e.io.read)
-
+      doc = e.io.read
     end
 
     ontology = errorCheck(doc)
@@ -1002,9 +1110,7 @@ class BioPortalRestfulCore
       return ontology
     end
 
-    doc.elements.each("*/data/ontologyBean"){ |element|
-      ontology = parseOntology(element)
-    }
+    ontology = generic_parse(:xml => doc, :type => "OntologyWrapper")
 
     return ontology
 
@@ -1032,21 +1138,46 @@ class BioPortalRestfulCore
     end
 
     pairs = []
-    doc.elements.each("*/data/list") { |pair|
-      pair.elements.each{|list|
-        pair = []
-        list.elements.each{|item|
-          pair << item.get_text.value
+    begin
+      doc.elements.each("*/data/list") { |pair|
+        pair.elements.each{|list|
+          pair = []
+          list.elements.each{|item|
+            pair << item.get_text.value
+          }
+          pairs << pair
         }
-        pairs << pair
       }
-    }
+    rescue Exception => e
+      LOG.add :debug, "Parsing diffs failed: #{e.message}"
+    end
     return pairs
   end
 
   def self.diffDownload(ver1,ver2)
     uri_gen = BioPortalResources::DownloadDiffs.new( :ontology_version1 => ver1, :ontology_version2 => ver2 )
     return uri_gen.generate_uri
+  end
+
+  def self.createRecommendation(params)
+    params[:format] = "asXML"
+
+    uri_gen = BioPortalResources::Recommendation.new
+    uri = uri_gen.generate_uri
+
+    LOG.add :debug, "Retrieve recommendation"
+    LOG.add :debug, uri
+    doc = postToRestlet(uri, params)
+
+    recommendation = errorCheck(doc)
+
+    unless recommendation.nil?
+      return recommendation
+    end
+
+    timer = Benchmark.ms { recommendation = generic_parse(:xml => doc) }
+
+    return recommendation
   end
 
 private
@@ -1079,78 +1210,74 @@ private
 
   # Gets XML from the rest service. Used to include a user-agent in one location.
   def self.get_xml(uri, timeout = 60)
+    uri = append_apikey(uri)
+
+    request = Thread.current[:request]
+    unless request.nil? || request.user_agent.nil?
+      useragent = uri.include?("?") ? "&trackinguseragent=#{CGI.escape(request.user_agent)}" : "?trackinguseragent=#{CGI.escape(request.user_agent)}"
+      uri << useragent
+    end
+
+    xml = nil
     begin
-      open(uri, "User-Agent" => "BioPortal-UI")
-    rescue Exception => e
+      LOG.add :debug, "Getting xml from:\n#{uri}"
+      xml = open(uri, "User-Agent" => "BioPortal-UI")
+    rescue OpenURI::HTTPError => e
       LOG.add :debug, "Problem retrieving xml for #{uri}: #{e.message}"
-      if !e.io.nil? && !e.io.status.nil? && e.io.status[0].to_i == 404
+      if !e.io.status.nil? && e.io.status[0].to_i == 404
         raise Error404
       end
+    rescue Timeout::Error => e
+      LOG.add :debug, "Timed out on URL:"
+      LOG.add :debug, uri
+      url_parts = uri.split("?")
+      # parse out the parameters in the query string
+      params = CGI::parse(url_parts[1]) if url_parts[1]
+      # remove trailing slash if it exists
+      url_parts[0].slice!(url_parts[0].length - 1) if url_parts[0][url_parts[0].length - 1] == 47
+      # check for ontology id
+      ont_id_location = url_parts[0].index(/\/[0-9]+$/)
+      ont_id = ont_id_location.nil? ? params["ontologyids"] : url_parts[0].slice!(ont_id_location, url_parts[0].length).delete("/")
+      # parse the remaining URL
+      parsed_url = URI.parse(url_parts[0])
+      # make sure concept id isn't nil
+      concept_id = !params.nil? && params["conceptid"] ? "'#{params["conceptid"]}'" : "null"
+      concept_id =  concept_id.length == 0 || concept_id.strip.eql?("") ? "null" : concept_id
+      # log the error
+      mysql_conn = Mysql.new(@mysql_config["host"], @mysql_config["username"], @mysql_config["password"], @mysql_config["database"])
+      mysql_conn.query("INSERT INTO timeouts
+                       (path, ontology_id, concept_id, params, created)
+                       VALUES('#{parsed_url.path}', #{ont_id.nil? ? "null" : ont_id}, '#{concept_id}', '#{url_parts[1]}', CURRENT_TIMESTAMP)")
+      mysql_conn.close
+    rescue Exception => e
       return nil
     end
-  end
 
-  def self.getConcept(ontology, concept_uri)
-    begin
-      LOG.add :debug, "Concept retreive url"
-      LOG.add :debug, concept_uri
-      startTime = Time.now
-      rest = get_xml(concept_uri)
-      LOG.add :debug, "Concept retreive (#{Time.now - startTime})"
-    rescue Exception=>e
-      LOG.add :debug, "getConcept retreive error: #{e.message}"
-    end
-
-    begin
-      startTime = Time.now
-      parser = XML::Parser.io(rest)
-      doc = parser.parse
-      LOG.add :debug, "Concept parse (#{Time.now - startTime})"
-    rescue Exception=>e
-      LOG.add :debug, "getConcept parse error: #{e.message}"
-    end
-
-    if doc.nil?
-      return doc
-    end
-
-    node = errorCheckLibXML(doc)
-
-    unless node.nil?
-      return node
-    end
-
-    startTime = Time.now
-    doc.find("/*/data/classBean").each{ |element|
-      node = parseConceptLibXML(element,ontology)
-    }
-    LOG.add :debug, "Concept storage (#{Time.now - startTime})"
-
-    return node
+    xml
   end
 
   def self.postMultiPart(url, paramsHash)
     paramsHash["apikey"] = $API_KEY
     params=[]
     for param in paramsHash.keys
-      # paramVal = paramsHash[param].nil? ? "" : paramsHash[param]
-      # puts param + ": " + paramVal.to_s
       if paramsHash["isRemote"].eql?("0") && param.eql?("filePath")
         params << file_to_multipart('filePath',paramsHash["filePath"].original_filename,paramsHash["filePath"].content_type,paramsHash["filePath"])
       else
-        params << text_to_multipart(param,paramsHash[param])
+        params << text_to_multipart(param, paramsHash[param])
       end
-
     end
 
     boundary = '349832898984244898448024464570528145'
-    query =
-    params.collect {|p| '--' + boundary + "\r\n" + p}.join('') + "--" + boundary + "--\r\n"
+    query = params.collect {|p| '--' + boundary + "\r\n" + p}.join('') + "--" + boundary + "--\r\n"
+
     uri = URI.parse(url)
-    response = Net::HTTP.new(uri.host,$REST_PORT).start.
-      post2(uri.path,
-          query,
-            "Content-type" => "multipart/form-data; boundary=" + boundary)
+    uri.port = $REST_PORT
+
+    response = nil
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      headers = {"Content-Type" => "multipart/form-data; boundary=" + boundary, "Accept-Charset" => "UTF-8"}
+      response = http.send_request('POST', uri.request_uri, query, headers)
+    end
 
     return response.body
   end
@@ -1194,11 +1321,47 @@ private
       if paramsHash[param].class.to_s.downcase.eql?("array")
         paramsHash[param] = paramsHash[param].join(",")
       end
+      paramsHash[param] = CGI.escape(paramsHash[param].to_s)
+    end
+
+    params = []
+    paramsHash.each {|k,v| params << "#{k}=#{v}"}
+
+    uri = URI.parse(url)
+    uri.port = $REST_PORT
+
+    response = nil
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      headers = {'Content-Type' => 'application/x-www-form-urlencoded; charset=utf-8'}
+      put_data = params.join("&")
+      response = http.send_request('POST', uri.request_uri, put_data, headers)
+    end
+
+    return response.body
+  end
+
+  def self.deleteToRestlet(url, paramsHash)
+    paramsHash[:apikey] = $API_KEY
+    paramsHash[:method] = "DELETE"
+
+    # Comma-separate lists
+    for param in paramsHash.keys
+      if paramsHash[param].class.to_s.downcase.eql?("array")
+        paramsHash[param] = paramsHash[param].join(",")
+      end
     end
 
     uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host, $REST_PORT)
-    response = Net::HTTP.post_form(uri, paramsHash)
+    uri.port = $REST_PORT
+
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req.form_data = paramsHash
+    req.content_type = "application/x-www-form-urlencoded"
+    response = nil
+    Net::HTTP.new(uri.host, uri.port).start {|http|
+      response = http.request(req)
+    }
+
     return response.body
   end
 
@@ -1296,7 +1459,6 @@ private
     ontology.id = ontologybeanXML.elements["id"].get_text.value.strip
     ontology.displayLabel= ontologybeanXML.elements["displayLabel"].get_text.value.strip rescue "No Label"
     ontology.ontologyId = ontologybeanXML.elements["ontologyId"].get_text.value.strip
-    ontology.userId = ontologybeanXML.elements["userId"].get_text.value.strip rescue ""
     ontology.parentId = ontologybeanXML.elements["parentId"].get_text.value.strip rescue ""
     ontology.format = ontologybeanXML.elements["format"].get_text.value.strip rescue  ""
     ontology.versionNumber = ontologybeanXML.elements["versionNumber"].get_text.value.strip rescue ""
@@ -1327,6 +1489,13 @@ private
     ontology.isMetadataOnly = ontologybeanXML.elements["isMetadataOnly"].get_text.value.strip.to_i rescue ""
     ontology.downloadLocation = ontologybeanXML.elements["downloadLocation"].get_text.value.strip rescue ""
     ontology.versionStatus = ontologybeanXML.elements["versionStatus"].get_text.value.strip rescue ""
+
+    ontology.userId = []
+    unless ontologybeanXML.elements["userIds"].nil?
+      ontologybeanXML.elements["userIds"].elements.each do |element|
+        ontology.userId << element.get_text.value.strip rescue ""
+      end
+    end
 
     ontology.categories = []
     ontologybeanXML.elements["categoryIds"].elements.each do |element|
@@ -1451,124 +1620,7 @@ private
   end
 
   def self.errorCheckLibXML(doc)
-    response = nil
-    errorHolder={}
-    begin
-      doc.elements.each("errorStatus"){ |element|
-        errorHolder[:error] = true
-        errorHolder[:shortMessage] = element.elements["shortMessage"].get_text.value.strip
-        errorHolder[:longMessage] =element.elements["longMessage"].get_text.value.strip
-        response = errorHolder
-      }
-    rescue
-    end
-
-    return response
-  end
-
-  def self.parseConcept(classbeanXML, ontology)
-    node = NodeWrapper.new
-    node.child_size=0
-    node.id = classbeanXML.elements["id"].get_text.value
-    node.fullId = classbeanXML.elements["fullId"].get_text.value rescue ""
-
-    node.name = classbeanXML.elements["label"].get_text.value rescue node.id
-    node.version_id = ontology
-    node.children = []
-    node.properties = {}
-    classbeanXML.elements["relations"].elements.each("entry"){ |entry|
-
-      startGet = Time.now
-      case entry.elements["string"].get_text.value.strip
-        when SUBCLASS
-        if entry.elements["list"].attributes["reference"]
-          entry.elements["list"].elements.each(entry.elements["list"].attributes["reference"]){|element|
-            element.elements.each{|classbean|
-
-              #issue with using reference.. for some reason pulls in extra guys sometimes
-              if classbean.name.eql?("classBean")
-                node.children<<parseConcept(classbean,ontology)
-                         end
-                         }
-                     }
-
-                else
-                  entry.elements["list"].elements.each {|element|
-                      node.children<<parseConcept(element,ontology)
-                  }
-                end
-               when SUPERCLASS
-
-               when CHILDCOUNT
-                 node.child_size = entry.elements["int"].get_text.value.to_i
-               else
-                 begin
-                 node.properties[entry.elements["string"].get_text.value] = entry.elements["list"].elements.map{|element|
-                   if(element.name.eql?("classBean"))
-                      parseConcept(element,ontology).name
-                   else
-                    element.get_text.value unless element.get_text.value.empty?
-
-                   end}.join(" ||%|| ") #rescue ""
-                  rescue Exception =>e
-                  end
-               end
-        }
-
-        node.children.sort!{|x,y| x.name.downcase<=>y.name.downcase}
-
-        return node
-  end
-
-  def self.parseConceptLibXML(classbeanXML, ontology)
-    # check if we're at the root node
-    root = classbeanXML.path == "/success/data/classBean" ? true : false
-
-    # Get basic info and initialize the node.
-    node = getConceptBasicInfo(classbeanXML,ontology)
-
-    if root
-      # look for child nodes and process if found
-      search = classbeanXML.path + "/relations/entry[string='SubClass']/list/classBean"
-      results = classbeanXML.first.find(search)
-      unless results.empty?
-        results.each do |child|
-          node.children << parseConceptLibXML(child,ontology)
-        end
-      end
-    end
-
-    if root
-      # find all other properties
-      search = classbeanXML.path + "/relations/entry"
-      classbeanXML.first.find(search).each do |entry|
-        # check to see if the entry is a relationship (signified by [R]), if it is move on
-        if classbeanXML.first.find(entry.path + "/string").first.content[0,10].eql?("SuperClass")
-          next
-        end
-
-        # check to see if this entry has a list of classBeans
-        beans = classbeanXML.first.find(entry.path + "/list/classBean")
-        list_content = []
-        if !beans.empty?
-          beans.each do |bean|
-            bean_label = classbeanXML.first.find(bean.path + "/label")
-            list_content << bean_label.first.content unless bean_label.first.nil?
-          end
-        else
-          # if there's no classBeans, process the list normally
-          list = classbeanXML.first.find(entry.path + "/list/string")
-          list.each do |item|
-            list_content << item.content
-          end
-        end
-
-        node.properties[classbeanXML.first.find(entry.path + "/string").first.content] = list_content.join(" ||%|| ")
-      end # stop processing relation entries
-    end # stop root node processing
-
-    node.children.sort!{|x,y| x.name.downcase<=>y.name.downcase}
-    return node
+    self.generic_parse(:xml => doc, :path => "/errorStatus")
   end
 
   def self.buildPathToRootTree(classbeanXML, ontology)
@@ -1637,6 +1689,15 @@ private
     return node
   end
 
+  def self.append_apikey(uri)
+    apikey = uri.include?("?") ? "&apikey=#{$API_KEY}" : "?apikey=#{$API_KEY}"
+    uri << apikey unless uri.include?("apikey=")
+    if Thread.current[:session] && Thread.current[:session][:user]
+      uri << "&userapikey=#{Thread.current[:session][:user].apikey}" unless uri.include?("userapikey=")
+    end
+    uri
+  end
+
   ###################### Generic Parser #########################
   ## The following methods are part of a generic parser, which
   ## promises a simpler, faster parsing implementation. For now
@@ -1662,37 +1723,37 @@ private
     type = params[:type] rescue nil
     xml = params[:xml]
     path = params[:path]
-    return_type = params[:return_type]
 
     if xml.nil?
       return nil
     end
 
-    if xml.kind_of?(String)
-      parser = XML::Parser.string(xml, :options => LibXML::XML::Parser::Options::NOBLANKS)
-    else
-      parser = XML::Parser.io(xml, :options => LibXML::XML::Parser::Options::NOBLANKS)
-    end
-
-    doc = parser.parse
+    doc = self.parse_xml(xml)
 
     if path.nil?
       root = doc.find_first("/success/data")
     else
-      root = path
+      root = doc.find_first(path)
     end
+
+    # Check to see if we have any data, if not return an empty hash
+    return Hash.new if root.nil? || root.first.nil? || !root.first.element?
 
     parsed = self.parse(root)
 
     # We end up with an extra hash at the root, this should get rid of that
-    attributes = {}
-    parsed.each do |k,v|
-      if v.is_a?(Hash)
-        attributes = {}
-        v.each{ |k,v| attributes[k] = v }
-      elsif v.is_a?(Array)
-        attributes = v
+    attributes = ActiveSupport::OrderedHash.new
+    if parsed.key?("data")
+      parsed.each do |k,v|
+        if v.is_a?(Hash)
+          attributes = {}
+          v.each{ |k,v| attributes[k] = v }
+        elsif v.is_a?(Array)
+          attributes = v
+        end
       end
+    else
+      attributes = parsed
     end
 
     if type
@@ -1710,8 +1771,18 @@ private
     end
   end
 
+  def self.parse_xml(xml)
+    if xml.kind_of?(String)
+      parser = XML::Parser.string(xml, :options => LibXML::XML::Parser::Options::NOBLANKS)
+    else
+      parser = XML::Parser.io(xml, :options => LibXML::XML::Parser::Options::NOBLANKS)
+    end
+
+    parser.parse
+  end
+
   def self.parse(node)
-    a = {}
+    a = ActiveSupport::OrderedHash.new
 
     attr_suffix = 1
 
@@ -1725,11 +1796,12 @@ private
           return child.content.to_i
         when "string"
           return child.content
-        when "synonyms", "categoryIds", "groupIds"
-          synonyms = []
-          child.each_element { |synonym| synonyms << synonym.content }
-          a[child.name] = synonyms
-        when "associated"
+        when "synonyms", "categoryIds", "groupIds", "hasViews", "virtualViewIds"
+          elements = []
+          child.each_element { |element| elements << element.content }
+          a[child.name] = elements
+        when "associated", "userAcl", "roles", "classesWithNoDocumentation", "classesWithOneSubclass","classesWithNoAuthor",
+             "userIds"
           a[child.name] = process_list(child)
       else
         if !child.first.nil? && child.first.element?
@@ -1765,7 +1837,7 @@ private
 
     entry_key = children[0].content
     entry_values = children[1]
-    entry_hash = {}
+    entry_hash = ActiveSupport::OrderedHash.new
 
     # Check to see if entry contains data as a list or single
     if entry_values.name.eql?("list") && !entry_values.empty?

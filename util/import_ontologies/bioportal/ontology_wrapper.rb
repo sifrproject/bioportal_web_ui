@@ -7,7 +7,6 @@ class OntologyWrapper
   attr_accessor :parentId
   attr_accessor :format
   attr_accessor :versionNumber
-  attr_accessor :versionStatus
   attr_accessor :internalVersion
   attr_accessor :versionStatus
   attr_accessor :isCurrent
@@ -64,6 +63,7 @@ class OntologyWrapper
   attr_accessor :obsoleteParent
   attr_accessor :obsoleteProperty
 
+  attr_accessor :subscribe_notifications
 
   FILTERS = {
     "All"=>0,
@@ -81,11 +81,11 @@ class OntologyWrapper
     "Not Applicable"=>5
   }
 
-  FORMAT = ["OBO","OWL-DL","OWL-FULL","OWL-LITE","PROTEGE","LEXGRID-XML","RRF","LOINC","RXNORM","UMLS-RELA"]
+  FORMAT = %W(OBO OWL-DL OWL-FULL OWL-LITE PROTEGE LEXGRID-XML RRF LOINC RXNORM UMLS-RELA)
 
-  LEXGRID_FORMAT = ["OBO","LEXGRID-XML","RRF","LOINC","RXNORM","UMLS-RELA"]
+  LEXGRID_FORMAT = %W(OBO LEXGRID-XML RRF LOINC RXNORM UMLS-RELA)
 
-  PROTEGE_FORMAT = ["OWL","OWL-DL","OWL-FULL","OWL-LITE","PROTEGE"]
+  PROTEGE_FORMAT = %W(OWL OWL-DL OWL-FULL OWL-LITE PROTEGE)
 
   def initialize(hash = nil, params = nil)
     return if hash.nil?
@@ -94,7 +94,7 @@ class OntologyWrapper
     self.displayLabel             = hash['displayLabel']
     self.id                       = hash['id']
     self.ontologyId               = hash['ontologyId']
-    self.userId                   = hash['userId']
+    self.userId                   = hash['userIds']
     self.parentId                 = hash['parentId']
     self.format                   = hash['format']
     self.versionNumber            = hash['versionNumber']
@@ -144,7 +144,7 @@ class OntologyWrapper
     self.obsoleteProperty         = hash['obsoleteProperty']
 
     self.useracl                  = []
-    if !self.useracl_full.nil?
+    unless self.useracl_full.nil?
       self.useracl_full.each do |user|
         self.useracl << user["userId"]
       end
@@ -152,14 +152,14 @@ class OntologyWrapper
   end
 
   def views
-    return DataAccess.getViews(self.ontologyId)
+    DataAccess.getViews(self.ontologyId)
   end
 
   def from_params(params)
     self.displayLabel = params[:displayLabel]
     self.id= params[:id]
     self.ontologyId= params[:ontologyId]
-    self.userId= params[:userId]
+    self.userId= params[:userIds]
     self.parentId= params[:parentId]
     self.format= params[:format]
     self.versionNumber= params[:versionNumber]
@@ -197,24 +197,36 @@ class OntologyWrapper
     self.viewDefinition = params[:viewDefinition]
     self.viewDefinitionLanguage = params[:viewDefinitionLanguage]
     self.viewGenerationEngine = params[:viewGenerationEngine]
+  end
 
+  def to_params_hash
+    hash = {}
+    self.instance_variables.each {|var| hash[var.to_s.delete("@")] = self.instance_variable_get(var) }
+
+    # Cleanup param names
+    categories = hash['categories'].kind_of?(Array) ? hash['categories'].join(",") : hash['categories']
+    groups = hash['groups'].kind_of?(Array) ? hash['groups'].join(",") : hash['groups']
+    hash['categoryId'] = categories
+    hash['groupId'] = groups
+    hash.delete('categories')
+    hash.delete('groups')
+
+    hash
   end
 
   def map_count
     count = DataAccess.getMappingCountOntology(self.ontologyId) rescue 0
   end
 
-  def getOntologyFromView
-    return DataAccess.getOntology(self.viewOnOntologyVersionId)
-  end
-
   # For use with select lists, always includes the admin by default
   def useracl_select
     select_opts = []
-    return select_opts if self.userId.nil? and (self.useracl.nil? or self.useracl.empty?)
+    return select_opts if self.userId.nil? || self.userId.empty? and (self.useracl.nil? or self.useracl.empty?)
 
     if self.useracl.nil? || self.useracl.empty?
-      select_opts << [DataAccess.getUser(self.userId).username, self.userId]
+      self.userId.each do |userId|
+        select_opts << [DataAccess.getUser(userId).username, userId]
+      end
     else
       self.useracl.each do |user|
         select_opts << [DataAccess.getUser(user).username, user]
@@ -233,9 +245,9 @@ class OntologyWrapper
     if CACHE.get("#{self.ontologyId}::ReviewCount").nil?
       count = Review.count(:conditions=>{:ontology_id=>self.ontologyId})
       CACHE.set("#{self.ontologyId}::ReviewCount",count)
-      return count
+      count
     else
-      return CACHE.get("#{self.ontologyId}::ReviewCount")
+      CACHE.get("#{self.ontologyId}::ReviewCount")
     end
   end
 
@@ -243,9 +255,9 @@ class OntologyWrapper
     if CACHE.get("#{self.ontologyId}::ProjectCount").nil?
       count = Project.count(:conditions=>"uses.ontology_id = '#{self.ontologyId}'",:include=>:uses)
       CACHE.set("#{self.ontologyId}::ProjectCount",count)
-      return count
+      count
     else
-      return CACHE.get("#{self.ontologyId}::ProjectCount")
+      CACHE.get("#{self.ontologyId}::ProjectCount")
     end
   end
 
@@ -253,46 +265,50 @@ class OntologyWrapper
      "#{self.id}"
   end
 
-  def topLevelNodes(view=false)
+  def top_level_nodes(view=false)
      DataAccess.getTopLevelNodes(self.id,view)
   end
 
   def metrics
-    return DataAccess.getOntologyMetrics(self.id)
+    DataAccess.getOntologyMetrics(self.id)
   end
 
   # Queries for the latest version of this ontology and returns a comparison.
   def latest?
     latest = DataAccess.getLatestOntology(self.ontologyId)
-    return latest.id.eql? self.id
+    latest.id.eql? self.id
+  end
+
+  def production?
+    self.versionStatus.nil? || self.versionStatus.downcase.eql?("production") || self.versionStatus.downcase.eql?("")
   end
 
   # Generates a PURL address for this ontology
   def purl
-    return "#{$PURL_PREFIX}/#{self.abbreviation}"
+    "#{$PURL_PREFIX}/#{self.abbreviation}"
   end
 
   def admin?(user)
-    return !user.nil? && (user.admin? || self.userId.include?(user.id))
+    !user.nil? && (user.admin? || self.userId.include?(user.id.to_i))
   end
 
   def archived?
-    return self.statusId.to_i == 6
+    self.statusId.to_i == 6
   end
 
   # Check to see if ontology is stored remotely (IE metadata only)
   def metadata_only?
-    return self.isMetadataOnly.eql?(1)
+    self.isMetadataOnly.to_i == 1
   end
 
   # Check criteria for browsable ontologies
   def terms_disabled?
-    return self.metadata_only? || (!$NOT_EXPLORABLE.nil? && $NOT_EXPLORABLE.include?(self.ontologyId.to_i))
+    self.metadata_only? || (!$NOT_EXPLORABLE.nil? && $NOT_EXPLORABLE.include?(self.ontologyId.to_i))
   end
 
   # Is this ontology just a huge bag of terms?
   def flat?
-    return !$NOT_EXPLORABLE.nil? && $NOT_EXPLORABLE.include?(self.ontologyId.to_i)
+    !$NOT_EXPLORABLE.nil? && $NOT_EXPLORABLE.include?(self.ontologyId.to_i)
   end
 
   def viewing_restricted?
@@ -307,8 +323,12 @@ class OntologyWrapper
     !self.viewingRestriction.nil? && self.viewingRestriction.downcase.eql?("licensed")
   end
 
+  def view?
+    self.isView.eql?("true") || self.isView.to_i == 1
+  end
+
   def valid_tree_view?
-    return self.statusId.to_i == 3 && !self.metadata_only?
+    self.statusId.to_i == 3 && !self.metadata_only?
   end
 
   def diffs
@@ -319,7 +339,7 @@ class OntologyWrapper
     DataAccess.getOntologyVersions(self.ontologyId).sort!{|x,y| y.internalVersion.to_i<=>x.internalVersion.to_i}
   end
 
-  def is_in_search_index?
+  def in_search_index?
     begin
       result = DataAccess.searchQuery([self.ontologyId], "testingversionforontology")
       return result.ontology_hit_counts[self.ontologyId.to_i]["ontologyVersionId"] == self.id
@@ -339,7 +359,7 @@ class OntologyWrapper
   def format_handler
     return :lexgrid if self.lexgrid?
     return :protege if self.protege?
-    return :unknown
+    :unknown
   end
 
   def synonym_label
@@ -358,28 +378,15 @@ class OntologyWrapper
     DataAccess.getLightNode(self.id, self.authorSlot).label rescue ""
   end
 
-  def to_params_hash
-    hash = {}
-    self.instance_variables.each {|var| hash[var.to_s.delete("@")] = self.instance_variable_get(var) }
-    
-    # Cleanup param names
-    categories = hash['categories'].kind_of?(Array) ? hash['categories'].join(",") : hash['categories']
-    groups = hash['groups'].kind_of?(Array) ? hash['groups'].join(",") : hash['groups']
-    hash['categoryId'] = categories
-    hash['groupId'] = groups
-    hash.delete('categories')
-    hash.delete('groups')
-    
-    hash
-  end
-  
   # Ontology Helper Methods
   def self.virtual_id?(ontology_id)
-    return ontology_id.to_i < 2900
+    ontology_id = ontology_id.to_i
+    return ontology_id < $VIRTUAL_ID_UPPER_LIMIT && !$VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
   end
 
   def self.version_id?(ontology_id)
-    return ontology_id.to_i > 2900
+    ontology_id = ontology_id.to_i
+    return ontology_id > $VIRTUAL_ID_UPPER_LIMIT || $VERSIONS_IN_VIRTUAL_SPACE.include?(ontology_id)
   end
 
 end
