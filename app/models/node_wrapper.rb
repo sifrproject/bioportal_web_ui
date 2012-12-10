@@ -113,6 +113,11 @@ class NodeWrapper
     @label = value
   end
 
+  def definitions
+    return "" if @definitions.nil?
+    @definitions.instance_of?(Array) ? @definitions.join(". ") : @definitions
+  end
+
   def label_html
     self.obsolete? ? "<span class='obsolete_term' title='This term is obsolete'>#{self.label}</span>" : self.label
   end

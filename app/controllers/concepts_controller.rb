@@ -84,8 +84,7 @@ class ConceptsController < ApplicationController
   def show_definition
     @ontology = DataAccess.getOntology(params[:ontology])
     term = DataAccess.getLightNode(@ontology.id, params[:concept])
-    definition = term.definitions.kind_of?(Array) ? term.definitions.join(" ") : term.definitions
-    render :text => definition
+    render :text => term.definitions
   end
 
   def show_tree

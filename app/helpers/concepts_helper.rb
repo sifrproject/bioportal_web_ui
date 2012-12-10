@@ -23,7 +23,7 @@ module ConceptsHelper
     if ontology_properties[property].nil? || ontology_properties[property].definitions.nil?
       no_definition
     else
-      "Property id: #{property} | Definition: #{strip_tags(ontology_properties[property].definitions.join('. '))}"
+      "Property id: #{property} | Definition: #{strip_tags(ontology_properties[property].definitions)}"
     end
   end
 end
