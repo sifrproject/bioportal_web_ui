@@ -55,14 +55,22 @@ class HomeController < ApplicationController
     restricted_ontologies.each do |ont|
       restricted_for_query << ont.ontologyId.to_i unless session[:user] && session[:user].has_access?(ont)
     end
-    unless restricted_for_query.empty?
-      restricted_condition = "ontology_id not in (?)"
-      if conditions.empty?
-        conditions = [restricted_condition, restricted_for_query]
-      else
-        conditions[0] << " AND " + restricted_condition
-        conditions.push(restricted_for_query)
-      end
+
+    # Get a list of all ontology ids
+    all_ontology_ids = []
+    @ontologies.each do |ont|
+      all_ontology_ids << ont.ontologyId.to_i
+    end
+
+    # Subtract the restricted onts from the non-restricted list
+    okay_ontologies = all_ontology_ids - restricted_for_query
+
+    restricted_condition = "ontology_id in (?)"
+    if conditions.empty?
+      conditions = [restricted_condition, okay_ontologies]
+    else
+      conditions[0] << " AND " + restricted_condition
+      conditions.push(okay_ontologies)
     end
 
     @active_totals = @active_totals.sort{|x,y| y[3].to_i<=>x[3].to_i}
