@@ -78,9 +78,9 @@ class SearchController < ApplicationController
     filter_private_results(results)
     LOG.add :debug, "Filter private ontologies: #{Time.now - start_time}s"
 
-    # start_time = Time.now
-    # results.results = results.rank_results(exact_count)
-    # LOG.add :debug, "Rank search results: #{Time.now - start_time}s"
+    start_time = Time.now
+    results.results = results.rank_results(exact_count)
+    LOG.add :debug, "Rank search results: #{Time.now - start_time}s"
 
     results.current_page_results = results.results.length + results.obsolete_results.length
 

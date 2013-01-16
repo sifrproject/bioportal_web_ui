@@ -111,8 +111,8 @@ class SearchResults < Array
     synonym.compact!
 
     # Rank our result buckets
-    preferred = OntologyRanker.rank(preferred, {:position => "ontologyId"})
-    synonym = OntologyRanker.rank(synonym, {:position => "ontologyId"})
+    # preferred = OntologyRanker.rank(preferred, {:position => "ontologyId"})
+    # synonym = OntologyRanker.rank(synonym, {:position => "ontologyId"})
 
     # Put it all together
     self.ranked = true
