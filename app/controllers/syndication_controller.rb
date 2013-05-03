@@ -1,19 +1,14 @@
 class SyndicationController < ApplicationController
 
-
-  
-
-
   def rss
-    
     limit = params[:limit] || 20
-    if params[:ontologies].nil?
+    if params[:ontologies].nil? || params[:ontologies].eql?("all")
       events = EventItem.find(:all,:order=>"created_at desc",:limit=>limit)
     else
       events = EventItem.find(:all,:conditions=>{:ontology_id=>params[:ontologies].split(",")},:order=>"created_at desc",:limit=>limit)
     end
     feed_items=[]
-    
+
     for event in events
       begin
         case event.event_type
@@ -26,7 +21,7 @@ class SyndicationController < ApplicationController
             note_url = Class.new.extend(NotesHelper).get_applies_to_url(note.createdInOntologyVersion, note.appliesTo['type'], note.appliesTo['id'])
             note_text = note.type.eql?("Comment") ? "Comment: #{note.body}" : "Reason for request: #{note.values[note.type]['reasonForChange']}"
             applies_to = note.appliesTo['type'].eql?("Ontology") ? "(#{note.ontology.displayLabel})" : "#{note.appliesTo['id']} in #{note.ontology.displayLabel}"
-            
+
             feed_items << { :title => "#{note_type} added to #{note.appliesTo['type']} #{applies_to}", :description => note_text, :date => event.created_at, :link => "#{$UI_URL}#{note_url}" }
           when "Mapping"
             mapping = DataAccess.getMapping(event.event_type_id)
@@ -36,16 +31,16 @@ class SyndicationController < ApplicationController
         #Catches exceptions from backend discrepencies
       end
     end
-    
+
     if params[:callback].nil?
-    
+
       xml_feed = "<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">
         <channel>
         <title>#{$SITE} Updates</title>
         <link>#{$UI_URL}</link>
         <description>Updates to the #{$ORG_SITE} Repository</description>
         <language>en-us</language>"
-      
+
       for item in feed_items
         xml_feed <<"<item>"
         xml_feed <<"<title>#{item[:title]}</title>"
@@ -55,12 +50,12 @@ class SyndicationController < ApplicationController
         xml_feed <<"<dc:date>#{item[:date]}</dc:date>"
         xml_feed <<"</item>"
       end
-      
+
       xml_feed <<"</channel>"
       xml_feed <<"</rss>"
-      
+
       render :text=>xml_feed
-    
+
     else
       json_response="#{params[:callback]}(["
       for item in feed_items
@@ -74,10 +69,10 @@ class SyndicationController < ApplicationController
           json_response<<","
         end
       end
-      
-      
+
+
       json_response << "])"
-      
+
           #dont save it if its a test
   #  begin
     if !request.env['HTTP_REFERER'].nil? && !request.env["HTTP_REFERER"].downcase.include?("bioontology.org")
@@ -89,10 +84,10 @@ class SyndicationController < ApplicationController
       end
       widget_log.save
     end
-      
+
       render :text=>json_response
     end
-    
+
   end
 
 end
