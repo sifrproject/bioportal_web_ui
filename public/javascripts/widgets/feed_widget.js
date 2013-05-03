@@ -43,18 +43,18 @@ var BP_ORG_SITE = (BP_ORG == "") ? BP_SITE : BP_ORG + " " + BP_SITE;
 
 jQuery(document).ready(function(){
     jQuery("#bp_feed_container").html('<ul id="bp_feed" style="margin-bottom: .5em;"></ul><a href="' + BP_SEARCH_SERVER + '"><img src="' + BP_SEARCH_SERVER + '/images/layout/logo_mini.png" border=0/></a>');
-	
-    jQuery.getJSON("/syndication/rss?ontologies="+BP_ontology_id+"&limit=5&callback=?",function(data){
+
+    jQuery.getJSON(BP_SEARCH_SERVER + "/syndication/rss?ontologies="+BP_ontology_id+"&limit=5&callback=?",function(data){
         if (data.length < 1) {
             jQuery("#bp_feed").append("No new changes to the ontology");
         }
-        
+
         for (var item in data) {
             jQuery("#bp_feed").append("<li><a href='"+data[item].link+"'>"+data[item].title+"</a> "+data[item].date+"<br/>"+data[item].description+"<br/></li>")
         }
-        
+
     })
-    
+
 })
 
 
