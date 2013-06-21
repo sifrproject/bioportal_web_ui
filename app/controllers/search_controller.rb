@@ -188,7 +188,14 @@ class SearchController < ApplicationController
   def filter_advanced_options(results, params)
     # Remove results due to advanced search options
     advanced_options_results = []
+    ontology_list_hash = DataAccess.getOntologyListHash
     results.each do |result|
+      # Discard if ontology doesn't exist
+      # WARNING!!! THIS SKIPS ALL ONTOLOGY VIEWS NO MATTER WHAT!!!
+      # It's in here to fix a problem where ontologies aren't in the index
+      # and I'm out today and can't do anything more complicated
+      next unless ontology_list_hash.key?(result['ontologyId'].to_i)
+
       # The following statements filter results using defaults. They can be overridden with "advanced options"
       # Discard if ontology is not production
       if params[:include_non_production].eql?("false")
