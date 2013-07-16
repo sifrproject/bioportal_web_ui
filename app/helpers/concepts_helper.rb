@@ -18,7 +18,7 @@ module ConceptsHelper
   end
 
   def property_title(property)
-    ontology_properties = DataAccess.getOntologyPropertiesHash(@concept.ontology_id, "id")
+    ontology_properties = DataAccess.getOntologyPropertiesHash(@concept.ontology_id, "id") rescue {}
     no_definition = "Property id: #{property} | Definition: No definition provided"
     if ontology_properties[property].nil? || ontology_properties[property].definitions.nil?
       no_definition
