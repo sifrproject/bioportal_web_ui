@@ -93,7 +93,8 @@
       </div>
     </span>
 
-    <%if @ontology.admin?(session[:user]) %>
+    <!-- Ontology submission disabled for release migration-->
+    <%if false #@ontology.admin?(session[:user]) %>
       <span id="admin_ontology" style="vertical-align: super; padding-left: 1em;">
         <a tabindex="0" href="#administer" class="fg-button fg-button-icon-right ui-widget ui-state-default" id="ont_admin"><span class="ui-icon ui-icon-triangle-1-s"></span>Administer</a>
         <div id="adminster_options" class="hidden" style="text-align: left;">

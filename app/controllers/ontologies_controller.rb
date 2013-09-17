@@ -117,6 +117,7 @@ class OntologiesController < ApplicationController
 
 
   def edit
+    raise Error404 # Disable submission for release migration
     @ontology = DataAccess.getOntology(params[:id])
 
     authorize_owner(@ontology.userId)
@@ -125,6 +126,7 @@ class OntologiesController < ApplicationController
   end
 
   def edit_view
+    raise Error404 # Disable submission for release migration
     @ontology = DataAccess.getView(params[:id])
 
     authorize_owner(@ontology.userId)
@@ -297,6 +299,7 @@ class OntologiesController < ApplicationController
   end
 
   def new
+    raise Error404 # Disable submission for release migration
     if(params[:id].nil?)
       @ontology = OntologyWrapper.new
       @ontology.userId = session[:user].id
@@ -308,6 +311,7 @@ class OntologiesController < ApplicationController
 
 
   def new_view
+    raise Error404 # Disable submission for release migration
     if(params[:id].nil? || params[:id].to_i < 1)
       @new = true
       @ontology = OntologyWrapper.new
@@ -322,6 +326,7 @@ class OntologiesController < ApplicationController
 
 
   def create
+    raise Error404 # Disable submission for release migration
     params[:ontology][:isCurrent] = 1
     params[:ontology][:isReviewed] = 1
     params[:ontology][:isFoundry] = 0
