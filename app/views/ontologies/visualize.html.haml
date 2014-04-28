@@ -1,7 +1,11 @@
 - unless @error
   - @title = "#{@ontology.name} - #{@concept.prefLabel}"
 
+  // Ensure this is loaded (don't use lazy loading in rloader)
+  = javascript_include_tag "bp_jumpTo" 
+
   :javascript
+
     jQuery.rloader([
       {type:'css',src:'/javascripts/JqueryPlugins/autocomplete/jquery.autocomplete.css'},
       {type:'js',src:'/javascripts/JqueryPlugins/autocomplete/crossdomain_autocomplete.js?nocache=20120302'},
@@ -11,7 +15,8 @@
       {type:'js',src:'/javascripts/bp_mappings.js'}
     ]);
 
-    var searchbox;
+    var searchBoxSelector ="#search_box",
+        searchBoxObj = null;
 
     // Called when the "Go" button on the Jump To form is clicked
     function jumpToValue(li){
@@ -51,47 +56,45 @@
       jumpToValue(li);
     }
 
-    // Formats the Jump To search results
-    function formatItem(row) {
-      var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
-      var keywords = jQuery("#search_box").val().trim().replace(specials, "\\$&").split(' ').join('|');
-      var regex = new RegExp( '(' + keywords + ')', 'gi' );
-      var matchType = "";
-      if (typeof row[2] !== "undefined" && row[2] !== "") {
-        matchType = " <span style='font-size:9px;color:blue;'>(" + row[2] + ")</span>";
-      }
-
-      if (row[0].match(regex) == null) {
-        var contents = row[6].split("\t");
-        var synonym = contents[0] || "";
-        synonym = synonym.split(";");
-        if (synonym !== "") {
-          var matchSynonym = jQuery.grep(synonym, function(e){
-            return e.match(regex) != null;
-          });
-          row[0] = row[0] + " (synonym: " + matchSynonym.join(" ") + ")";
-        }
-      }
-      // Cleanup obsolete class tag before markup for search keywords.
-      if(row[0].indexOf("[obsolete]") != -1) {
-        row[0] = row[0].replace("[obsolete]", "");
-        obsolete_prefix = "<span class='obsolete_class' title='obsolete class'>";
-        obsolete_suffix = "</span>";
-      } else {
-        obsolete_prefix = "";
-        obsolete_suffix = "";
-      }
-      // Markup the search keywords.
-      var row0_markup = row[0].replace(regex, "<b><span style='color:#006600;'>$1</span></b>");
-      return obsolete_prefix + row0_markup + matchType + obsolete_suffix;
-    }
+    // // Formats the Jump To search results
+    // function formatItem(row) {
+    //   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
+    //   var keywords = jQuery("#search_box").val().trim().replace(specials, "\\$&").split(' ').join('|');
+    //   var regex = new RegExp( '(' + keywords + ')', 'gi' );
+    //   var matchType = "";
+    //   if (typeof row[2] !== "undefined" && row[2] !== "") {
+    //     matchType = " <span style='font-size:9px;color:blue;'>(" + row[2] + ")</span>";
+    //   }
+    //   if (row[0].match(regex) == null) {
+    //     var contents = row[6].split("\t");
+    //     var synonym = contents[0] || "";
+    //     synonym = synonym.split(";");
+    //     if (synonym !== "") {
+    //       var matchSynonym = jQuery.grep(synonym, function(e){
+    //         return e.match(regex) != null;
+    //       });
+    //       row[0] = row[0] + " (synonym: " + matchSynonym.join(" ") + ")";
+    //     }
+    //   }
+    //   // Cleanup obsolete class tag before markup for search keywords.
+    //   if(row[0].indexOf("[obsolete]") != -1) {
+    //     row[0] = row[0].replace("[obsolete]", "");
+    //     obsolete_prefix = "<span class='obsolete_class' title='obsolete class'>";
+    //     obsolete_suffix = "</span>";
+    //   } else {
+    //     obsolete_prefix = "";
+    //     obsolete_suffix = "";
+    //   }
+    //   // Markup the search keywords.
+    //   var row0_markup = row[0].replace(regex, "<b><span style='color:#006600;'>$1</span></b>");
+    //   return obsolete_prefix + row0_markup + matchType + obsolete_suffix;
+    // }
 
     classes_init = function(){
       // Override the side of the bd_content div to avoid problems with
       // the window resizing, which can sometimes cause the right-hand content div to drop down
       var bd_content_width = jQuery("#ontology_content").width();
       jQuery("#bd_content").width(bd_content_width);
-
       // Split bar
       jQuery("#bd_content").splitter({
         sizeLeft: 400,
@@ -99,6 +102,23 @@
         cookie: "vsplitbar_position"
       });
     }
+
+
+    jQuery(document).ready(function() {
+      classes_init();
+      // search_box_init defined in bp_jumpTo
+      var ontSearchOptions = {
+      searchBoxSelector: searchBoxSelector,
+        extraParams: { objecttypes: "class" },
+        onFindValue: jumpToValue,   // identify custom function (not function closure)
+        onItemSelect: jumpToSelect, // identify custom function (not function closure)
+        // formatItem: formatItem,
+      };
+      search_box_init("/search/json_search/#{@ontology.acronym}", ontSearchOptions);
+      searchBoxObj = jQuery(searchBoxSelector)[0].autocompleter;
+    });
+
+
 
     // The tab system
     jQuery(".tab").live("click", function(){
@@ -109,7 +129,6 @@
     function showClassesTab(tabId) {
       // Get the target content area
       var target = document.getElementById(tabId + "_content");
-
       if (target != null) {
         jQuery(".tab_container").addClass("not_visible");
         jQuery(target).removeClass("not_visible");
@@ -117,7 +136,6 @@
         jQuery("#" + tabId + "_top").addClass("selected");
         jQuery(document).trigger("classes_tab_visible");
       }
-
       jQuery(document).trigger("visualize_tab_change", [{tabType: tabId}]);
     }
 
@@ -146,27 +164,6 @@
           });
         }
     }
-
-    search_box_init = function(){
-      jQuery("#search_box").bioportal_autocomplete("/search/json_search/#{@ontology.acronym}", {
-        extraParams: { objecttypes: "class" },
-        width: "400px",
-        selectFirst: true,
-        lineSeparator: "~!~",
-        matchSubset: 0,
-        minChars: 1,
-        maxItemsToShow: 25,
-        onFindValue: jumpToValue,
-        onItemSelect: jumpToSelect,
-        formatItem: formatItem
-      });
-      searchbox = jQuery("#search_box")[0].autocompleter;
-    }
-
-    jQuery(document).ready(function() {
-      classes_init();
-      search_box_init();
-    });
 
     jQuery(document).ready(function(){
       // TODO_REV: Handle views (replace `if (false)` with `@ontology.isView == 'true'`)

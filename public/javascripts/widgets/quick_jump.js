@@ -25,6 +25,7 @@ try {
 
 // Widget-specific code
 
+
 // Set the defaults if they haven't been set yet
 if (typeof BP_SEARCH_SERVER === 'undefined') {
   var BP_SEARCH_SERVER = "http://bioportal.bioontology.org";
@@ -60,6 +61,9 @@ function determineHTTPS(url) {
 
 BP_SEARCH_SERVER = determineHTTPS(BP_SEARCH_SERVER);
 
+jQuery.getScript(BP_SEARCH_SERVER + "/javascripts/bp_jumpTo.js");
+// jQuery.getScript("/javascripts/bp_jumpTo.js");
+
 // Process after document is fully loaded
 jQuery(document).ready(function(){
 	// Install any CSS we need (check to make sure it hasn't been loaded)
@@ -77,7 +81,7 @@ jQuery(document).ready(function(){
 	jQuery("#bp_quick_jump").append("<input type='hidden' id='jump_to_concept_id'>");
 	jQuery("#bp_quick_jump").append("<input type='hidden' id='jump_to_ontology_id'>");
 
-	// Grab the specific scripts we need and fires it start event
+	// Grab the specific scripts we need and fire the start event
 	jQuery.getScript(BP_SEARCH_SERVER + "/javascripts/JqueryPlugins/autocomplete/crossdomain_autocomplete.js",function(){
 		jumpTo_setup_functions();
 	});
@@ -92,7 +96,6 @@ function jumpTo_jumpToValue(li) {
 			return;
 		}
 	}
-
 	if (jQuery("#jump_to_concept_id") != null && jQuery("#jump_to_ontology_id") != null) {
 		var sValue = jQuery("#jump_to_concept_id").val();
 		var ontology_id = jQuery("#jump_to_ontology_id").val();
@@ -101,85 +104,92 @@ function jumpTo_jumpToValue(li) {
 	}
 }
 
-function jumpTo_formatItem(row, position, count) {
-  var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
-  var keywords = jQuery("#BP_search_box").val().replace(specials, "\\$&").split(' ').join('|');
-  var regex = new RegExp( '(' + keywords + ')', 'gi' );
-  var result = "";
-  var class_name_width = "350px";
 
-  // Results
-  var result_type = row[2];
-  var result_class = row[0];
-  var result_ont_version = row[3];
-  var result_uri = row[4];
+// function jumpTo_formatItem(row, position, count) {
+// 	var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
+// 	var keywords = jQuery("#BP_search_box").val().replace(specials, "\\$&").split(' ').join('|');
+// 	var regex = new RegExp( '(' + keywords + ')', 'gi' );
+// 	var result = "";
+// 	var class_name_width = "350px";
+// 	// Results
+// 	var result_type = row[2];
+// 	var result_class = row[0];
+// 	var result_ont_version = row[3];
+// 	var result_uri = row[4];
+// 	// Set wider class name column
+// 	if (BP_include_definitions) {
+// 		class_name_width = "150px";
+// 	} else if (BP_ontology_id == "") {
+// 		class_name_width = "300px";
+// 	}
+// 	// row[7] is the ontology_id, only included when searching multiple ontologies
+// 	if (BP_ontology_id !== "") {
+// 		if (BP_include_definitions) {
+// 			result += definitionMarkup(result_ont_version, result_uri);
+// 		}
+// 		result += "<div class='result_class' style='width: "+class_name_width+";'>" + result_class.replace(regex, "<b><span class='result_class_highlight'>$1</span></b>") + "</div>";
+// 		result += "<div class='result_type' style='overflow: hidden; float: none;'>" + result_type + "</div>";
+// 	} else {
+// 		// Results
+// 		var result_ont = row[7];
+// 		result += "<div class='result_class' style='width: "+class_name_width+";'>" + result_class.replace(regex, "<b><span class='result_class_highlight'>$1</span></b>") + "</div>"
+// 		if (BP_include_definitions) {
+// 			result += definitionMarkup(result_ont_version, result_uri);
+// 		}
+// 		result += "<div>" + " <div class='result_type'>" + result_type + "</div><div class='result_ontology' style='overflow: hidden;'>" + truncateText(result_ont, 30) + "</div></div>";
+// 	}
+// 	return result;
+// }
 
-  // Set wider class name column
-  if (BP_include_definitions) {
-    class_name_width = "150px";
-  } else if (BP_ontology_id == "") {
-    class_name_width = "300px";
-  }
-
-	// row[7] is the ontology_id, only included when searching multiple ontologies
-	if (BP_ontology_id !== "") {
-    if (BP_include_definitions) {
-      result += definitionMarkup(result_ont_version, result_uri);
-    }
-
-		result += "<div class='result_class' style='width: "+class_name_width+";'>" + result_class.replace(regex, "<b><span class='result_class_highlight'>$1</span></b>") + "</div>";
-
-    result += "<div class='result_type' style='overflow: hidden; float: none;'>" + result_type + "</div>";
-	} else {
-    // Results
-    var result_ont = row[7];
-
-		result += "<div class='result_class' style='width: "+class_name_width+";'>" + result_class.replace(regex, "<b><span class='result_class_highlight'>$1</span></b>") + "</div>"
-
-    if (BP_include_definitions) {
-      result += definitionMarkup(result_ont_version, result_uri);
-    }
-
-    result += "<div>" + " <div class='result_type'>" + result_type + "</div><div class='result_ontology' style='overflow: hidden;'>" + truncateText(result_ont, 30) + "</div></div>";
-	}
-
-	return result;
-}
-
-function definitionMarkup(ont, concept) {
-	return "<div class='result_definition'>retreiving definitions...<a class='get_definition_via_ajax' href='"+BP_SEARCH_SERVER+"/ajax/json_class?callback=?&ontologyid="+ont+"&conceptid="+encodeURIComponent(concept)+"'></a></div>";
-}
+// function definitionMarkup(ont, concept) {
+// 	return "<div class='result_definition'>retreiving definitions...<a class='get_definition_via_ajax' href='"+BP_SEARCH_SERVER+"/ajax/json_class?callback=?&ontologyid="+ont+"&conceptid="+encodeURIComponent(concept)+"'></a></div>";
+// }
 
 function jumpTo_setup_functions() {
-  var extra_params = { subtreerootconceptid: encodeURIComponent(BP_search_branch) };
+  var extra_params = {
+    subtreerootconceptid: encodeURIComponent(BP_search_branch),
+    objecttypes: "class"
+  };
 
-  var result_width = 350;
-
-  // Add extra space for definition
+  var result_width = 400;
   if (BP_include_definitions) {
+	// Add extra space for definition
     result_width += 300;
   }
-
-  // Add space for ontology name
   if (BP_ontology_id === "") {
+	// Add space for ontology name
     result_width += 250;
-  } else {
-    result_width += 100;
   }
 
-  jQuery("#BP_search_box").bioportal_autocomplete(BP_SEARCH_SERVER + "/search/json_search/" + BP_ontology_id, {
-  	extraParams: extra_params,
-  	lineSeparator: "~!~",
-  	matchSubset: 0,
-  	minChars: 3,
-  	maxItemsToShow: 20,
-  	onFindValue: jumpTo_jumpToValue,
-  	onItemSelect: jumpTo_jumpToSelect,
-  	width: result_width,
-  	footer: '<div style="color: grey; font-size: 8pt; font-family: Verdana; padding: .8em .5em .3em;">Results provided by <a style="color: grey;" href="' + BP_SEARCH_SERVER + '">' + BP_ORG_SITE + '</a></div>',
-  	formatItem: jumpTo_formatItem
-  });
+  var footer = '<div style="color: grey; font-size: 8pt; font-family: Verdana; padding: .8em .5em .3em;">'
+  footer += 'Results provided by <a style="color: grey;" href="' + BP_SEARCH_SERVER + '">' + BP_ORG_SITE + '</a></div>';
 
+  // jQuery("#BP_search_box").bioportal_autocomplete(BP_SEARCH_SERVER + "/search/json_search/" + BP_ontology_id, {
+  // 	extraParams: extra_params,
+  // 	lineSeparator: "~!~",
+  // 	matchSubset: 0,
+  // 	minChars: 3,
+  // 	maxItemsToShow: 20,
+  // 	onFindValue: jumpTo_jumpToValue,
+  // 	onItemSelect: jumpTo_jumpToSelect,
+  // 	width: result_width,
+  // 	footer: footer,
+  // 	formatItem: formatItem 
+  // 	// formatItem: jumpTo_formatItem
+  // });
+
+  var ontSearchURL = BP_SEARCH_SERVER + "/search/json_search/" + BP_ontology_id,
+     ontSearchOptions = {
+	    searchBoxSelector: "#BP_search_box",
+	  	extraParams: extra_params,
+	  	onFindValue: jumpTo_jumpToValue,   // identify custom function (not function closure)
+	  	onItemSelect: jumpTo_jumpToSelect, // identify custom function (not function closure)
+	  	width: result_width,
+	  	footer: footer
+	  	// formatItem: formatItem,
+	  	// formatItem: jumpTo_formatItem
+     };
+  search_box_init(ontSearchURL, ontSearchOptions);
   jumpTo_searchbox = jQuery("#BP_search_box")[0].autocompleter;
 
   // Setup polling to get definitions
