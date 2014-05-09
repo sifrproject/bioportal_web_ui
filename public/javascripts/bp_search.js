@@ -30,6 +30,93 @@ var showAdditionalClsResults = function(event) {
     showAdditionalResults(this, "#additional_cls_results_");
 };
 
+
+// Declare the blacklisted class ID entities at the top level, to avoid
+// repetitive execution within blacklistClsIDComponents.  The order of the
+// declarations here matches the order of removal.  The fixed strings are
+// removed once, the regex strings are removed globally from the class ID.
+var blacklistFixStrArr = [],
+    blacklistSearchWordsArr = [], // see performSearch and aggregateResultsWithSubordinateOntologies
+    blacklistRegexArr = [],
+    blacklistRegexMod = "ig";
+blacklistFixStrArr.push("https://");
+blacklistFixStrArr.push("http://");
+blacklistFixStrArr.push("bioportal.bioontology.org/ontologies/");
+blacklistFixStrArr.push("purl.bioontology.org/ontology/");
+blacklistFixStrArr.push("purl.obolibrary.org/obo/");
+blacklistFixStrArr.push("swrl.stanford.edu/ontologies/");
+blacklistFixStrArr.push("mesh.owl"); // Avoids RH-MESH subordinate to MESH
+blacklistRegexArr.push(new RegExp("abnormalities", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("biological", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("biology", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("bioontology", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("clinical", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("extension", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("\.gov", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("ontology", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("ontologies", blacklistRegexMod));
+blacklistRegexArr.push(new RegExp("semanticweb", blacklistRegexMod));
+
+function blacklistClsIDComponents(clsID) {
+    var strippedID = clsID;
+    // remove fixed strings first
+    for (var i = 0; i < blacklistFixStrArr.length; i++) {
+        strippedID = strippedID.replace(blacklistFixStrArr[i], "");
+    };
+    // cleanup with regex replacements
+    for (var i = 0; i < blacklistRegexArr.length; i++) {
+        strippedID = strippedID.replace(blacklistRegexArr[i], "");
+    };
+    // remove search keywords (see performSearch and aggregateResultsWithSubordinateOntologies)
+    for (var i = 0; i < blacklistSearchWordsArr.length; i++) {
+        strippedID = strippedID.replace(blacklistSearchWordsArr[i], "");
+    };
+    return strippedID;
+}
+
+function OntologyOwnsClass(clsID, ontAcronym) {
+    // Does the clsID contain the ontAcronym?
+    // Use case insensitive match
+    clsID = blacklistClsIDComponents(clsID);
+    return clsID.toUpperCase().lastIndexOf(ontAcronym) > -1;
+}
+
+function findOntologyOwnerOfClass(clsID, ontAcronyms) {
+    // Find the index of cls_id in cls_list results with the cls_id in the 'owner'
+    // ontology (cf. ontologies that import the class, or views).
+    var ontAcronym = "",
+        ontWeight = 0,
+        ontIsOwner = false,
+        ontOwner = {
+            "acronym": "",
+            "index": null,
+            "weight": 0
+        };
+    for (var i = 0, j = ontAcronyms.length; i < j; i++) {
+        ontAcronym = ontAcronyms[i];
+        // Does the class ID contain the ontology acronym? If so, the result is a
+        // potential ontology owner. Update the ontology owner, if the ontology
+        // acronym matches and it has a greater 'weight' than any previous ontology owner.
+        // Note that OntologyOwnsClass() modifies the clsID to blacklist various strings that
+        // cause false or misleading matches for ontology acronyms in class ID.
+        if (OntologyOwnsClass(clsID, ontAcronym)) {
+            // This weighting that places greater value on matching an ontology acronym later in the class ID.
+            ontWeight = ontAcronym.length * (clsID.toUpperCase().lastIndexOf(ontAcronym) + 1);
+            if (ontWeight > ontOwner.weight) {
+                ontOwner.acronym = ontAcronym;
+                ontOwner.index = i;
+                ontOwner.weight = ontWeight;
+                // Cannot break here, in case another acronym has greater weight.
+            }
+        }
+
+    }
+    return ontOwner;
+}
+
+
+
+
 jQuery(document).ready(function() {
     // Wire advanced search categories
     jQuery("#search_categories").chosen({
@@ -256,6 +343,9 @@ function performSearch() {
         exactMatch = jQuery("#search_exact_match").is(":checked"),
         categories = jQuery("#search_categories").val() || "";
 
+    // Set the list of search words to be blacklisted for the ontology ownership algorithm
+    blacklistSearchWordsArr = query.split(/\s+/);
+
     jQuery.ajax({
         // bp.config is created in views/layouts/_header..., which calls
         // ApplicationController::bp_config_json
@@ -351,14 +441,44 @@ function aggregateResultsWithSubordinateOntologies(ontologies) {
         tmpResult = null,
         tmpClsID = null,
         tmpOntOwner = null,
+        ontAcronym = null,
         ontAcronyms = [],
         clsOntOwnerTracker = {};
-    // build hash of ontology acronyms
+    // build array of ontology acronyms
     for (i = 0, j = ontologies.length; i < j; i++) {
         tmpOnt = ontologies[i];
         tmpResult = tmpOnt.same_ont[0]; // primary result for this ontology
-        ontAcronyms.push(ontologyIdToAcronym(tmpResult.links.ontology));
+        ontAcronym = ontologyIdToAcronym(tmpResult.links.ontology);
+        ontAcronyms.push(ontAcronym);
     }
+    // Remove any items in blacklistSearchWordsArr that match ontology acronyms.
+    i = 0;
+    while (i < blacklistSearchWordsArr.length) {
+        // Check for any substring matches against ontology acronyms, where the
+        // acronyms are assumed to be upper case strings.  (Note, cannot use the
+        // ontAcronyms array .indexOf() method, because it doesn't search for
+        // substring matches).
+        var searchToken = blacklistSearchWordsArr[i].toUpperCase();
+        var match = false;
+        for (var j = ontAcronyms.length - 1; j >= 0; j--) {
+            if (ontAcronyms[j].indexOf(searchToken) > -1) {
+                match = true;
+                break;
+            }
+        };
+        if (match) {
+            // Remove this blacklisted search token because it matches or partially matches an ontology acronym.
+            blacklistSearchWordsArr.splice(i,1);
+            // Don't increment i, the slice moves everything so i+1 is now at i.
+        } else {
+            i++; // check the next search token.
+        }
+    }
+    // Convert blacklistSearchWordsArr to regex constructs so they are removed
+    // with case insensitive matches in blacklistClsIDComponents
+    for (var i = blacklistSearchWordsArr.length - 1; i >= 0; i--) {
+        blacklistSearchWordsArr[i] = new RegExp(blacklistSearchWordsArr[i], blacklistRegexMod);
+    };
     // build hash of primary class results with an ontology owner
     for (i = 0, j = ontologies.length; i < j; i++) {
         tmpOnt = ontologies[i];
@@ -654,94 +774,6 @@ function findClassWithOntologyOwner(cls_id, cls_list) {
     }
     return ontOwner;
 }
-
-
-// Declare the blacklisted class ID entities at the top level, to avoid
-// repetitive execution within blacklistClsIDComponents.  The order of the
-// declarations here matches the order of removal.  The fixed strings are
-// removed once, the regex strings are removed globally from the class ID.
-var blacklistFixStrArr = [],
-    blacklistRegexArr = [],
-    blacklistRegexMod = "ig";
-blacklistFixStrArr.push("https://");
-blacklistFixStrArr.push("http://");
-blacklistFixStrArr.push("bioportal.bioontology.org/ontologies/");
-blacklistFixStrArr.push("purl.bioontology.org/ontology/");
-blacklistFixStrArr.push("purl.obolibrary.org/obo/");
-blacklistFixStrArr.push("swrl.stanford.edu/ontologies/");
-blacklistFixStrArr.push("mesh.owl"); // Avoids RH-MESH subordinate to MESH
-blacklistRegexArr.push(new RegExp("abnormalities", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("biological", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("biology", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("bioontology", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("clinical", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("extension", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("\.gov", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("ontology", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("ontologies", blacklistRegexMod));
-blacklistRegexArr.push(new RegExp("semanticweb", blacklistRegexMod));
-
-function blacklistClsIDComponents(clsID) {
-    var strippedID = clsID;
-    // remove fixed strings first
-    for (var i = 0; i < blacklistFixStrArr.length; i++) {
-        strippedID = strippedID.replace(blacklistFixStrArr[i], "");
-    };
-    // cleanup with regex replacements
-    for (var i = 0; i < blacklistRegexArr.length; i++) {
-        strippedID = strippedID.replace(blacklistRegexArr[i], "");
-    };
-    return strippedID;
-}
-
-function OntologyOwnsClass(clsID, ontAcronym) {
-    // Does the clsID contain the ontAcronym?
-    // Use case insensitive match
-    clsID = blacklistClsIDComponents(clsID);
-    return clsID.toLowerCase().indexOf(ontAcronym.toLowerCase()) > -1;
-}
-
-function findOntologyOwnerOfClass(clsID, ontAcronyms) {
-    // Find the index of cls_id in cls_list results with the cls_id in the 'owner'
-    // ontology (cf. ontologies that import the class, or views).
-    var ontAcronym = "",
-        ontWeight = 0,
-        ontIsOwner = false,
-        ontOwner = {
-            "acronym": "",
-            "index": null,
-            "weight": 0
-        };
-    for (var i = 0, j = ontAcronyms.length; i < j; i++) {
-        ontAcronym = ontAcronyms[i];
-        // Does the cls_id contain the ont acronym? If so, the result is a
-        // potential ontology owner. Update the ontology owner, if the ontology
-        // acronym matches and it is longer than any previous ontology owner.
-
-        // Note: superceded acronym length with algorithm below.
-        // ontIsOwner = OntologyOwnsClass(clsID, ontAcronym);
-        // if (ontIsOwner && (ontAcronym.length > ontOwner.acronym.length)) {
-        //     ontOwner.acronym = ontAcronym;
-        //     ontOwner.index = i;
-        //     // Cannot break here, in case another acronym has longer match.
-        // }
-
-        // Alternate algorithm that places greater weight on matching an
-        // ontology acronym later in the class URI.
-        if (OntologyOwnsClass(clsID, ontAcronym)) {
-            ontWeight = ontAcronym.length * (clsID.toLowerCase().indexOf(ontAcronym.toLowerCase()) + 1);
-            if (ontWeight > ontOwner.weight) {
-                ontOwner.acronym = ontAcronym;
-                ontOwner.index = i;
-                ontOwner.weight = ontWeight;
-                // Cannot break here, in case another acronym has greater weight.
-            }
-        }
-
-    }
-    return ontOwner;
-}
-
 
 
 var sortStringFunction = function(a, b) {

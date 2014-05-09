@@ -28,7 +28,9 @@
     \&nbsp;&nbsp;
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
 %div{:style => "padding:10px;margin:10px;"}
-  = t('home.intro').nil? || t('home.intro').empty? ? "<span style='font-size:1.5em'><b>Welcome to BioPortal!</b> For help using #{$SITE}, click on this icon: #{help_icon("/help#Home_Page")}</span>" : t('home.intro')
+  - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
+  - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"
+  = t('home.intro').nil? || t('home.intro').empty? ? bp_welcome + help : t('home.intro')
 %table{:width => "100%"}
   %tr
     %td{:valign => "top", :width => "33%"}

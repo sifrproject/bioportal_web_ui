@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/ncbo/ontologies_api_ruby_client.git
-  revision: 05e708a4f34fdc75ab3890d882323fef4d884cb4
+  revision: 6e56e5e5733f5088389e78ffee8eea3b54b80fe2
   specs:
     ontologies_api_client (0.0.5)
       activesupport (<= 3.0)
@@ -55,11 +55,11 @@ GEM
     iconv (1.0.4)
     json (1.8.1)
     kgio (2.9.2)
-    lz4-ruby (0.3.0)
+    lz4-ruby (0.3.1)
     memcache-client (1.8.5)
     method_source (0.8.2)
     mime-types (2.2)
-    multi_json (1.9.2)
+    multi_json (1.9.3)
     multipart-post (2.0.0)
     mysql (2.8.1)
     oink (0.10.1)

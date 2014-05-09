@@ -49,6 +49,6 @@
       %th Description:*
       %td= text_area :project, :description, value: @project.description, :rows=>6, :class=>"required", :tabindex=>5
   %div#ontology_picker_project{style: "padding-top: 2em;"}
-    - selected_ontologies = @project.ontologyUsed && @project.ontologyUsed.map {|o| o.acronym } || []
+    - selected_ontologies = @project.ontologyUsed && @project.ontologyUsed.map {|id| id.split('/').last } || []
     - locals = { sel_text: "Select Ontologies Used", selected_ontologies: selected_ontologies, form_object: :project, form_attribute: "ontologyUsed" }
     = render :partial => "shared/ontology_picker", locals: locals

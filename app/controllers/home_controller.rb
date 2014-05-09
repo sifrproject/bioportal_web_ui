@@ -158,7 +158,13 @@ class HomeController < ApplicationController
     @user = LinkedData::Client::Models::User.get(session[:user].id, include: "all")
 
     @user_ontologies = @user.customOntology
-    @user_ontologies ||= {}
+    @user_ontologies ||= []
+    
+    onts = LinkedData::Client::Models::Ontology.all;
+    @admin_ontologies = onts.select {|o| o.administeredBy.include? @user.id }
+
+    projects = LinkedData::Client::Models::Project.all;
+    @user_projects = projects.select {|p| p.creator.include? @user.id }
 
     render :partial => "users/details", :layout => "ontology"
   end

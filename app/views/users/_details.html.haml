@@ -23,6 +23,7 @@
     = session[:user].apikey
   %br/
 
+
   - unless @user.subscription.nil? || @user.subscription.empty?
     %h2 Subscriptions
     %table
@@ -42,12 +43,23 @@
               = subscribe_ontology_button(ont, @user)
     %br/
 
-  - unless @user_submitted_ontologies.nil? || @user_submitted_ontologies.length == 0
-    %h2 Submitted Ontologies
+  - unless @user_projects.nil? || @user_projects.empty?
+    %h2#user_projects{:style => "font-size: large;"}
+      Projects Created
     %ul{:style => "padding-left: 1em;"}
-      - @user_submitted_ontologies.each do |ont|
+      - @user_projects.each do |project|
         %li
-          %a{:href => "/ontologies/#{ont.id}"}= ont.displayLabel
+          %a{:href => "/projects/#{project.acronym}"}= project.name
+    %br/
+
+  - unless @admin_ontologies.nil? || @admin_ontologies.empty?
+    %h2#admin_ontologies{:style => "font-size: large;"}
+      Submitted Ontologies
+    %ul{:style => "padding-left: 1em;"}
+      - @admin_ontologies.each do |ont|
+        %li
+          %a{:href => "/ontologies/#{ont.acronym}"}= ont.name
+    %br/
 
   :javascript
     jQuery(document).ready(function(){
