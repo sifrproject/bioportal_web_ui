@@ -155,7 +155,7 @@ jQuery(document).ready(function () {
 // Get parameters from the URL
 var BP_urlParams = {};
 (function () {
-  var match,
+  var match, hashParamMatch, paramHash,
     pl = /\+/g,  // Regex for replacing addition symbol with a space
     search = /([^&=]+)=?([^&]*)/g,
     decode = function (s) {
@@ -165,10 +165,35 @@ var BP_urlParams = {};
   queryH = window.location.hash.substring(1);
 
   while (match = search.exec(query)) {
-    BP_urlParams[decode(match[1])] = decode(match[2]);
+    if (hashParamMatch = /^(\w+)\[(.*)\]$/.exec(match[1])) {
+      paramHash = BP_urlParams[hashParamMatch[1]];
+      if (paramHash === undefined) {
+        paramHash = {};
+      }
+      if (paramHash[decode(hashParamMatch[2])] === undefined) {
+        paramHash[decode(hashParamMatch[2])] = [];
+      }
+      paramHash[decode(hashParamMatch[2])].push(decode(match[2]));
+      BP_urlParams[hashParamMatch[1]] = paramHash;
+    } else {
+      BP_urlParams[decode(match[1])] = decode(match[2]);
+    }
   }
+
   while (match = search.exec(queryH)) {
-    BP_urlParams[decode(match[1])] = decode(match[2]);
+    if (hashParamMatch = /^(\w+)\[(.*)\]$/.exec(match[1])) {
+      paramHash = BP_urlParams[hashParamMatch[1]];
+      if (paramHash === undefined) {
+        paramHash = {};
+      }
+      if (paramHash[decode(hashParamMatch[2])] === undefined) {
+        paramHash[decode(hashParamMatch[2])] = [];
+      }
+      paramHash[decode(hashParamMatch[2])].push(decode(match[2]));
+      BP_urlParams[hashParamMatch[1]] = paramHash;
+    } else {
+      BP_urlParams[decode(match[1])] = decode(match[2]);
+    }
   }
 })();
 
@@ -182,12 +207,8 @@ function pageInit() {
     params[paramLocations[i]] = route[i];
   }
   jQuery.extend(params, BP_urlParams);
-  //
-  // TODO: may need to change the .split() on the classes params.
-  //
-  params["classes"] = (typeof params["classes"] !== "undefined") ? params["classes"].split(",") : undefined;
   BP_urlParams = params;
-  if (typeof params["acronym"] !== "undefined") {
+  if (typeof params["acronym"] !== "undefined" && params["acronym"] !== "search") {
     router.route("resource", params);
   } else if (typeof params["resources"] !== "undefined") {
     router.route("resources", params);
@@ -349,29 +370,37 @@ function displayResources(classes) {
 }
 
 function displayClasses(classes, completedCallback) {
-  var concept, conceptOpt, ontologyId, conceptId, ontologyName, conceptRetreivedCount, conceptsLength = classes.length, params;
-  conceptRetreivedCount = 0;
+  var concept, conceptOpt, ontologyId, conceptId, ontologyName, conceptsLength, params, ontClasses, chsnValue,
+      conceptRetreivedCount = 0,
+      ontClassPairs = [];
+
+  for (ontology in classes) {
+    ontClasses = classes[ontology];
+    for (var i = 0; i < ontClasses.length; i++) {
+      ontClassPairs.push([ontology, ontClasses[i]]);
+    }
+  }
+  conceptsLength = ontClassPairs.length;
+
   jQuery("#resource_index_classes").html("");
-  for (var i = 0; i < conceptsLength; i++) {
-    concept = classes[i];
-    ontologyId = concept.split("/")[0];
-    conceptId = concept.split("/")[1];
+  for (var i = 0; i < ontClassPairs.length; i++) {
+    ontClassPair = ontClassPairs[i];
+    ontologyId = ontClassPair[0];
+    ontologyAcronym = ontClassPair[0].split("/").slice(-1)[0];
+    conceptId = ontClassPair[1];
     ontologyName = ont_names[ontologyId];
-    params = { ontologyid: ontologyId, conceptid: conceptId };
-    jQuery.getJSON("/ajax/json_class", params, (function (ontologyName) {
+    params = { ontologyid: ontologyAcronym, conceptid: conceptId };
+    chsnValue = ontologyId + uri_split_chars + conceptId;
+    jQuery.getJSON("/ajax/json_class", params, (function (ontologyAcronym, chsnValue) {
       return function (data) {
-        jQuery("#resource_index_classes").append(jQuery("<option/>").val(concept).html(" " + data.label + " <span class='search_ontology_acronym'>(" + ontologyName + ")</span>"));
+        jQuery("#resource_index_classes").append(jQuery("<option/>").attr("selected", true).val(chsnValue).html(" " + data.prefLabel + " <span class='search_ontology_acronym'>(" + ontologyAcronym + ")</span>"));
         conceptRetreivedCount += 1;
         if (conceptRetreivedCount == conceptsLength) {
-          for (var j = 0; j < conceptsLength; j++) {
-            conceptOpt = classes[j];
-            jQuery("#resource_index_classes option[value='" + conceptOpt + "']").attr("selected", true);
-          }
           updateChosen();
           getSearchResults(completedCallback);
         }
       }
-    })(ontologyName));
+    })(ontologyAcronym, chsnValue));
   }
 }
 
