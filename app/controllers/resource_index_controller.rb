@@ -65,6 +65,9 @@ class ResourceIndexController < ApplicationController
     @resources ||= LinkedData::Client::ResourceIndex.resources # application_controller
     @resources_hash ||= resources2hash(@resources)  # required in partial 'resources_results'
 
+    # Enable for retrieving the first 10 docs from all resources at once
+    # @documents_by_resource = LinkedData::Client::ResourceIndex.documents_all_resources(@classes, page: 1, pagesize: 10)
+
     render :partial => "resources_results"
   end
 

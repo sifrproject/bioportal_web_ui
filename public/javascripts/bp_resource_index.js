@@ -393,7 +393,11 @@ function displayClasses(classes, completedCallback) {
     chsnValue = ontologyId + uri_split_chars + conceptId;
     jQuery.getJSON("/ajax/json_class", params, (function (ontologyAcronym, chsnValue) {
       return function (data) {
-        jQuery("#resource_index_classes").append(jQuery("<option/>").attr("selected", true).val(chsnValue).html(" " + data.prefLabel + " <span class='search_ontology_acronym'>(" + ontologyAcronym + ")</span>"));
+        jQuery("#resource_index_classes")
+            .append(jQuery("<option/>")
+            .attr("selected", true)
+            .val(chsnValue)
+            .html(" " + data.prefLabel + " <span class='search_ontology_acronym'>(" + ontologyAcronym + ")</span>"));
         conceptRetreivedCount += 1;
         if (conceptRetreivedCount == conceptsLength) {
           updateChosen();
@@ -472,6 +476,7 @@ jQuery("a#show_all_resources").live("click", function () {
 });
 
 function showResourceResults(resource, name) {
+  jQuery("#resource_info_" + resource).find("a.resource_results_ajax").addClass("get_via_ajax");
   jQuery(".resource_info").addClass("not_visible");
   jQuery("#resource_table").addClass("not_visible");
   jQuery("#resource_info_" + resource).removeClass("not_visible");

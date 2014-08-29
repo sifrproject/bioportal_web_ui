@@ -53,12 +53,16 @@
       %div.resource_image
         %img{:src => @resources_hash[acronym.to_s][:logo], :class => "resource_image"}
       - if count > 0
-        - @documents = LinkedData::Client::ResourceIndex.documents(acronym, @classes, page: 1, pagesize: 10)
-        - @resource_results = ResourceIndexResultPaginatable.new(@documents)
-        - @acronym = acronym.to_s
+        / Enable when getting the first 10 docs for all resources at once
+        /- @documents = @documents_by_resource[acronym.to_s]
+        /- @resource_results = ResourceIndexResultPaginatable.new(@documents)
+        /- @acronym = acronym.to_s
 
         %div.paginate_ajax
-          %a{class: "get_via_ajax", href: "/resource_index/results_paginate?acronym=#{acronym}&#{LinkedData::Client::ResourceIndex.class_params(@classes)}"}
+          / Enable when getting the first 10 docs for all resources at once
+          /= render partial: "resource_results"
+          = loading_spinner()
+          %a{class: "resource_results_ajax", style: "display: none;", href: "/resource_index/results_paginate?acronym=#{acronym}&#{LinkedData::Client::ResourceIndex.class_params(@classes)}"}
       - else
         No results
       %div.clearing

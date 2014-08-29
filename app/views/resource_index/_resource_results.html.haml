@@ -26,6 +26,7 @@
         %div.element_text
           -fields_sorted = fields_hash.sort_by { |k,v| resource_data[:fields][k].weight }.reverse rescue binding.pry # returns list like [ [k,v], ...]
           -fields_sorted.each do |field_list|  # field_list contains [ string, hash ]
+            -next if field_list[1].to_s.strip.length == 0
             -field_name = field_list[0]
             -field_data = field_list[1]
             %h4= field_name.to_s.split("_").drop(1).join(" ").capitalize
