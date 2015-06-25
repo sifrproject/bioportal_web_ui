@@ -10,6 +10,7 @@ gem 'uglifier', '>= 1.0.3'
 # gem 'therubyracer', platforms: :ruby
 gem 'duktape'
 
+gem 'jquery-ui-rails'
 gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
@@ -42,7 +43,6 @@ gem "rack-mini-profiler"
 gem "flamegraph"
 gem "stackprof", :require => false
 gem 'cube-ruby', require: 'cube'
-gem 'calendar_date_select'
 gem 'oj'
 gem 'multi_json'
 gem 'rails_autolink'
@@ -50,6 +50,7 @@ gem 'dalli'
 
 #logs in json format, useful for shipping logs to logstash
 gem 'rackstash', git: "https://github.com/planio-gmbh/rackstash.git"
+gem 'logstash-logger'
 
 gem 'ncbo_resolver', git: "https://github.com/ncbo/ncbo_resolver.git"
 gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "master"

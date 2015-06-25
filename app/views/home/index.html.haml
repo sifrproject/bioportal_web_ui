@@ -221,7 +221,7 @@
         sValue = data;
       }
       document.location="/ontologies/"+sValue;
-      jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Ontology...</h1>' });
+      jQuery.blockUI({ message: '<h1>#{image_tag("jquery.simple.tree/spinner.gif")} Loading Ontology...</h1>' });
       return;
     }
   }
@@ -253,7 +253,8 @@
       var concept_id = data[0];
       var ontology_version_id = data[2];
       var ontology_id = data[7];
-      document.location="/resource_index/resource_index?conceptids="+ontology_id+"/"+encodeURIComponent(concept_id);
+      var full_ontology_id = jQuery(document).data().bp.config.rest_url + "/ontologies/" + ontology_id;
+      window.location = "/resource_index/resources?classes[" + encodeURIComponent(full_ontology_id) + "]=" + encodeURIComponent(concept_id);
       return;
     }
   }

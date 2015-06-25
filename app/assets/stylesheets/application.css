@@ -9,5 +9,18 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require jquery-ui
  *= require_tree .
+ *
+ *= require alertify
+ *= require chosen
+ *= require facebox
+ *= require fg.menu
+ *= require jquery-ui-1.8.1.custom
+ *= require jquery.autocomplete
+ *= require jquery.rating
+ *= require jquery.tooltip
+ *= require superfish
+ *= require thickbox
+ *
  */

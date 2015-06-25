@@ -53,7 +53,7 @@
     / annotator_button calls 'get_annotations' in bp_annotator.js
     %input#annotator_button.link_button{:style => "margin-top: 15px;", :type => "button", :value => "Get Annotations"}/
     %span.annotator_spinner{:style => "display: none;"}
-      %img{:src => "/images/spinners/spinner_000000_16px.gif", :style => "vertical-align: text-bottom;"}/
+      %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "vertical-align: text-bottom;"}/
     %span#annotator_error.annotator_error{:style => "color: red;"}
 #annotations_container{:style => "display: none; padding: 0 13px; margin: 0 0 2em;"}
   #result_counts{:style => "float: right; font-style: oblique; color: gray;"}

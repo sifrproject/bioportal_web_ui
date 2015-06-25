@@ -31,7 +31,7 @@
       #map_from_concept_details{:style => "display: none; margin-top: 2em;"}
         %h2{:style => "margin-bottom: 5px;"} Class Details
         #map_from_concept_details_table{:style => "height: 200px; overflow: auto; border: thin solid lightgray"}
-          %img{:src => "/images/spinners/spinner_000000_16px.gif", :style => "padding: 5px;"}/
+          %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "padding: 5px;"}/
   #mapping_to{:style => "width: 50%; float: right;"}
     #mapping_to_content{:style => "padding: 1em;"}
       %h2 Class 2
@@ -42,7 +42,7 @@
       #map_to_concept_details{:style => "display: none; margin-top: 2em;"}
         %h2{:style => "margin-bottom: 5px;"} Class Details
         #map_to_concept_details_table{:style => "height: 200px; overflow: auto; border: thin solid lightgray"}
-          %img{:src => "/images/spinners/spinner_000000_16px.gif", :style => "padding: 5px;"}/
+          %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "padding: 5px;"}/
   #mapping_options{:style => "margin: 13px; clear: both;"}
     = text_area(:mapping, :comment, :class => "", :placeholder => "Comment", :style => "padding: 3px; height: 3.2em; width: 100%;")
     %br/

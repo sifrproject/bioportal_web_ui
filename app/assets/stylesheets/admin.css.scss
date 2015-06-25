@@ -1,0 +1,99 @@
+/* message boxes */
+.alert-box {
+  color: #555;
+  border-radius: 5px;
+  font-family: Tahoma, Geneva, Arial, sans-serif;
+  font-size: 11px;
+  padding: 10px 11px 10px 36px;
+}
+.alert-box span {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.error {
+  background: #ffecec image-url("error.png") no-repeat 10px 50%;
+  border: 1px solid #f5aca6;
+}
+.success {
+  background: #e9ffd9 image-url("success.png") no-repeat 10px 50%;
+  border: 1px solid #a6ca8a;
+}
+.warning {
+  background: #fff8c4 image-url("warning.png") no-repeat 10px 50%;
+  border: 1px solid #f2c779;
+}
+.notice {
+  background:#e3f7fc image-url("notice.png") no-repeat 10px 50%;
+  border:1px solid #8ed9f6;
+}
+.progress {
+  background: #fff image-url("spinners/spinner_000000_16px.gif") no-repeat 10px 50%;
+  border: 1px solid #8ed9f6;
+}
+/* end: message boxes */
+.memcached_utilities td {
+  padding: .5em;
+}
+#adminOntologies {
+  clear: both;
+}
+table.dataTable tbody tr.selected {
+  background-color: #D7E3EA;
+}
+.ontologies_list_container {
+  width: 90%;
+  padding: 1em;
+}
+/* Datatables */
+.ontologies_list_container {
+  clear: both;
+}
+.ontologies_list_container .dataTables_length {
+  float: left;
+  padding: 1em 0;
+}
+.ontologies_list_container .dataTables_filter {
+  float: right;
+  padding-top: 3px;
+}
+.ontologies_list_container .dataTables_filter input {
+  width: 200px;
+}
+.ontologies_list_container .dataTables_info {
+  text-align: center;
+  padding: .5em;
+}
+.ontologies_list_container .dataTables_paginate {
+  text-align: center;
+}
+.ontologies_list_container .dataTables_paginate .paginate_button {
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 .5em;
+}
+.ontologies_list_container .dataTables_paginate .paginate_button:hover {
+  text-decoration: none;
+}
+.ontologies_list_container .first, .ontologies_list_container .previous, .ontologies_list_container .next, .ontologies_list_container .last {
+  padding: 0 .5em;
+}
+.ontology_nav {
+  float: left;
+  padding: 0 0 1em 0;
+}
+.success_message {
+  margin: 0 0 10px !important;
+}
+#success_message,
+#error_message,
+#progress_message {
+  display: none;
+}
+/* to fix facebox default sizing in chrome */
+#facebox .body {
+  width: 375px !important;
+}
+
+.zebra td {
+  padding: 8px 12px 8px 12px !important;
+}

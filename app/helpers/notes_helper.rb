@@ -152,7 +152,7 @@ module NotesHelper
     rescue
       # pass, fallback init done above begin block to scope parameters beyond the begin/rescue block
     end
-    spinner = '<span class="notes_subscribe_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>'
+    spinner = '<span class="notes_subscribe_spinner" style="display: none;">' + image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + '</span>'
     error = "<span style='color: red;' class='notes_sub_error'></span>"
     return "<a href='javascript:void(0);' class='subscribe_to_notes link_button' #{params}>#{sub_text} to notes emails</a> #{spinner} #{error}".html_safe
   end
@@ -163,7 +163,7 @@ module NotesHelper
     # user ||= anonymous_user
 
     params = "data-bp_user_id='#{user.id}'"
-    spinner = '<span class="delete_notes_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>'
+    spinner = '<span class="delete_notes_spinner" style="display: none;">' + image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + '</span>'
     error = "<span style='color: red;' class='delete_notes_error'></span>"
     return "<a href='#' onclick='deleteNotes(this);return false;' style='display: inline-block !important;' class='notes_delete link_button' #{params}>Delete selected notes</a> #{spinner} #{error}"
   end

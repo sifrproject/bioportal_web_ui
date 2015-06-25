@@ -93,7 +93,26 @@
 
       jQuery("#acronym_errors").html(errorHTML);
     });
+
+    jQuery("#ontologyForm").validate({
+      errorClass: "ontologyFormError",
+      errorElement: "div",
+      rules: {
+        "ontology[name]": "required",
+        "ontology[acronym]": "required",
+      },
+      messages: {
+        "ontology[name]": "Please enter a name",
+        "ontology[acronym]": "Please enter an acronym",
+      },
+    });
   });
+
+:css
+  div.ontologyFormError {
+    color: red;
+    padding-top: 3px;
+  }
 
 - unless @errors.nil?
   .enable-lists{:style => "color:red;"}
@@ -186,6 +205,6 @@
       = f.check_box :subscribe_notifications
   %tr
     %td{:align => "right", :colspan => "2"}
-      = submit_tag "Cancel"
+      = submit_tag "Cancel", formnovalidate: "formnovalidate"
       = submit_tag button_text
 

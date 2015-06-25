@@ -5,8 +5,9 @@
   jQuery(function(){
     jQuery("#datepicker").datepicker({
       showOn: 'button',
-      buttonImage: '/images/calendar.gif',
+      buttonImage: "#{image_path('calendar.gif')}",
       buttonImageOnly: true,
+      buttonText: 'Choose a release date',
       dateFormat: 'yy-mm-dd'
     });
   });
@@ -180,7 +181,7 @@
         Release Date
         %span.asterik *
       %td
-        = text_field :submission, :released, :id => "datepicker", value: @submission.released, placeholder: "Date format: #{Date.today.to_s}", :required => true
+        = text_field :submission, :released, :id => "datepicker", value: "#{Date.today.to_s}", :required => true
         %span{:style => "font-size: 90%; color: grey;"}
     %tr
       %th

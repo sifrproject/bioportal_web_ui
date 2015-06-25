@@ -194,9 +194,9 @@ module ApplicationHelper
   def loading_spinner(padding = false, include_text = true)
     loading_text = include_text ? " loading..." : ""
     if padding
-      raw('<div style="padding: 1em;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;">' + loading_text + '</div>')
+      raw('<div style="padding: 1em;">' + image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + loading_text + '</div>')
     else
-      raw('<img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;">' + loading_text)
+      raw(image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + loading_text)
     end
   end
 
@@ -351,7 +351,7 @@ module ApplicationHelper
     end
     # TODO: modify/copy CSS for notes_sub_error => subscribe_error
     # TODO: modify/copy CSS for subscribe_to_notes => subscribe_to_ontology
-    spinner = '<span class="subscribe_spinner" style="display: none;"><img src="/images/spinners/spinner_000000_16px.gif" style="vertical-align: text-bottom;"></span>'
+    spinner = '<span class="subscribe_spinner" style="display: none;">' + image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + '</span>'
     error = "<span style='color: red;' class='subscribe_error'></span>"
     return "<a href='javascript:void(0);' class='subscribe_to_ontology link_button' #{params}>#{sub_text}</a> #{spinner} #{error}"
   end

@@ -10,6 +10,23 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require jquery
-//= require jquery_ujs
-//= require_tree .
+//= require bioportal
+//= require bp_class_tree
+//= require bp_ajax_controller
+//= require bp_ontology_viewer
+//= require bp_reviews
+//= require bp_notes
+//= require bp_form_complete
+//= require bp_create_mappings
+//= require bp_analytics
+//= require bp_user_intention_survey
+//= require bp_search
+//= require bp_annotator
+//= require bp_resource_index
+//= require bp_mappings
+//= require bp_visualize
+//= require bp_admin
+//= require bp_recommender
+//= require bp_property_tree
+//= require bp_ont_chart
+

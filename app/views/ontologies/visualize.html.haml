@@ -104,7 +104,7 @@
             - if $PURL_ENABLED
               %span{:style => "float: right;"}
                 %a#class_permalink{:href => @current_purl, :style => "padding: 0;", :title => "Get a permanent link to this class"}
-                  %img{:src => "/stylesheets/layout/images/link_icon.png", :style => "height: 14px; padding: 5px;"}/
+                  %img{:src => asset_path("link_icon.png"), :style => "height: 14px; padding: 5px;"}/
         #contents
           #details_content.tab_container= render :partial =>'/concepts/details'
           #visualization_content.tab_container.not_visible= render :partial =>'/concepts/biomixer'

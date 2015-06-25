@@ -4,7 +4,23 @@
 <% src_url = "#{$BIOMIXER_URL}/?mode=embed&embed_mode=paths_to_root&ontology_acronym=#{@ontology.acronym}&full_concept_id=#{CGI.escape(@concept.fullId)}&userapikey=#{user_api_key}&restURLPrefix=#{rest_domain}" %>
 <% original_src = @immediate_load ? src_url : "/ajax/loading_spinner"%>
 
-<div style="padding-left: .5%; width: 99.5%; height: 900px;">
+<script>
+window.onmessage = function(e) {
+  if (e.data === "biomixer_full_screen_request") {
+    console.log("Full sreen button pressed, when Biomixer loaded as main frame.");
+    var iframeHeight = jQuery(window).height() - jQuery("#bd_content .container").offset().top - 50;
+    jQuery("#nav_ontology").hide();
+    jQuery("#bd_content .sidebar").hide();
+    jQuery("#bd_content .vsplitbar").hide();
+    jQuery("#bd_content .container .tabs").hide();
+    jQuery("#bd_content .container").css("width", "100%").css("height", iframeHeight);
+    jQuery("#bd .bd_content .container #contents").css("max-height", iframeHeight);
+    jQuery("#biomixer_container").css("padding", 0).css("width", "100%").css("height", iframeHeight);
+  }
+};
+</script>
+
+<div id="biomixer_container" style="padding-left: .5%; width: 99.5%; height: 900px;">
   <iframe id="biomixer_iframe" src="<%=original_src%>" data-src="<%=src_url%>"
-    style="min-height: 500px;" height="100%" width="100%" frameborder="0"></iframe>
+    style="min-height: 700px;" height="100%" width="100%" frameborder="0"></iframe>
 </div>

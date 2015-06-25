@@ -11,7 +11,7 @@
       #resource_index_search_button
         %input#resource_index_button.link_button{:type => "button", :value => "Search Resource Index"}
         %span#resource_index_spinner{:style => "display: none;"}
-          %img{:src => "/images/spinners/spinner_000000_16px.gif", :style => "vertical-align: text-bottom;"}
+          %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "vertical-align: text-bottom;"}
       - textarea_title = "Start typing to find classes to search the index with"
       = select_tag :resource_index_classes, "",        |
           :multiple => 'true',                         |
