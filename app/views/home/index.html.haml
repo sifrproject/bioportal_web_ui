@@ -130,6 +130,12 @@
               %tr
                 %td Classes
                 %td= number_with_delimiter(@cls_count, :delimiter => ",")
+              %tr
+                %td Projects
+                %td= LinkedData::Client::Models::Project.all.length
+              %tr
+                %td Users
+                %td= LinkedData::Client::Models::User.all.length
       - else
         %fieldset
           = t('stats').html_safe
