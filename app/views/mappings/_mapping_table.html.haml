@@ -30,19 +30,28 @@
         - # process is likely 'same_uris'
         - next if cls.links['ontology'] == @concept.links['ontology']
       -# this is a different class or the same class in another ontology (for same_uri mappings).
-      - ont = cls.explore.ontology
-      - next if ont.errors && ont.errors.collect {|e| e.include? "Access denied" }.any?
-      - begin
-        - ont_acronym = ont.acronym
-        - ont_name = ont.name
-        - ont_link = "/ontologies/#{ont_acronym}"
+      - if map.process["name"] == "Interportal Mapping" ||  map.process["name"] == "External Mapping"
+        -# In case this is an external mapping, getting cls and ontology informations directly from the cls object
+        - cls_link = raw("<a href='#{cls.links["self"]}'>#{cls.id}</a>")
+        - ont_acronym = cls.links['ontology']
+        - ont_name = cls.links['ontology']
+        - ont_link = cls.links['ontology']
         - ont_access = true
-      - rescue
-        - ont_access = false
-        -# Work around ontologies with access restrictions
-        -# ont_acronym = cls.links['ontology'].split('/').last
-        -# ont_name = ont_acronym  # no way to get the name here?
-        -# ont_link = ''  # no link to restricted ontologies
+      - else
+        - ont = cls.explore.ontology
+        - next if ont.errors && ont.errors.collect {|e| e.include? "Access denied" }.any?
+        - begin
+          - ont_acronym = ont.acronym
+          - ont_name = ont.name
+          - ont_link = "/ontologies/#{ont_acronym}"
+          - cls_link = raw(get_link_for_cls_ajax(cls.id, ont_acronym))
+          - ont_access = true
+        - rescue
+          - ont_access = false
+          -# Work around ontologies with access restrictions
+          -# ont_acronym = cls.links['ontology'].split('/').last
+          -# ont_name = ont_acronym  # no way to get the name here?
+          -# ont_link = ''  # no link to restricted ontologies
       - if ont_access
         - map_id = map.id.to_s.split("/").last
         %tr.human{:id => map_id}
@@ -51,7 +60,7 @@
               = check_box_tag :delete_mapping_checkbox, map.id
           %td
             -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
-            = raw(get_link_for_cls_ajax(cls.id, ont_acronym))
+            = cls_link
           %td
             %a{:href => ont_link}= ont_name
           %td
