@@ -250,6 +250,3 @@ DEPENDENCIES
   stackprof
   uglifier (>= 1.0.3)
   will_paginate (~> 3.0)
-
-BUNDLED WITH
-   1.10.5
