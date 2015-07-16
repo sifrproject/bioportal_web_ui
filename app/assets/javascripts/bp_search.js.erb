@@ -355,7 +355,8 @@ function performSearch() {
             pagesize: 150,
             apikey: jQuery(document).data().bp.config.apikey,
             userapikey: jQuery(document).data().bp.config.userapikey,
-            format: "jsonp"
+            format: "jsonp",
+            ncbo_slice: (("ncbo_slice" in jQuery(document).data().bp.config) ? jQuery(document).data().bp.config.ncbo_slice : '')
         },
         dataType: "jsonp",
         success: function(data) {

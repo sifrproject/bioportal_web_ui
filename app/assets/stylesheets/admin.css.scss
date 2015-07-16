@@ -93,7 +93,9 @@ table.dataTable tbody tr.selected {
 #facebox .body {
   width: 375px !important;
 }
-
 .zebra td {
   padding: 8px 12px 8px 12px !important;
+}
+.missing_term {
+  color: red;
 }

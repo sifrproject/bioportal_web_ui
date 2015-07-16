@@ -5,17 +5,57 @@
 <% original_src = @immediate_load ? src_url : "/ajax/loading_spinner"%>
 
 <script>
+jQuery(document).data().bp.biomixer_fullscreen = {};
+jQuery(document).data().bp.biomixer_fullscreen.enabled = false;
+jQuery(document).data().bp.biomixer_fullscreen.bd_container_h = jQuery("#bd_content .container").css("height");
+jQuery(document).data().bp.biomixer_fullscreen.bd_contents_h = jQuery("#bd .bd_content .container #contents").css("max-height");
+jQuery(document).data().bp.biomixer_fullscreen.bio_container_h = jQuery("#biomixer_container").css("height");
+jQuery(document).data().bp.biomixer_fullscreen.bd_container_w = jQuery("#bd_content .container").css("width");
+jQuery(document).data().bp.biomixer_fullscreen.bio_container_w = jQuery("#biomixer_container").css("width");
+
+jQuery(document).data().bp.biomixer_fullscreen = {
+  maximize: 'hide',
+  minimize: 'show'
+};
+
+
+jQuery(document).data().bp.biomixer_fullscreen.toggle = function(toggle) {
+  jQuery("#nav_ontology")[toggle]();
+  jQuery("#bd_content .sidebar")[toggle]();
+  jQuery("#bd_content .vsplitbar")[toggle]();
+  jQuery("#bd_content .container .tabs")[toggle]();
+  jQuery(document).data().bp.biomixer_fullscreen.heights(toggle === 'show');
+}
+
+ jQuery(document).data().bp.biomixer_fullscreen.heights = function(original) {
+  var height;
+  if (original) {
+    jQuery("#bd_content .container").css("height", jQuery(document).data().bp.biomixer_fullscreen.bd_container_h);
+    jQuery("#bd .bd_content .container #contents").css("max-height", jQuery(document).data().bp.biomixer_fullscreen.bd_contents_h);
+    jQuery("#biomixer_container").css("height", jQuery(document).data().bp.biomixer_fullscreen.bio_container_h);
+    jQuery("#bd_content .container").css("width", jQuery(document).data().bp.biomixer_fullscreen.bd_container_w);
+    jQuery("#biomixer_container").css("padding", 0).css("width", jQuery(document).data().bp.biomixer_fullscreen.bio_container_w);
+    jQuery("#bd_content").trigger('resize');
+  } else {
+    height = jQuery(window).height() - jQuery("#bd_content .container").offset().top - 50;
+    jQuery("#bd_content .container").css("width", "100%").css("height", height);
+    jQuery("#bd .bd_content .container #contents").css("max-height", height);
+    jQuery("#biomixer_container").css("padding", 0).css("width", "100%").css("height", height);
+  }
+}
+
 window.onmessage = function(e) {
+  var iframeHeight = jQuery(window).height() - jQuery("#bd_content .container").offset().top - 50;
   if (e.data === "biomixer_full_screen_request") {
-    console.log("Full sreen button pressed, when Biomixer loaded as main frame.");
-    var iframeHeight = jQuery(window).height() - jQuery("#bd_content .container").offset().top - 50;
-    jQuery("#nav_ontology").hide();
-    jQuery("#bd_content .sidebar").hide();
-    jQuery("#bd_content .vsplitbar").hide();
-    jQuery("#bd_content .container .tabs").hide();
-    jQuery("#bd_content .container").css("width", "100%").css("height", iframeHeight);
-    jQuery("#bd .bd_content .container #contents").css("max-height", iframeHeight);
-    jQuery("#biomixer_container").css("padding", 0).css("width", "100%").css("height", iframeHeight);
+    if (jQuery(document).data().bp.biomixer_fullscreen.enabled) {
+      // make small
+      jQuery(document).data().bp.biomixer_fullscreen.toggle(jQuery(document).data().bp.biomixer_fullscreen.minimize);
+      jQuery(document).data().bp.biomixer_fullscreen.enabled = false;
+    } else {
+      // make big
+      jQuery(document).data().bp.biomixer_fullscreen.toggle(jQuery(document).data().bp.biomixer_fullscreen.maximize);
+      jQuery(document).data().bp.biomixer_fullscreen.enabled = true;
+    }
   }
 };
 </script>

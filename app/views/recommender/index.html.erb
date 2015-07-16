@@ -62,11 +62,15 @@
     </div>
   </div>
 
-  <!-- Get recommendations / Edit Input buttons -->
-  <input id="recommenderButton" type="button" style="margin-top: 10px;" class="link_button ui-button ui-widget ui-state-default ui-corner-all" value="Get Recommendations" />
-  <input id="editButton" type="button" style="display: none;margin-top: 10px;" class="link_button ui-button ui-widget ui-state-default ui-corner-all" value="Edit Input" />
+  <!-- Get Recommendations / Edit Input buttons -->
+  <%= content_tag :div, style: "margin-top: 10px;" do -%>
+    <%= submit_tag "Get Recommendations", id: "recommenderButton", type: "button", class: "link_button ui-button ui-widget ui-state-default ui-corner-all" %>
+    <%= submit_tag "Edit Input", id: "editButton", type: "button", style: "display: none;", class: "link_button ui-button ui-widget ui-state-default ui-corner-all" %>
+    <%= content_tag :span, class: "recommenderSpinner" do -%>
+      <%= image_tag "spinners/spinner_000000_16px.gif", style: "vertical-align: middle;" %>
+    <% end -%>
+  <% end -%>
 
-  <span class="recommenderSpinner"><%= image_tag "spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;" %></span>
   <br /><br />
   <span class="notTextError">Please paste a paragraph of text or some keywords to use in calculating ontology recommendations.<br></span>
   <span class="sumWeightsError">The sum of the weights must be greater than zero.<br></span>

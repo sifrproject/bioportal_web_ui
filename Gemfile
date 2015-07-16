@@ -8,7 +8,7 @@ gem 'coffee-rails', '~> 4.1.0'
 gem 'uglifier', '>= 1.0.3'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
-gem 'duktape'
+# gem 'duktape'
 
 gem 'jquery-ui-rails'
 gem 'jquery-rails'
@@ -18,12 +18,6 @@ gem 'jquery-rails'
 
 # To use Jbuilder templates for JSON
 # gem 'jbuilder'
-
-# Use unicorn as the app server
-gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano'
 
 # To use debugger
 # gem 'debugger'
@@ -48,10 +42,22 @@ gem 'multi_json'
 gem 'rails_autolink'
 gem 'dalli'
 
+# application monitoring
+gem 'newrelic_rpm'
+
 #logs in json format, useful for shipping logs to logstash
 gem 'rackstash', git: "https://github.com/planio-gmbh/rackstash.git"
 gem 'logstash-logger'
 
-gem 'ncbo_resolver', git: "https://github.com/ncbo/ncbo_resolver.git"
-gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "master"
+gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "staging"
 
+#group :development do
+    #Capistrano
+    gem 'capistrano', '~> 3.4.0', require: false
+    # rails specific capistrano funcitons
+    gem 'capistrano-rails', '~> 1.1.0', require: false
+    # integrate bundler with capistrano
+    gem 'capistrano-bundler', require: false
+    # passenger reload
+    gem 'capistrano-passenger', require: false
+#end

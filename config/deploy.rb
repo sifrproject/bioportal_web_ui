@@ -1,38 +1,88 @@
-# required for typing in a password for sudo
-default_run_options[:pty] = true
+# config valid only for Capistrano 3.1
+lock '3.4.0'
 
-set :stage, "stage-hostname"
-set :user, "SSHUserOnStage"
-set :flex_release, "stage"
+set :application, 'bioportal_web_ui'
 
-set :application, "BioPortal"
-set :repository,  "https://bmir-gforge.stanford.edu/svn/bioportalui/trunk"
-set :svn_username, "anonymous"
-set :svn_password, "anonymous_ncbo"
+set :repo_url, "git@github.com:ncbo/#{fetch(:application)}.git"
 
-set :scm, :subversion
+#set :deploy_via, :remote_cache
 
-# If you aren't deploying to /u/apps/#{application} on the target
-# servers (which is the default), you can specify the actual location
-# via the :deploy_to variable:
-set :deploy_to, "/var/rails/#{application}"
+# Default branch is :master
+# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
-# stage
-server stage, :app, :web, :db, :primary => true
+# Default deploy_to directory is /var/www/my_app
+set :deploy_to, "/srv/rails/#{fetch(:application)}"
 
-# production
-#role :app, "ror-prod1.example.org"
-#role :web, "ror-prod1.example.org"
-#role :db,  "ror-prod1.example.org", :primary => true
+# Default value for :scm is :git
+# set :scm, :git
 
-# svn export --force --username anonymous --password anonymous_ncbo https://bmir-gforge.stanford.edu/svn/flexviz/tags/$flexrelease/flex $destination/public/flex
+# Default value for :format is :pretty
+# set :format, :pretty
 
-# If you are using Passenger mod_rails uncomment this:
+# Default value for :log_level is :debug
+# set :log_level, :debug
+
+# Default value for :pty is false
+# set :pty, true
+
+# Default value for :linked_files is []
+#set :linked_files, %w{config/bioportal_config.rb config/database.yml public/robots.txt config/newrelic.yml}
+
+# Default value for linked_dirs is []
+#set :linked_dirs, %w{bin log tmp/pids tmp/cache public/system public/assets config/locales}
+set :linked_dirs, %w{bin log tmp/pids tmp/cache public/system public/assets}
+
+# Default value for default_env is {}
+# set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Default value for keep_releases is 5
+set :keep_releases, 5
+set :bundle_flags, '--without development test --deployment' 
+
+#If you want to restart using `touch tmp/restart.txt`, add this to your config/deploy.rb:
+
+set :passenger_restart_with_touch, true
+#If you want to restart using `passenger-config restart-app`, add this to your config/deploy.rb:
+#set :passenger_restart_with_touch, false # Note that `nil` is NOT the same as `false` here
+#If you don't set `:passenger_restart_with_touch`, capistrano-passenger will check what version of passenger you are running
+#and use `passenger-config restart-app` if it is available in that version.
+
 namespace :deploy do
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
-  end
-end
 
+  desc 'Incorporate the bioportal_conf private repository content'
+  #Get cofiguration from repo if PRIVATE_CONFIG_REPO is set 
+  #(should be set to NCBO private config repo)
+  task :get_config do
+     if defined?(PRIVATE_CONFIG_REPO)
+       TMP_CONFIG_PATH = "/tmp/#{SecureRandom.hex(15)}"
+       on roles(:web) do
+          execute "git clone -q #{PRIVATE_CONFIG_REPO} #{TMP_CONFIG_PATH}"
+          execute "rsync -av #{TMP_CONFIG_PATH}/#{fetch(:application)}/ #{release_path}/"
+          execute "rm -rf #{TMP_CONFIG_PATH}"
+      end
+    end
+  end
+
+  desc 'Restart application'
+  task :restart do
+    on roles(:web), in: :sequence, wait: 5 do
+      # Your restart mechanism here, for example:
+      execute :touch, release_path.join('tmp/restart.txt')
+    end
+  end
+
+  #before :started, :get_config
+  after :updating, :get_config
+  after :publishing, :restart
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
+  end
+
+
+end

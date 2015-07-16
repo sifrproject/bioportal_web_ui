@@ -57,6 +57,7 @@
         %th Institutions
         %th Ontologies
         - if current_user_admin?
+          %th User
           %th Created
     %tbody
       - for project in @projects
@@ -72,7 +73,7 @@
               - if session[:user] && (project.creator == session[:user].id || session[:user].admin?)
                 = link_to("Edit", edit_project_path(project.acronym))
                 / TODO_REV: Enable delete project for admins
-              - if session[:user] && session[:user].admin?
+              - if current_user_admin?
                 &nbsp;&nbsp;
                 = link_to("Delete (admin only)", project_path(project.acronym), :method => :delete, :confirm => "Are you sure?")
           / Project description (may be truncated with a dialog)
@@ -103,5 +104,7 @@
             - else
               = ontologyCount
           - if current_user_admin?
+            %td
+              = project.creator.map {|c| c.split("/").last}.join(", ")
             %td
               = project.created

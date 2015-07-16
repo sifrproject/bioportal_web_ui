@@ -22,7 +22,7 @@ class ConceptsController < ApplicationController
     if request.xhr?
       display = params[:callback].eql?('load') ? {full: true} : {display: "prefLabel"}
       @concept = @ontology.explore.single_class(display, params[:id])
-      raise Error404 if @concept.nil?
+      not_found if @concept.nil?
       show_ajax_request # process an ajax call
     else
       # Get the latest 'ready' submission, or fallback to any latest submission
@@ -30,7 +30,7 @@ class ConceptsController < ApplicationController
       @submission = get_ontology_submission_ready(@ontology)  # application_controller
 
       @concept = @ontology.explore.single_class({full: true}, params[:id])
-      raise Error404 if @concept.nil?
+      not_found if @concept.nil?
 
       show_uri_request # process a full call
       render :file => '/ontologies/visualize', :use_full_path => true, :layout => 'ontology'
@@ -48,7 +48,7 @@ class ConceptsController < ApplicationController
     end
     @ontology = LinkedData::Client::Models::Ontology.find(ont_id)
     @ontology ||= LinkedData::Client::Models::Ontology.find_by_acronym(ont_id).first
-    raise Error404 unless @ontology
+    not_found unless @ontology
     # Retrieve a class prefLabel or return the class ID (URI)
     # - mappings may contain class URIs that are not in bioportal (e.g. obo-xrefs)
     cls = @ontology.explore.single_class(cls_id)
@@ -79,7 +79,7 @@ class ConceptsController < ApplicationController
       return
     end
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    raise Error404 if @ontology.nil?
+    not_found if @ontology.nil?
     get_class(params)   # application_controller
     render :partial => "ontologies/treeview"
   end
@@ -92,7 +92,7 @@ class ConceptsController < ApplicationController
       return
     end
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    raise Error404 if @ontology.nil?
+    not_found if @ontology.nil?
     @root = @ontology.property_tree
     render json: LinkedData::Client::Models::Property.properties_to_hash(@root.children)
   end
@@ -111,7 +111,7 @@ class ConceptsController < ApplicationController
 
   # Renders a details pane for a given ontology/concept
   def details
-    raise Error404 if params[:conceptid].nil? || params[:conceptid].empty?
+    not_found if params[:conceptid].nil? || params[:conceptid].empty?
 
     if params[:ontology].to_i > 0
       orig_id = params[:ontology]
@@ -122,10 +122,10 @@ class ConceptsController < ApplicationController
     end
 
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    raise Error404 if @ontology.nil?
+    not_found if @ontology.nil?
 
     @concept = @ontology.explore.single_class({full: true}, CGI.unescape(params[:conceptid]))
-    raise Error404 if @concept.nil?
+    not_found if @concept.nil?
 
     if params[:styled].eql?("true")
       render :partial => "details", :layout => "partial"
@@ -140,10 +140,10 @@ class ConceptsController < ApplicationController
 
   def biomixer
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    raise Error404 if @ontology.nil?
+    not_found if @ontology.nil?
 
     @concept = @ontology.explore.single_class({full: true}, params[:conceptid])
-    raise Error404 if @concept.nil?
+    not_found if @concept.nil?
 
     @immediate_load = true
 

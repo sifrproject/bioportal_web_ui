@@ -12,9 +12,6 @@ require 'ontologies_api_client'
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
-# Custom 404 handling
-class Error404 < StandardError; end
-
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   helper_method :bp_config_json # export this method to helpers
@@ -87,14 +84,8 @@ class ApplicationController < ActionController::Base
     user ||= User.new({"id" => 0})
   end
 
-  # Custom 404 handling
-  rescue_from Error404, :with => :render_404
-
-  def render_404
-    respond_to do |type|
-      type.all { render :file => Rails.root.join('public', '404.html'), :status => 404, :layout => false }
-    end
-    true
+  def not_found
+    raise ActiveRecord::RecordNotFound.new('Not Found')
   end
 
   NOTIFICATION_TYPES = { :notes => "CREATE_NOTE_NOTIFICATION", :all => "ALL_NOTIFICATION" }
@@ -115,7 +106,7 @@ class ApplicationController < ActionController::Base
     # For config settings, see
     # config/bioportal_config.rb
     # config/initializers/ontologies_api_client.rb
-    {
+    config = {
         org: $ORG,
         org_url: $ORG_URL,
         site: $SITE,
@@ -126,7 +117,9 @@ class ApplicationController < ActionController::Base
         rest_url: LinkedData::Client.settings.rest_url,
         annotator_url: $ANNOTATOR_URL,
         biomixer_url: $BIOMIXER_URL
-    }.to_json
+    }
+    config[:ncbo_slice] = @subdomain_filter[:acronym] if (@subdomain_filter[:active] && !@subdomain_filter[:acronym].empty?)
+    config.to_json
   end
 
   def remote_file_exists?(url)
@@ -229,16 +222,10 @@ class ApplicationController < ActionController::Base
       return
     end
     acronym = BPIDResolver.id_to_acronym(params[:ontology])
-    raise Error404 unless acronym
+    not_found unless acronym
     if class_view
       @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym).first
-      concept = get_class(params).first
-      if concept.nil?
-        uri = BPIDResolver.uri_from_short_id(acronym, params[:conceptid])
-        params[:conceptid] = uri if uri
-      else
-        uri = concept.id.to_s
-      end
+      concept = get_class(params).first.to_s
       redirect_to "/ontologies/#{acronym}?p=classes#{params_string_for_redirect(params, prefix: "&")}", :status => :moved_permanently
     else
       redirect_to "/ontologies/#{acronym}#{params_string_for_redirect(params)}", :status => :moved_permanently
@@ -249,11 +236,6 @@ class ApplicationController < ActionController::Base
     params = @_params
     if params[:ontology] && params[:ontology].to_i > 0
       params[:ontology] = BPIDResolver.id_to_acronym(params[:ontology])
-    end
-
-    if params[:ontology] && params[:conceptid] && !params[:conceptid].start_with?("http")
-      uri = BPIDResolver.uri_from_short_id(params[:ontology], params[:conceptid])
-      params[:conceptid] = uri if uri
     end
 
     params
@@ -405,7 +387,7 @@ class ApplicationController < ActionController::Base
         roots = @ontology.explore.roots
         if roots.nil? || roots.empty?
           LOG.add :debug, "Missing roots for #{@ontology.acronym}"
-          raise Error404
+          not_found
         end
 
         @root = LinkedData::Client::Models::Class.new(read_only: true)
@@ -418,14 +400,14 @@ class ApplicationController < ActionController::Base
         # Some ontologies have "too many children" at their root. These will not process and are handled here.
         if @concept.nil?
           LOG.add :debug, "Missing class #{root_child.links.self}"
-          raise Error404
+          not_found
         end
       else
         # if the id is coming from a param, use that to get concept
         @concept = @ontology.explore.single_class({full: true}, params[:conceptid])
         if @concept.nil? || @concept.errors
           LOG.add :debug, "Missing class #{@ontology.acronym} / #{params[:conceptid]}"
-          raise Error404
+          not_found
         end
 
         # Create the tree
@@ -434,7 +416,7 @@ class ApplicationController < ActionController::Base
           roots = @ontology.explore.roots
           if roots.nil? || roots.empty?
             LOG.add :debug, "Missing roots for #{@ontology.acronym}"
-            raise Error404
+            not_found
           end
           if roots.any? {|c| c.id == @concept.id}
             rootNode = roots

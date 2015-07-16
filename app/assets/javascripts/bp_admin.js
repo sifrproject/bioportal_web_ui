@@ -380,13 +380,14 @@ function performActionOnOntologies() {
 function populateOntologyRows(data) {
   var ontologies = data.ontologies;
   var allRows = [];
-  var hideFields = ["date_updated", "errErrorStatus", "errMissingStatus", "problem", "logFilePath"];
+  var hideFields = ["format", "date_updated", "errErrorStatus", "errMissingStatus", "problem", "logFilePath"];
 
   for (var acronym in ontologies) {
     var errorMessages = [];
     var ontology = ontologies[acronym];
     var ontLink = "<a href='" + BP_CONFIG.ui_url + "/ontologies/" + acronym + "' target='_blank' style='" + (ontology["problem"] === true ? "color:red;" : "") + "'>" + acronym + "</a>";
     var bpLinks = '';
+    var format = ontology["format"];
     var dateUpdated = ontology["date_updated"];
 
     if (ontology["logFilePath"] != '') {
@@ -403,7 +404,7 @@ function populateOntologyRows(data) {
         errorMessages.push(ontology[k]);
       }
     }
-    var row = [ontLink, dateUpdated, bpLinks, errStatus, missingStatus, errorMessages.join("<br/>"), ontology["problem"]];
+    var row = [ontLink, format, dateUpdated, bpLinks, errStatus, missingStatus, errorMessages.join("<br/>"), ontology["problem"]];
     allRows.push(row);
   }
   return allRows;
@@ -502,39 +503,44 @@ function displayOntologies(data, ontology) {
           "title": "Ontology",
           "width": "160px"
         },
-
         {
           "targets": 1,
+          "searchable": true,
+          "title": "Format",
+          "width": "55px"
+        },
+        {
+          "targets": 2,
           "searchable": true,
           "title": "Report Date",
           "width": "110px"
         },
         {
-          "targets": 2,
+          "targets": 3,
           "searchable": false,
           "orderable": false,
           "title": "URL",
           "width": "140px"
         },
         {
-          "targets": 3,
+          "targets": 4,
           "searchable": true,
           "title": "Error Status",
           "width": "130px"
         },
         {
-          "targets": 4,
+          "targets": 5,
           "searchable": true,
           "title": "Missing Status",
           "width": "130px"
         },
         {
-          "targets": 5,
+          "targets": 6,
           "searchable": true,
           "title": "Issues"
         },
         {
-          "targets": 6,
+          "targets": 7,
           "searchable": true,
           "visible": false
         }

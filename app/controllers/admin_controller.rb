@@ -41,7 +41,7 @@ class AdminController < ApplicationController
 
     if ontology
       full_log_file_path = ontology[:logFilePath]
-      @log_file_path = /#{params["acronym"]}\/\d+\/\w+\.log$/.match(full_log_file_path)
+      @log_file_path = /#{params["acronym"]}\/\d+\/[a-zA-Z0-9-_]+\.log$/.match(full_log_file_path)
     else
       @parse_log = "No record exists for ontology #{params["acronym"]}"
       @log_file_path = "None"

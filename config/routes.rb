@@ -46,6 +46,9 @@ BioportalWebUi::Application.routes.draw do
   match '/validate_ontology_file' => 'home#validate_ontology_file', via: [:get, :post]
   get '/layout_partial/:partial' => 'home#render_layout_partial'
   
+  # Error pages
+  match ':status', to: 'errors#show', constraints: {status: /\d{3}/}, via: :all
+
   # Analytics endpoint
   get '/analytics' => 'analytics#track'
 

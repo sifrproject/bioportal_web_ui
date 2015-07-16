@@ -37,7 +37,8 @@ class AnnotatorController < ApplicationController
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
                 :whole_word_only => (params[:whole_word_only] == "true") ? "false" : "true",  # service default is true
                 :exclude_synonyms => params[:exclude_synonyms] ||= "false",  # service default is false
-                :score => params[:score]
+                :score => params[:score],
+                :ncbo_slice => params[:ncbo_slice] || ''
     }
 
     start = Time.now
@@ -56,6 +57,7 @@ class AnnotatorController < ApplicationController
     query += "&exclude_numbers=" + options[:exclude_numbers].to_s unless options[:exclude_numbers].empty?
     query += "&whole_word_only=" + options[:whole_word_only].to_s unless options[:whole_word_only].empty?
     query += "&exclude_synonyms=" + options[:exclude_synonyms].to_s unless options[:exclude_synonyms].empty?
+    query += "&ncbo_slice=" + options[:ncbo_slice].to_s unless options[:ncbo_slice].empty?
 
     annotations = parse_json(query) # See application_controller.rb
     #annotations = LinkedData::Client::HTTP.get(query)

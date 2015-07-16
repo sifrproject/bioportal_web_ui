@@ -2,28 +2,45 @@ require 'cgi'
 require 'ostruct'
 require 'json'
 require 'open-uri'
-require 'ncbo_resolver'
 
 class BPIDResolver
-
-  NCBO::Resolver.configure(redis_host: $REDIS_HOST, redis_port: $REDIS_PORT)
-  RESOLVER = NCBO::Resolver
+  require Rails.root + 'lib/resolver/acronym_from_virtual'
+  require Rails.root + 'lib/resolver/virtual_from_acronym'
+  require Rails.root + 'lib/resolver/virtual_from_version'
 
   def self.id_to_acronym(id)
-    return if $REDIS_HOST && $REDIS_HOST.empty?
-    acronym = RESOLVER::Ontologies.acronym_from_virtual_id(id)
-    acronym = RESOLVER::Ontologies.acronym_from_version_id(id) unless acronym
+    acronym = self.acronym_from_virtual_id(id)
+    acronym = self.acronym_from_version_id(id) unless acronym
     acronym
   end
 
   def self.acronym_to_virtual_id(acronym)
-    return if $REDIS_HOST && $REDIS_HOST.empty?
-    RESOLVER::Ontologies.virtual_id_from_acronym(acronym)
+    self.virtual_id_from_acronym(acronym)
   end
 
-  def self.uri_from_short_id(acronym, short_id)
-    return if $REDIS_HOST && $REDIS_HOST.empty?
-    RESOLVER::Classes.uri_from_short_id(acronym, short_id)
+  private
+
+  def self.acronym_from_id(id)
+    acronym = self.acronym_from_virtual_id(id)
+    acronym = self.acronym_from_version_id(id) unless acronym
+    acronym
+  end
+
+  def self.acronym_from_virtual_id(virtual_id)
+    ACRONYM_FROM_VIRTUAL["old:acronym_from_virtual:#{virtual_id}"]
+  end
+
+  def self.acronym_from_version_id(version_id)
+    virtual = virtual_id_from_version_id(version_id)
+    acronym_from_virtual_id(virtual)
+  end
+
+  def self.virtual_id_from_version_id(version_id)
+    VIRTUAL_FROM_VERSION["old:virtual_from_version:#{version_id}"]
+  end
+
+  def self.virtual_id_from_acronym(acronym)
+    VIRTUAL_FROM_ACRONYM["old:virtual_from_acronym:#{acronym}"]
   end
 
 end

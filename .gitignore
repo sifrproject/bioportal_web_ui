@@ -20,6 +20,7 @@ config/bioportal_config_localhost.rb
 config/bioportal_config_stage.rb
 config/bioportal_config_prod.rb
 config/database.yml
+config/deploy/*
 config/locales/en.rb
 **.DS_Store
 /public/**/cache/**
@@ -36,3 +37,5 @@ nohup.out
 
 .tags_sorted_by_file
 
+
+config/newrelic.yml

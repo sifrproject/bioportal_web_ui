@@ -36,97 +36,95 @@ function insertSampleText() {
 }
 
 function get_annotations() {
-    jQuery("#results_error").html("");
-    jQuery("#annotator_error").html("");
+  jQuery("#results_error").html("");
+  jQuery("#annotator_error").html("");
 
-    // Validation
-    if (jQuery("#annotation_text").val() === jQuery("#annotation_text").attr("title")) {
-      jQuery("#annotator_error").html("Please enter text to annotate");
-      return;
+  // Validation
+  if (jQuery("#annotation_text").val() === jQuery("#annotation_text").attr("title")) {
+    jQuery("#annotator_error").html("Please enter text to annotate");
+    return;
+  }
+
+  // Really dumb, basic word counter.
+  if (jQuery("#annotation_text").val().split(' ').length > 500) {
+    jQuery("#annotator_error").html("Please use less than 500 words. If you need to annotate larger pieces of text you can use the <a href='http://www.bioontology.org/wiki/index.php/Annotator_User_Guide' target='_blank'>Annotator Web Service</a>");
+    return;
+  }
+
+  jQuery("#annotations_container").hide();
+  jQuery(".annotator_spinner").show();
+  ajax_process_halt();
+
+  var params = {},
+    ont_select = jQuery("#ontology_ontologyId"),
+    mappings = [];
+
+  params.text = jQuery("#annotation_text").val();
+  params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
+  params.longest_only = jQuery("#longest_only").is(':checked');
+  params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
+  params.whole_word_only = jQuery("#whole_word_only").is(':checked');
+  params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
+  params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
+
+  params.score = jQuery("#score").val();
+  if (params.score) {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.score, true);
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.score, false);
+  }
+
+  var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
+  if (maxLevel > 0) {
+    params.expand_class_hierarchy = "true";
+    params.class_hierarchy_max_level = maxLevel.toString();
+  }
+
+  // UI checkbox to control using the batch call in the controller.
+  params.raw = true; // do not use batch call to resolve class prefLabel and ontology names.
+  //if( jQuery("#use_ajax").length > 0 ) {
+  //  params.raw = jQuery("#use_ajax").is(':checked');
+  //}
+
+  // Use the annotator default for wholeWordOnly = true.
+  //if (jQuery("#wholeWordOnly:checked").val() !== undefined) {
+  //  params.wholeWordOnly = jQuery("#wholeWordOnly:checked").val();
+  //}
+
+  jQuery("[name='mappings']:checked").each(function() {
+    mappings.push(jQuery(this).val());
+  });
+  params.mappings = mappings;
+
+  if (jQuery("#semantic_types").val() !== null) {
+    params.semantic_types = jQuery("#semantic_types").val();
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, true);
+    jQuery("#results_error").html("Only results from ontologies with semantic types available are displayed.");
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, false);
+  }
+
+  params["recognizer"] = jQuery("#recognizer").val();
+
+  jQuery.ajax({
+    type: "POST",
+    url: "/annotator", // Call back to the UI annotation_controller::create method
+    data: params,
+    dataType: "json",
+    success: function(data) {
+      set_last_params(params);
+      display_annotations(data, bp_last_params);
+      jQuery(".annotator_spinner").hide(200);
+      jQuery("#annotations_container").show(300);
+    },
+    error: function(data) {
+      set_last_params(params);
+      jQuery(".annotator_spinner").hide(200);
+      jQuery("#annotations_container").hide();
+      jQuery("#annotator_error").html(" Problem getting annotations, please try again");
     }
-
-    // Really dumb, basic word counter.
-    if (jQuery("#annotation_text").val().split(' ').length > 500) {
-      jQuery("#annotator_error").html("Please use less than 500 words. If you need to annotate larger pieces of text you can use the <a href='http://www.bioontology.org/wiki/index.php/Annotator_User_Guide' target='_blank'>Annotator Web Service</a>");
-      return;
-    }
-
-    jQuery("#annotations_container").hide();
-    jQuery(".annotator_spinner").show();
-    ajax_process_halt();
-
-    var params = {},
-      ont_select = jQuery("#ontology_ontologyId"),
-      mappings = [];
-
-    params.text = jQuery("#annotation_text").val();
-    params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
-    params.longest_only = jQuery("#longest_only").is(':checked');
-    params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
-    params.whole_word_only = jQuery("#whole_word_only").is(':checked');
-    params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
-
-    params.score = jQuery("#score").val();
-    if (params.score) {
-      annotationsTable.fnSetColumnVis(BP_COLUMNS.score, true);
-    } else {
-      annotationsTable.fnSetColumnVis(BP_COLUMNS.score, false);
-    }
-
-    var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
-    if (maxLevel > 0) {
-      params.expand_class_hierarchy = "true";
-      params.class_hierarchy_max_level = maxLevel.toString();
-    }
-
-    // UI checkbox to control using the batch call in the controller.
-    params.raw = true; // do not use batch call to resolve class prefLabel and ontology names.
-    //if( jQuery("#use_ajax").length > 0 ) {
-    //  params.raw = jQuery("#use_ajax").is(':checked');
-    //}
-
-    // Use the annotator default for wholeWordOnly = true.
-    //if (jQuery("#wholeWordOnly:checked").val() !== undefined) {
-    //  params.wholeWordOnly = jQuery("#wholeWordOnly:checked").val();
-    //}
-
-    jQuery("[name='mappings']:checked").each(function() {
-      mappings.push(jQuery(this).val());
-    });
-    params.mappings = mappings;
-
-    if (jQuery("#semantic_types").val() !== null) {
-      params.semantic_types = jQuery("#semantic_types").val();
-      annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, true);
-      jQuery("#results_error").html("Only results from ontologies with semantic types available are displayed.");
-    } else {
-      annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, false);
-    }
-
-    params["recognizer"] = jQuery("#recognizer").val();
-
-    jQuery.ajax({
-      type: "POST",
-      url: "/annotator", // Call back to the UI annotation_controller::create method
-      data: params,
-      dataType: "json",
-      success: function(data) {
-        set_last_params(params);
-        display_annotations(data, bp_last_params);
-        jQuery(".annotator_spinner").hide(200);
-        jQuery("#annotations_container").show(300);
-      },
-      error: function(data) {
-        set_last_params(params);
-        jQuery(".annotator_spinner").hide(200);
-        jQuery("#annotations_container").hide();
-        jQuery("#annotator_error").html(" Problem getting annotations, please try again");
-      }
-    });
-
-  } // get_annotations
-
-
+  });
+} // get_annotations
 
 var displayFilteredColumnNames = function() {
   "use strict";
