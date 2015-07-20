@@ -1,9 +1,8 @@
 class NcboAnnotatorplusController < ApplicationController
   layout 'ontology'
 
-  # REST_URI is defined in application_controller.rb
-  #ANNOTATOR_URI = REST_URI + "/annotator"
-  ANNOTATOR_URI = $ANNOTATOR_URL
+  NCBO_ANNOTATOR_URI = $NCBO_ANNOTATOR_URL
+  NCBO_API_KEY = $NCBO_API_KEY
 
   def index
     @semantic_types_for_select = []
@@ -39,9 +38,9 @@ class NcboAnnotatorplusController < ApplicationController
     }
 
     start = Time.now
-    query = ANNOTATOR_URI
+    query = NCBO_ANNOTATOR_URI
     query += "?text=" + CGI.escape(text_to_annotate)
-    query += "&apikey=" + API_KEY
+    query += "&apikey=" + NCBO_API_KEY
     query += "&include=prefLabel"
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0

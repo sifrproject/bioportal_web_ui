@@ -1,3 +1,5 @@
+var annotator_url = document.URL.match(".*\/([^\/?]*)")[1];
+
 var
   bp_last_params = null,
   annotationsTable = null,
@@ -108,7 +110,7 @@ function get_annotations() {
 
   jQuery.ajax({
     type: "POST",
-    url: "/annotator", // Call back to the UI annotation_controller::create method
+    url: "/" + annotator_url, // Call back to the UI annotation_controller::create method
     data: params,
     dataType: "json",
     success: function(data) {
@@ -520,9 +522,10 @@ function get_class_details(cls) {
 function get_class_details_from_raw(cls) {
   var
     ont_acronym = cls.links.ontology.replace(/.*\//, ''),
-    ont_name = annotator_ontologies[cls.links.ontology].name,
+    ont_name = undefined,
     ont_rel_ui = '/ontologies/' + ont_acronym,
     ont_link = null;
+  try {ont_name = annotator_ontologies[cls.links.ontology].name;} catch(e) {ont_name = undefined;}
   if (ont_name === undefined) {
     ont_link = get_link_for_ont_ajax(ont_acronym);
   } else {
