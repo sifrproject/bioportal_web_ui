@@ -1,0 +1,120 @@
+- @title = "NCBO Annotator +"
+%div{:style => "padding: 1em;"}
+  %h1 NCBO Annotator +
+  %p
+    = t('home.annotate.intro').html_safe.nil? || t('home.annotate.intro').html_safe.empty? ? "Get annotations for biomedical text with concepts from the ontologies #{help_icon("/help#Annotator_Tab")}".html_safe : t('home.annotate.intro').html_safe
+  %div{:style => "padding-bottom: 1em;"}
+    %div{:style => "width: 610px;"}
+      %a#insert_text_link{:href => "javascript:void(0);", :style => "font-size: 8pt; text-decoration: none; float: right; margin-bottom: 3px;"} insert sample text
+    - textarea_title = "Enter or paste text to be annotated"
+    = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
+    %br{:style => "margin-bottom: 10px;"}/
+    = render :partial => "shared/ontology_picker", :locals => { :custom_ontologies => @annotator_ontologies }
+    - if @sem_type_ont
+      %b Select UMLS Semantic Types
+      %br/
+      = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
+      %br/
+      %br/
+    %p
+      = check_box_tag :longest_only, :all, false, :id => "longest_only"
+      = label_tag :longest_only, "Match Longest Only"
+      &nbsp;&nbsp;
+      / TODO: When the REST API supports different mapping types, revise this section of the UI.
+      = check_box_tag :mappings, :all, false, :id => "mappings_all"
+      = label_tag :mappings_all, "Include Mappings"
+    %p
+      = check_box_tag :exclude_numbers, :all, false, :id => "exclude_numbers"
+      = label_tag :exclude_numbers, "Exclude Numbers"
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      = check_box_tag :whole_word_only, :all, false, :id => "whole_word_only"
+      = label_tag :whole_word_only, "Match Partial Words"
+    %p
+      = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
+      = label_tag :exclude_synonyms, "Exclude Synonyms"
+    %p
+      %b Include Ancestors Up To Level:
+      &nbsp;&nbsp;
+      - options = [["None", 0], *(1..10).map {|i| [i, i]}, ["All", 999]]
+      = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 70px;"
+    %p
+      %b Include Score:
+      &nbsp;&nbsp;
+      - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
+      = select_tag :score, options_for_select(options, 0), style: "width: 70px;"
+    - if @recognizers.length > 1
+      %p
+        %b Entity Recognizer:
+        &nbsp;&nbsp;
+        - default_recognizer = @recognizers.include?("mgrep") ? "mgrep" : @recognizers.first
+        = select_tag :recognizer, options_for_select(@recognizers.map {|r| [r,r]}, default_recognizer)
+
+
+    %div{style: "margin-top: 30px;"}
+      / annotator_button calls 'get_annotations' in bp_annotator.js
+      %input#annotator_button.link_button{:type => "button", :value => "Get Annotations"}/
+      %span.annotator_spinner{:style => "display: none;"}
+        %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "vertical-align: middle;"}/
+      %span#annotator_error.annotator_error{:style => "color: red; vertical-align: middle; margin-left: 3px;"}
+#annotations_container{:style => "display: none; padding: 0 13px; margin: 0 0 2em;"}
+  #result_counts{:style => "float: right; font-style: oblique; color: gray;"}
+  %h2{:style => "margin-bottom: 0;"}
+    Annotations
+  #filter_list{:style => "font-size: 9pt; color: gray; display: none; clear: both; margin: -15px 0 5px"}
+    %span#filter_title> Results are filtered by:
+    \&nbsp;
+    %span#filter_names
+  #results_error{:style => "color: red; margin-bottom: 7px;"}
+  %table#annotations.zebra{:style => "display: inline-block; min-width: 700px; width: 100%;"}
+    %thead
+      %tr
+        %th{:style => "padding-right: 6px;", :title => "Class"}
+          Class
+          %span.popup_container{:style => "padding-left: 1.7em;"}
+            %span.bp_popup_link_container
+              %a#filter_classes.bp_popup_link{:href => "javascript:void(0);"} filter
+          #classes_filter_list.bp_popup_list{:style => "display: none;"}
+        %th{:style => "padding-right: 6px", :title => "Ontology"}
+          Ontology
+          %span.popup_container{:style => "padding-left: 1.7em;"}
+            %span.bp_popup_link_container
+              %a#filter_ontologies.bp_popup_link{:href => "javascript:void(0);"} filter
+          #ontology_filter_list.bp_popup_list{:style => "display: none;"}
+        %th{:style => "padding-right: 6px; min-width: 85px;", :title => "Type", class: "match_type"}
+          Type
+          %span.popup_container{:style => "padding-left: 1.7em;"}
+            %span.bp_popup_link_container
+              %a#filter_match_type.bp_popup_link{:href => "javascript:void(0);"} filter
+          #match_type_filter_list.bp_popup_list{:style => "display: none;"}
+        %th UMLS Sem Type
+        %th{class: "match_context"} Context
+        %th{:style => "padding-right: 6px;", :title => "Matched Class"}
+          Matched Class
+          %span.popup_container{:style => "padding-left: 1.7em;"}
+            %span.bp_popup_link_container
+              %a#filter_matched_classes.bp_popup_link{:href => "javascript:void(0);"} filter
+          #matched_classes_filter_list.bp_popup_list{:style => "display: none;"}
+        %th{:style => "padding-right: 6px; min-width: 200px;", :title => "Matched Ontology"}
+          Matched Ontology
+          %span.popup_container{:style => "padding-left: 1.7em;"}
+            %span.bp_popup_link_container
+              %a#filter_matched_ontologies.bp_popup_link{:href => "javascript:void(0);"} filter
+          #matched_ontology_filter_list.bp_popup_list{:style => "display: none;"}
+        %th Score
+    %tbody
+  #download_links{:style => "margin-top: 1.5em;"}
+    %p
+      %span{:style => "padding: 0 3px 0 0;"}>
+        %b Format Results As:
+        %span#download_links_tabdelimited.link_button.ui_button
+        %span#download_links_json.link_button.ui_button
+        %span#download_links_rdf.link_button.ui_button
+        %span#download_links_text.link_button.ui_button
+      %span#download_links_xml.link_button.ui_button
+    %span{:style => "font-size: 8pt;"}
+      To reproduce these results:
+      %br/
+      %span#annotator_parameters{:style => "color: gray; font-weight: bold;"}
+      %br/
+      Additional parameters are documented at
+      \#{link_to 'Annotator Web Service', "#{$REST_URL}/documentation#nav_annotator", :target => "_blank"}
