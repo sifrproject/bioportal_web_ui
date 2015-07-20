@@ -46,7 +46,7 @@ BioportalWebUi::Application.configure do
   config.action_view.sanitized_allowed_attributes = ['id', 'class', 'style', 'data-cls', 'data-ont']
 
   # Include BioPortal-specific configuration options
-  require Rails.root.join('config', "bioportal_config_#{Rails.env}.rb")
+  require Rails.root.join('config', "bioportal_config.rb")
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
