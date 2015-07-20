@@ -62,7 +62,11 @@ function get_annotations() {
     mappings = [];
 
   params.text = jQuery("#annotation_text").val();
-  params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
+  if (annotator_url === "annotator") {
+    params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
+  } else {
+    params.ontologies = jQuery("#ncbo_ontologies").val();
+  }
   params.longest_only = jQuery("#longest_only").is(':checked');
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
   params.whole_word_only = jQuery("#whole_word_only").is(':checked');
@@ -462,6 +466,9 @@ jQuery(document).ready(function() {
   "use strict";
   jQuery("#annotator_button").click(get_annotations);
   jQuery("#semantic_types").chosen({
+    search_contains: true
+  });
+  jQuery("#ncbo_ontologies").chosen({
     search_contains: true
   });
   jQuery("#insert_text_link").click(insertSampleText);

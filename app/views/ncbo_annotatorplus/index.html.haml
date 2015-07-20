@@ -10,7 +10,10 @@
     - textarea_title = "Enter or paste text to be annotated"
     = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
     %br{:style => "margin-bottom: 10px;"}/
-    = render :partial => "shared/ontology_picker", :locals => { :custom_ontologies => @annotator_ontologies }
+    %b Select Ontologies
+    %br/
+    = select_tag :ncbo_ontologies, options_for_select(@ontologies_for_select), :multiple => 'true', "data-placeholder".to_sym => "Click here to select ontologies", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
+    %br/
     - if @sem_type_ont
       %b Select UMLS Semantic Types
       %br/

@@ -14,6 +14,7 @@ class NcboAnnotatorplusController < ApplicationController
     @semantic_types_for_select.sort! {|a,b| a[0] <=> b[0]}
     @recognizers = parse_json(REST_URI + "/annotator/recognizers")
     @annotator_ontologies = LinkedData::Client::Models::Ontology.all
+    @ontologies_for_select = get_ontologies_for_select
   end
 
 
@@ -181,6 +182,17 @@ class NcboAnnotatorplusController < ApplicationController
       classes_simple[c[:id]] = c
     end
     return classes_simple
+  end
+
+  def get_ontologies_for_select
+    ontologies_json = JSON.parse(Net::HTTP.get(URI.parse("http://data.bioontology.org/ontologies?apikey=#{NCBO_API_KEY}")))
+    ontologies_array = []
+
+    ontologies_json.each do |onto|
+      ontologies_array.push(["#{onto['name']} (#{onto['acronym']})", onto['acronym']])
+    end
+
+    return ontologies_array
   end
 
 end
