@@ -532,21 +532,31 @@ function get_class_details_from_raw(cls) {
     ont_name = undefined,
     ont_rel_ui = '/ontologies/' + ont_acronym,
     ont_link = null;
-  try {ont_name = annotator_ontologies[cls.links.ontology].name;} catch(e) {ont_name = undefined;}
-  if (ont_name === undefined) {
-    ont_link = get_link_for_ont_ajax(ont_acronym);
-  } else {
-    ont_link = get_link(ont_rel_ui, ont_name); // no ajax required!
-  }
+
   var
     cls_rel_ui = cls.links.ui.replace(/^.*\/\/[^\/]+/, ''),
     cls_label = cls.prefLabel,
     cls_link = null;
-  if (cls_label === undefined) {
-    cls_link = get_link_for_cls_ajax(cls['@id'], ont_acronym);
+
+  if (annotator_url === "annotator") {
+    try {ont_name = annotator_ontologies[cls.links.ontology].name;} catch(e) {ont_name = undefined;}
+    if (ont_name === undefined) {
+        ont_link = get_link_for_ont_ajax(ont_acronym);
+    } else {
+        ont_link = get_link(ont_rel_ui, ont_name); // no ajax required!
+    }
+    if (cls_label === undefined) {
+        cls_link = get_link_for_cls_ajax(cls['@id'], ont_acronym);
+    } else {
+        cls_link = get_link(cls_rel_ui, cls_label); // no ajax required!
+    }
   } else {
-    cls_link = get_link(cls_rel_ui, cls_label); // no ajax required!
+    ont_link = get_link(cls.links.ontology, ont_acronym);
+    ont_rel_ui = ont_link;
+    cls_link = get_link(cls.links.ui, cls_label);
+    cls_rel_ui = cls_link;
   }
+
   return class_details = {
     cls_rel_ui: cls_rel_ui,
     ont_rel_ui: ont_rel_ui,
