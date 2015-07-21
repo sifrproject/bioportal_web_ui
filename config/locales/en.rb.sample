@@ -18,7 +18,10 @@
           button to see what it does. Click on the (?) to see a detailed help panel.
           <br/><br/>
           Subscribe to the <a target="_blank" href="http://groups.google.com/group/annotator-discuss">NCBO Annotator Users Google group</a> to learn more about  
-          who and how the Annotator is being used in different projects.'
+          who and how the Annotator is being used in different projects.',
+        :ncbo => 'The NCBO Annotator+ is a proxy calling the NCBO Annotator Web service on the NCBO BioPortal. This proxy enables to use new Annotators features such as scoring [Melzi & Jonquet 2014] or RDF outputs [Melzi & Jonquet 2014].</br>
+If using the API, please provide a valid NCBO BioPortal apikey and hit the service at <a href="http://services.bioportal.lirmm.fr/ncbo_annotatorplus">http://services.bioportal.lirmm.fr/ncbo_annotatorplus</a></br>
+Text submitted to the NCBO Annotator+ must be in English.'
       },
       
       :resources => {
