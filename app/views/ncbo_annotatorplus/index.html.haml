@@ -1,7 +1,10 @@
 - javascript_include_tag "bp_ncbo_annotatorplus.js"
 - @title = "NCBO Annotator +"
 %div{:style => "padding: 1em;"}
-  %h1 NCBO Annotator +
+  %h1
+    %a{:href => "http://www.bioontology.org"}
+      %img{:src => "/images/ncbo_logo.jpg", :style => "height: 1em;"}
+    NCBO Annotator +
   %p
     = t('home.annotate.ncbo').html_safe.nil? || t('home.annotate.ncbo').html_safe.empty? ? "Get annotations for biomedical text with concepts from the ontologies #{help_icon("/help#Annotator_Tab")}".html_safe : t('home.annotate.ncbo').html_safe
   %div{:style => "padding-bottom: 1em;"}
