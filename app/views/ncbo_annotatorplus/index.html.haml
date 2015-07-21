@@ -1,17 +1,19 @@
 - javascript_include_tag "bp_ncbo_annotatorplus.js"
 - @title = "NCBO Annotator +"
 %div{:style => "padding: 1em;"}
-  %h1
-    %a{:href => "http://www.bioontology.org"}
-      %img{:src => "/images/ncbo_logo.jpg", :style => "height: 1em;"}
-    NCBO Annotator +
+  %h1 NCBO Annotator +
   %p
     = t('home.annotate.ncbo').html_safe.nil? || t('home.annotate.ncbo').html_safe.empty? ? "Get annotations for biomedical text with concepts from the ontologies #{help_icon("/help#Annotator_Tab")}".html_safe : t('home.annotate.ncbo').html_safe
   %div{:style => "padding-bottom: 1em;"}
     %div{:style => "width: 610px;"}
       %a#insert_text_link{:href => "javascript:void(0);", :style => "font-size: 8pt; text-decoration: none; float: right; margin-bottom: 3px;"} insert sample text
-    - textarea_title = "Enter or paste text to be annotated"
-    = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
+    %div
+      %div{:style => "display: inline-block;"}
+        - textarea_title = "Enter or paste text to be annotated"
+        = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
+      %div{:style => "display: inline-block;"}
+        %a{:href => "http://www.bioontology.org"}
+          %img{:src => "/images/ncbo_logo.jpg", :style => "margin-left: 100px;"}
     %br{:style => "margin-bottom: 10px;"}/
     %b Select Ontologies
     %br/
