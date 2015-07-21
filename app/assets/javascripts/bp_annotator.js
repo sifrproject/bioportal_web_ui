@@ -62,10 +62,10 @@ function get_annotations() {
     mappings = [];
 
   params.text = jQuery("#annotation_text").val();
-  if (annotator_url === "annotator") {
-    params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
-  } else {
+  if (annotator_url === "ncbo_annotatorplus") {
     params.ontologies = jQuery("#ncbo_ontologies").val();
+  } else {
+    params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
   }
   params.longest_only = jQuery("#longest_only").is(':checked');
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
@@ -431,10 +431,10 @@ function annotatorFormatLink(param_string, format) {
   };
   //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   var query = undefined;
-  if (annotator_url === "annotator") {
-    query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
-  } else {
+  if (annotator_url === "ncbo_annotatorplus") {
     query = BP_CONFIG.ncbo_annotator_url + "?apikey=" + BP_CONFIG.ncbo_apikey + "&" + param_string;
+  } else {
+    query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   }
   if (format !== 'json') {
     query += "&format=" + format;
@@ -543,7 +543,12 @@ function get_class_details_from_raw(cls) {
     cls_label = cls.prefLabel,
     cls_link = null;
 
-  if (annotator_url === "annotator") {
+  if (annotator_url === "ncbo_annotatorplus") {
+    ont_link = get_link(cls.links.ontology, ont_acronym);
+    ont_rel_ui = ont_link;
+    cls_link = get_link(cls.links.ui, cls_label);
+    cls_rel_ui = cls_link;
+  } else {
     try {ont_name = annotator_ontologies[cls.links.ontology].name;} catch(e) {ont_name = undefined;}
     if (ont_name === undefined) {
         ont_link = get_link_for_ont_ajax(ont_acronym);
@@ -555,11 +560,6 @@ function get_class_details_from_raw(cls) {
     } else {
         cls_link = get_link(cls_rel_ui, cls_label); // no ajax required!
     }
-  } else {
-    ont_link = get_link(cls.links.ontology, ont_acronym);
-    ont_rel_ui = ont_link;
-    cls_link = get_link(cls.links.ui, cls_label);
-    cls_rel_ui = cls_link;
   }
 
   return class_details = {
@@ -795,8 +795,13 @@ function display_annotations(data, params) {
   update_annotations_table(all_rows);
   // Generate parameters for list at bottom of page
   var param_string = generateParameters(); // uses bp_last_param
-  var query = BP_CONFIG.annotator_url + "?" + param_string;
-  var query_encoded = BP_CONFIG.annotator_url + "?" + encodeURIComponent(param_string);
+  if (annotator_url === "ncbo_annotatorplus") {
+    var query = BP_CONFIG.ncbo_annotator_url + "?" + param_string;
+    var query_encoded = BP_CONFIG.ncbo_annotator_url + "?" + encodeURIComponent(param_string);
+  } else {
+    var query = BP_CONFIG.annotator_url + "?" + param_string;
+    var query_encoded = BP_CONFIG.annotator_url + "?" + encodeURIComponent(param_string);
+  }
   jQuery("#annotator_parameters").html(query);
   jQuery("#annotator_parameters_encoded").html(query_encoded);
   // Add links for downloading results
