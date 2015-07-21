@@ -430,7 +430,12 @@ function annotatorFormatLink(param_string, format) {
     "tabDelimited": "CSV"
   };
   //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
-  var query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
+  var query = undefined;
+  if (annotator_url === "annotator") {
+    query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
+  } else {
+    query = BP_CONFIG.ncbo_annotator_url + "?apikey=" + BP_CONFIG.ncbo_apikey + "&" + param_string;
+  }
   if (format !== 'json') {
     query += "&format=" + format;
   }
