@@ -57,6 +57,8 @@
             %a{:href => ont_link}= ont_name
           %td
             #{map.source} #{(map.process || {})[:source_name]}
+            - if is_translation(map.process["relation"])
+              %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
   - if !got_internal_mappings
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
@@ -141,6 +143,8 @@
             %a{:href => ont_link}= ont_name
           %td
             #{map.source} #{(map.process || {})[:source_name]}
+            - if is_translation(map.process["relation"])
+              %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
   - if got_external_mappings == false
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
