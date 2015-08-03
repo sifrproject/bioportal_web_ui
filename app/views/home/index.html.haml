@@ -175,22 +175,35 @@
                 - for map in mappings
                   - break if good_count == 5
                   - begin
+                    - mapProc = map.process
+                    - raise "UI-view error for recent mapping process #{map.process}" if mapProc.nil?
                     - # map.classes might contain more than two items, use first and last.
                     - clsA = map.classes.first
                     - clsB = map.classes.last
                     - next unless clsA.prefLabel && clsB.prefLabel
                     - raise "UI-view error for recent mapping class #{map.classes.first.id}" if clsA.nil?
                     - raise "UI-view error for recent mapping class #{map.classes.last.id}" if clsB.nil?
-                    - ontA = clsA.explore.ontology
-                    - ontB = clsB.explore.ontology
-                    - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
-                    - raise "UI-view error for recent mapping ontology #{clsB[:ontology]}" if ontB.nil?
-                    - mapProc = map.process
-                    - raise "UI-view error for recent mapping process #{map.process}" if mapProc.nil?
+                    - if map.process.name == "REST Mapping"
+                      - ontA = clsA.explore.ontology
+                      - ontB = clsB.explore.ontology
+                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                      - raise "UI-view error for recent mapping ontology #{clsB[:ontology]}" if ontB.nil?
+                      - ontAcroA = ontA.acronym
+                      - ontAcroB = ontB.acronym
+                    - elsif map.process.name == "Interportal Mapping"
+                      - ontA = clsA.explore.ontology
+                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                      - ontAcroA = ontA.acronym
+                      - ontAcroB = clsB["links"]["ontology"].split("/")[-1]
+                    - elsif map.process.name == "External Mapping"
+                      - ontA = clsA.explore.ontology
+                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                      - ontAcroA = ontA.acronym
+                      - ontAcroB = clsB["links"]["ontology"]
                     - good_count += 1
                     %tr
                       %td
-                        - mapStr = "#{clsA[:prefLabel]} (#{ontA.acronym}) <=> #{clsB[:prefLabel]} (#{ontB.acronym})"
+                        - mapStr = "#{clsA[:prefLabel]} (#{ontAcroA}) <=> #{clsB[:prefLabel]} (#{ontAcroB})"
                         -# Don't link to map.id, it is a linked-data URI.
                         -# Use a relative UI link to the first class in the mapping.
                         - mapLnk = clsA["links"]["ui"].gsub(/^.*\/ontologies/,'/ontologies') + '#mappings'
@@ -203,7 +216,7 @@
                           = mapProc.creator.gsub(/.*\//,'')
                   - rescue => e
                     - LOG.add :error, e.message, e.backtrace.join("\n\t")
-                    - LOG.add :error, "Recent mapping: #{map.id}, classes: #{map.classes.map {|c| "#{c.ontology.acronym} #{c.id}" }.join(', ')}"
+                    - LOG.add :error, "Recent mapping: #{map.id}, classes: #{map.classes.map {|c| "#{c.id}" }.join(', ')}"
                     - next
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
   %span Supported by
