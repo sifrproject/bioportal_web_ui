@@ -19,13 +19,15 @@ config/bioportal_config.rb
 config/bioportal_config_localhost.rb
 config/bioportal_config_stage.rb
 config/bioportal_config_prod.rb
+config/bioportal_config_production.rb
+config/bioportal_config_development.rb
 config/database.yml
 config/deploy/*
 config/locales/en.rb
 **.DS_Store
 /public/**/cache/**
 /public/umls/*
-/public/assets/*
+/public/assets
 nohup.out
 
 .ruby-version

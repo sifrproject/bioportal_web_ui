@@ -6,6 +6,10 @@ class MappingsController < ApplicationController
   before_action :authorize_and_redirect, :only=>[:create,:new,:destroy]
 
   MAPPINGS_URL = "#{LinkedData::Client.settings.rest_url}/mappings"
+  EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
+  INTERPORTAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/InterportalMappings"
+  EXTERNAL_URL_PARAM_STR = "mappings:external"
+  INTERPORTAL_URL_PARAM_STR = "interportal:"
 
   def index
     ontology_list = LinkedData::Client::Models::Ontology.all.select {|o| !o.summaryOnly}
@@ -23,10 +27,21 @@ class MappingsController < ApplicationController
     @options = {}
     if ontologies_mapping_count
       ontologies_mapping_count.members.each do |ontology_acronym|
-        ontology = ontologies_hash[ontology_acronym.to_s]
-        mapping_count = ontologies_mapping_count[ontology_acronym]
-        next unless ontology && mapping_count > 0
-        select_text = "#{ontology.name} - #{ontology.acronym} (#{number_with_delimiter(mapping_count, delimiter: ',')})"
+        # Adding external and interportal mappings to the dropdown list
+        if ontology_acronym.to_s == EXTERNAL_MAPPINGS_GRAPH
+          mapping_count = ontologies_mapping_count[ontology_acronym.to_s]
+          select_text = "External Mappings (#{number_with_delimiter(mapping_count, delimiter: ',')})" if mapping_count > 0
+          ontology_acronym = EXTERNAL_URL_PARAM_STR
+        elsif ontology_acronym.to_s.start_with?(INTERPORTAL_MAPPINGS_GRAPH)
+          mapping_count = ontologies_mapping_count[ontology_acronym.to_s]
+          select_text = "Interportal Mappings - #{ontology_acronym.to_s.split("/")[-1].upcase} (#{number_with_delimiter(mapping_count, delimiter: ',')})" if mapping_count > 0
+          ontology_acronym = INTERPORTAL_URL_PARAM_STR + ontology_acronym.to_s.split("/")[-1]
+        else
+          ontology = ontologies_hash[ontology_acronym.to_s]
+          mapping_count = ontologies_mapping_count[ontology_acronym]
+          next unless ontology && mapping_count > 0
+          select_text = "#{ontology.name} - #{ontology.acronym} (#{number_with_delimiter(mapping_count, delimiter: ',')})"
+        end
         @options[select_text] = ontology_acronym
       end
     end
@@ -36,19 +51,40 @@ class MappingsController < ApplicationController
 
   def count
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
+    if @ontology
+      @ontology_id = @ontology.acronym
+      @ontology_label = @ontology.name
+      counts = LinkedData::Client::HTTP.get("#{MAPPINGS_URL}/statistics/ontologies/#{params[:id]}")
+    else
+      @ontology = params[:id]
+      @ontology_id = @ontology
+      @ontology_label = params[:id].split(":")[-1]
+      if @ontology_label == "external"
+        counts = LinkedData::Client::HTTP.get("#{MAPPINGS_URL}/statistics/external")
+      elsif params[:id].split(":")[0] == "interportal"
+        counts = LinkedData::Client::HTTP.get("#{MAPPINGS_URL}/statistics/interportal/#{@ontology_label}")
+      end
+    end
 
-    counts = LinkedData::Client::HTTP.get("#{MAPPINGS_URL}/statistics/ontologies/#{params[:id]}")
     @ontologies_mapping_count = []
     counts.members.each do |acronym|
       count = counts[acronym]
       ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym.to_s).first
+      if ontology
+        onto_info = {:id => ontology.id, :name => ontology.name, :viewOf => ontology.viewOf}
+      else
+        if acronym.to_s == EXTERNAL_MAPPINGS_GRAPH
+          onto_info = {:id => acronym.to_s, :name => "External Mappings", :viewOf => nil}
+          @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
+        elsif acronym.to_s.start_with?(INTERPORTAL_MAPPINGS_GRAPH)
+          onto_info = {:id => acronym.to_s, :name => "#{acronym.to_s.split("/")[-1].upcase} Interportal", :viewOf => nil}
+          @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
+        end
+      end
       next unless ontology
-      @ontologies_mapping_count << {'ontology' => ontology, 'count' => count}
+      @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
     end
-    @ontologies_mapping_count.sort! {|a,b| a['ontology'].name.downcase <=> b['ontology'].name.downcase } unless @ontologies_mapping_count.nil? || @ontologies_mapping_count.length == 0
-
-    @ontology_id = @ontology.acronym
-    @ontology_label = @ontology.name
+    @ontologies_mapping_count.sort! {|a,b| a['ontology'][:name].downcase <=> b['ontology'][:name].downcase } unless @ontologies_mapping_count.nil? || @ontologies_mapping_count.length == 0
 
     render :partial => 'count'
   end
@@ -57,9 +93,35 @@ class MappingsController < ApplicationController
     page = params[:page] || 1
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
     @target_ontology = LinkedData::Client::Models::Ontology.find(params[:target])
-    ontologies = [@ontology.acronym, @target_ontology.acronym]
 
-    @mapping_pages = LinkedData::Client::HTTP.get(MAPPINGS_URL, {page: page, ontologies: ontologies.join(",")})
+    # Cases if ontology or target are interportal or external
+    if @ontology.nil?
+      ontology_acronym = params[:id]
+      if params[:id] == EXTERNAL_URL_PARAM_STR
+        @ontology_name = "External Mappings"
+      elsif params[:id].start_with?(INTERPORTAL_URL_PARAM_STR)
+        @ontology_name = params[:id].sub(":", " - ")
+      end
+    else
+      ontology_acronym = @ontology.acronym
+      @ontology_name = @ontology.name
+    end
+    if @target_ontology.nil?
+      if params[:target] == EXTERNAL_MAPPINGS_GRAPH
+        target_acronym = EXTERNAL_URL_PARAM_STR
+        @target_ontology_name = "External Mappings"
+      elsif params[:target].start_with?(INTERPORTAL_MAPPINGS_GRAPH)
+        target_acronym = "#{INTERPORTAL_URL_PARAM_STR}:#{params[:target].split("/")[-1]}"
+        @target_ontology_name = "Interportal - #{params[:target].split("/")[-1].upcase}"
+      end
+    else
+      target_acronym = @target_ontology.acronym
+      @target_ontology_name = @target_ontology.name
+    end
+
+    ontologies = [ontology_acronym, target_acronym]
+
+    @mapping_pages = LinkedData::Client::HTTP.get(MAPPINGS_URL, {page: page, ontologies: ontologies.join(","), display: "prefLabel"})
     @mappings = @mapping_pages.collection
     @delete_mapping_permission = check_delete_mapping_permission(@mappings)
 
