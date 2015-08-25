@@ -194,7 +194,7 @@
                       - ontA = clsA.explore.ontology
                       - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
                       - ontAcroA = ontA.acronym
-                      - ontAcroB = clsB["links"]["ontology"].split("/")[-1]
+                      - ontAcroB = clsB["links"]["ontology"]
                     - elsif map.process.name == "External Mapping"
                       - ontA = clsA.explore.ontology
                       - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
