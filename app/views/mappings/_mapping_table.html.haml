@@ -27,6 +27,8 @@
       - if cls.id == @concept.id
         - # process is likely 'same_uris'
         - next if cls.links['ontology'] == @concept.links['ontology']
+      - if map.process.nil?
+        - next
       -# this is a different class or the same class in another ontology (for same_uri mappings).
       - unless !map.process.nil? && (map.process["name"] == "Interportal Mapping" ||  map.process["name"] == "External Mapping")
         - ont = cls.explore.ontology
@@ -62,7 +64,7 @@
   - if !got_internal_mappings
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
-      %td{:colspan => "3"} There are currently internal no mappings for this class.
+      %td{:colspan => "3"} There are currently no internal mappings for this class.
 
 %br
 %h2 Interportal mappings
@@ -81,6 +83,8 @@
         - # process is likely 'same_uris'
         - next if cls.links['ontology'] == @concept.links['ontology']
       -# this is a different class or the same class in another ontology (for same_uri mappings).
+      - if map.process.nil?
+        - next
       - if !map.process.nil? && map.process["name"] == "Interportal Mapping"
         -# In case this is an interportal mapping, getting cls and ontology informations directly from the cls object
         - cls_link = raw("<a href='#{cls.links["self"]}'>#{cls.id}</a>")
@@ -124,6 +128,8 @@
         - # process is likely 'same_uris'
         - next if cls.links['ontology'] == @concept.links['ontology']
       -# this is a different class or the same class in another ontology (for same_uri mappings).
+      - if map.process.nil?
+        - next
       - if !map.process.nil? && map.process["name"] == "External Mapping"
         -# In case this is an external mapping, getting cls and ontology informations directly from the cls object
         - cls_link = raw("<a href='#{cls.links["self"]}'>#{cls.id}</a>")
