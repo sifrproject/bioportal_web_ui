@@ -157,7 +157,6 @@ module ApplicationHelper
     end
     node.children.sort! {|a,b| (a.prefLabel || a.id).downcase <=> (b.prefLabel || b.id).downcase}
     for child in node.children
-      icons = ""
       if child.id.eql?(id)
         active_style="class='active'"
       else
@@ -168,7 +167,7 @@ module ApplicationHelper
       else
         open = ""
       end
-      relation = child.relation_icon
+      icons = child.relation_icon(node)
 
       # This fake root will be present at the root of "flat" ontologies, we need to keep the id intact
       li_id = child.id.eql?("bp_fake_root") ? "bp_fake_root" : short_uuid
@@ -176,7 +175,7 @@ module ApplicationHelper
       if child.id.eql?("bp_fake_root")
         string << "<li class='active' id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='#' #{active_style}>#{child.prefLabel}</a></li>"
       else
-        string << "<li #{open} id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ontologies/#{child.explore.ontology.acronym}/?p=classes&conceptid=#{CGI.escape(child.id)}' #{active_style}> #{relation} #{child.prefLabel({use_html: true})} #{icons}</a>"
+        string << "<li #{open} id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ontologies/#{child.explore.ontology.acronym}/?p=classes&conceptid=#{CGI.escape(child.id)}' #{active_style}> #{child.prefLabel({use_html: true})}</a> #{icons}"
         if child.hasChildren && !child.expanded?
           string << "<ul class='ajax'><li id='#{li_id}'><a id='#{CGI.escape(child.id)}' href='/ajax_concepts/#{child.explore.ontology.acronym}/?conceptid=#{CGI.escape(child.id)}&callback=children'>ajax_class</a></li></ul>"
         elsif child.expanded?

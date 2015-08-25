@@ -5,7 +5,7 @@ class AnalyticsController < ApplicationController
     entry = Analytics.new
     entry.segment = params[:segment]
     entry.action = params[:analytics_action]
-    entry.slice = @subdomain_filter[:active] ? @subdomain_filter[:acronym] : nil
+    entry.bp_slice = @subdomain_filter[:active] ? @subdomain_filter[:acronym] : nil
     entry.ip = request.remote_ip
     entry.user = session[:user].nil? ? nil : session[:user].id
     entry.params = params.except(:segment, :analytics_action, :action, :controller)
@@ -15,7 +15,7 @@ class AnalyticsController < ApplicationController
 
   def search_result_clicked
     clicks = Analytics.where(:segment => "search", :action => "result_clicked").all
-    rows = [["query", "position_clicked", "ontology_clicked", "higher_rated_ontologies", "additional_result", "exact_match", "concept_id", "time", "user", "slice", "ip_address"]]
+    rows = [["query", "position_clicked", "ontology_clicked", "higher_rated_ontologies", "additional_result", "exact_match", "concept_id", "time", "user", "bp_slice", "ip_address"]]
     clicks.each do |click|
       next if click.params.empty?
       rows << [
@@ -28,7 +28,7 @@ class AnalyticsController < ApplicationController
         click.params["concept_id"],
         click.created_at,
         click.user,
-        click.slice,
+        click.bp_slice,
         click.ip
       ]
     end
@@ -37,7 +37,7 @@ class AnalyticsController < ApplicationController
 
   def user_intention_surveys
     surveys = Analytics.where(:segment => "users", :action => "intention_survey").all
-    rows = [["page", "response", "email", "time", "user", "slice", "ip_address"]]
+    rows = [["page", "response", "email", "time", "user", "bp_slice", "ip_address"]]
     surveys.each do |survey|
       rows << [
         survey.params["page"],
@@ -45,7 +45,7 @@ class AnalyticsController < ApplicationController
         survey.params["contest_email"],
         survey.created_at,
         survey.user,
-        survey.slice,
+        survey.bp_slice,
         survey.ip
       ]
     end

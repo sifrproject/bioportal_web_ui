@@ -181,7 +181,7 @@ private
 
   def build_tree
     # find path to root
-    rootNode = @concept.explore.tree(include: "prefLabel,hasChildren,obsolete")
+    rootNode = @concept.explore.tree(include: "prefLabel,hasChildren,obsolete,subClassOf")
     @root = LinkedData::Client::Models::Class.new(read_only: true)
     @root.children = rootNode unless rootNode.nil?
   end

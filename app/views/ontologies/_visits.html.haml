@@ -25,6 +25,6 @@
 
     jQuery(document).data().bp.ont_chart = {};
     jQuery(document).data().bp.ont_chart.scaleLabel = "<%=' ' + numberWithCommas(value)%>";
-    jQuery(document).data().bp.ont_chart.visitsLabels = #{visits_data[:labels][0..months_to_show-1].to_json};
-    jQuery(document).data().bp.ont_chart.visitsData = #{visits_data[:visits][0..months_to_show-1].to_json};
+    jQuery(document).data().bp.ont_chart.visitsLabels = #{visits_data[:labels][-1-months_to_show..-1].to_json};
+    jQuery(document).data().bp.ont_chart.visitsData = #{visits_data[:visits][-1-months_to_show..-1].to_json};
 

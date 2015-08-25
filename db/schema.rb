@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140306012927) do
+ActiveRecord::Schema.define(version: 20150806211835) do
 
   create_table "analytics", force: :cascade do |t|
     t.string   "segment",    limit: 255
     t.string   "action",     limit: 255
-    t.string   "slice",      limit: 255
+    t.string   "bp_slice",   limit: 255
     t.string   "ip",         limit: 255
     t.integer  "user",       limit: 4
     t.text     "params",     limit: 65535
