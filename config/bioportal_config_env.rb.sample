@@ -32,6 +32,10 @@ $REST_URL = "http://example.org:8080/"
 # Annotator REST service address
 $ANNOTATOR_URL = "http://example.org:8080/annotator/"
 
+# NCBO annotator URL and apikey
+$NCBO_ANNOTATOR_URL = "http://example.org:8082/ncbo_annotatorplus"
+$NCBO_API_KEY = ""
+
 # Legacy REST core service address (BioPortal v3.x and lower)
 $LEGACY_REST_URL = "http://example.org:8080/bioportal"
 
