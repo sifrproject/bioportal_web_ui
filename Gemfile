@@ -49,7 +49,7 @@ gem 'newrelic_rpm'
 gem 'rackstash', git: "https://github.com/planio-gmbh/rackstash.git"
 gem 'logstash-logger'
 
-gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "staging"
+gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "master"
 
 #group :development do
     #Capistrano
