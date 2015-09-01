@@ -80,7 +80,7 @@
                 %a{:href => "/resource_index"} Advanced Resource Search
     %tr
       %td{:valign => "top"}
-        %fieldset{style: "display: none;"}
+        %fieldset
           %legend
             Ontology Visits #{"in full #{$SITE} " if at_slice?} (#{@analytics.date.strftime("%B %Y")})
           %table.minimal.align-right{width: "100%"}
