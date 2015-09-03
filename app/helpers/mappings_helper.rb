@@ -15,9 +15,10 @@ module MappingsHelper
 
   # a little method that returns true if the URIs array contain a gold:translation or gold:freeTranslation
   def is_translation(relation_array)
+    relation_array.map!(&:downcase)
     if relation_array.include? "http://purl.org/linguistics/gold/translation"
       true
-    elsif relation_array.include? "http://purl.org/linguistics/gold/freeTranslation"
+    elsif relation_array.include? "http://purl.org/linguistics/gold/freetranslation"
       true
     else
       false
