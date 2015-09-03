@@ -252,11 +252,11 @@ class OntologiesController < ApplicationController
         if ontology
           onto_info = {:id => ontology.id, :name => ontology.name, :viewOf => ontology.viewOf}
         else
-          if acronym.to_s == EXTERNAL_MAPPINGS_GRAPH
+          if acronym.to_s.start_with?(EXTERNAL_MAPPINGS_GRAPH)
             onto_info = {:id => acronym.to_s, :name => "External Mappings", :viewOf => nil}
             @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
           elsif acronym.to_s.start_with?(INTERPORTAL_MAPPINGS_GRAPH)
-            onto_info = {:id => acronym.to_s, :name => "#{acronym.to_s.split("/")[-1].upcase} Interportal", :viewOf => nil}
+            onto_info = {:id => acronym.to_s, :name => "Interportal Mappings - #{acronym.to_s.split("/")[-1].upcase}", :viewOf => nil}
             @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
           end
         end
