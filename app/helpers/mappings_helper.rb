@@ -7,6 +7,8 @@ module MappingsHelper
     "http://www.w3.org/1999/02/22-rdf-syntax-ns" => "rdf:"
   }
 
+  INTERPORTAL_HASH = $INTERPORTAL_HASH
+
   def get_short_id(uri)
     split = uri.split("#")
     name = split.length > 1 && RELATIONSHIP_URIS.keys.include?(split[0]) ? RELATIONSHIP_URIS[split[0]] + split[1] : uri
@@ -23,6 +25,43 @@ module MappingsHelper
     else
       false
     end
+  end
+
+  # method to get (using http) prefLabel for interportal classes
+  def getInterportalPrefLabel(class_uri, class_ui_url)
+    interportal_key = getInterportalKey(class_ui_url)
+    if interportal_key
+      json_class = JSON.parse(Net::HTTP.get(URI.parse("#{class_uri}?apikey=#{interportal_key}")))
+      if !json_class["prefLabel"].nil?
+        return json_class["prefLabel"]
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+
+  # to get the apikey from the interportal instance of the interportal class.
+  # The best way to know from which interportal instance the class came is to compare the UI url
+  def getInterportalKey(class_ui_url)
+    INTERPORTAL_HASH.each do |key, value|
+      if class_ui_url.start_with?(value["ui"])
+        return value["apikey"]
+      else
+        return nil
+      end
+    end
+  end
+
+  # method to extract the prefLabel from the external class URI
+  def getExternalPrefLabel(class_uri)
+    if class_uri.include? "#"
+      prefLabel = class_uri.split("#")[-1]
+    else
+      prefLabel = class_uri.split("/")[-1]
+    end
+    return prefLabel
   end
 
 end

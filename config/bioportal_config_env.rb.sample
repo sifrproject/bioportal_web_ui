@@ -32,9 +32,17 @@ $REST_URL = "http://example.org:8080/"
 # Annotator REST service address
 $ANNOTATOR_URL = "http://example.org:8080/annotator/"
 
+
 # NCBO annotator URL and apikey
 $NCBO_ANNOTATOR_URL = "http://example.org:8082/ncbo_annotatorplus"
 $NCBO_API_KEY = ""
+
+# Used to define other bioportal that can be mapped to
+# Example to map to ncbo bioportal : {"ncbo" => {"api" => "http://data.bioontology.org", "ui" => "http://bioportal.bioontology.org", "apikey" => ""}
+# Then create the mapping using the following class in JSON : "http://purl.bioontology.org/ontology/MESH/C585345": "ncbo:MESH"
+# Where "ncbo" is the namespace used as key in the interportal_hash
+$INTERPORTAL_HASH = {}
+
 
 # Legacy REST core service address (BioPortal v3.x and lower)
 $LEGACY_REST_URL = "http://example.org:8080/bioportal"
