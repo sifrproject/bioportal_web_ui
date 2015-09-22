@@ -17,12 +17,17 @@ module MappingsHelper
 
   # a little method that returns true if the URIs array contain a gold:translation or gold:freeTranslation
   def is_translation(relation_array)
-    relation_array.map!(&:downcase)
-    if relation_array.include? "http://purl.org/linguistics/gold/translation"
-      true
-    elsif relation_array.include? "http://purl.org/linguistics/gold/freetranslation"
-      true
+    if relation_array.kind_of?(Array)
+      relation_array.map!(&:downcase)
+      if relation_array.include? "http://purl.org/linguistics/gold/translation"
+        true
+      elsif relation_array.include? "http://purl.org/linguistics/gold/freetranslation"
+        true
+      else
+        false
+      end
     else
+      LOG.add :error, "Warning: Mapping relation is not an array"
       false
     end
   end
@@ -45,11 +50,13 @@ module MappingsHelper
   # to get the apikey from the interportal instance of the interportal class.
   # The best way to know from which interportal instance the class came is to compare the UI url
   def getInterportalKey(class_ui_url)
-    INTERPORTAL_HASH.each do |key, value|
-      if class_ui_url.start_with?(value["ui"])
-        return value["apikey"]
-      else
-        return nil
+    if !INTERPORTAL_HASH.nil?
+      INTERPORTAL_HASH.each do |key, value|
+        if class_ui_url.start_with?(value["ui"])
+          return value["apikey"]
+        else
+          return nil
+        end
       end
     end
   end

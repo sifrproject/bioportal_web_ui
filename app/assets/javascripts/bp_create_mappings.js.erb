@@ -1,4 +1,5 @@
 jQuery(document).ready(function() {
+
   jQuery(".ontology_picker_single").live("change", function(){
     var current_side = jQuery(this).attr("id").replace("_picker", "");
     jQuery("#" + current_side)[0].autocompleter.flushCache();
@@ -35,7 +36,18 @@ jQuery(document).ready(function() {
     }
   });
 
-  // Reset mapping UI when tree changes or loaded from ajax
+
+  jQuery(".mapping_radio").live("click", function() {
+    var mapping_type = jQuery(this).val();
+    jQuery("div.mapping_form").hide();
+    if (mapping_type == "interportal") {
+      jQuery("div#interportal_form").show();
+    } else {
+      jQuery("div#external_form").show();
+    }
+  });
+
+    // Reset mapping UI when tree changes or loaded from ajax
   jQuery(document).live("tree_changed", resetMappingUIWithFacebox);
   jQuery(document).live("classes_tab_visible", resetMappingUI);
 
@@ -49,6 +61,7 @@ jQuery(document).ready(function() {
   create_mapping_advanced_options.init();
 
   jQuery("#create_mapping_button").live("click", bp_createMapping.create);
+  jQuery("#create_external_mapping_button").live("click", bp_createExternalMapping.create);
 });
 
 // Also in bp_mappings.js
@@ -106,6 +119,7 @@ function resetMappingUI() {
 var bp_createMapping = {
   create: function() {
     bp_createMapping.reset();
+
     jQuery("#create_mapping_spinner").show();
     var errored = bp_createMapping.validate();
 
@@ -210,5 +224,119 @@ var create_mapping_advanced_options = {
     });
   }
 
+}
+
+
+var bp_createExternalMapping = {
+    create: function() {
+        bp_createExternalMapping.reset();
+        jQuery("#create_mapping_spinner").show();
+        var errored = bp_createExternalMapping.validate();
+
+        console.log(jQuery(".mapping_radio:checked").val());
+
+        if (errored) {
+            jQuery("#create_mapping_spinner").hide();
+            return false;
+        }
+
+        var mapping_type = jQuery(".mapping_radio:checked").val();
+
+        if (mapping_type == "interportal") {
+            var ontology_from = jQuery("#map_from_bioportal_ontology_id");
+            var ontology_to = jQuery("#map_to_interportal").val() + ":" + jQuery("#map_to_interportal_ontology").val();
+            var concept_from_id = jQuery("#map_from_bioportal_full_id");
+            var concept_to_id = jQuery("#map_to_interportal_class");
+            var mapping_comment = jQuery("#mapping_comment");
+            var mapping_relation = jQuery("#mapping_relation");
+            var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
+        } else {
+            var ontology_from = jQuery("#map_from_bioportal_ontology_id");
+            var ontology_to = "ext:" + jQuery("#map_to_external_ontology").val();
+            var concept_from_id = jQuery("#map_from_bioportal_full_id");
+            var concept_to_id = jQuery("#map_to_external_class");
+            var mapping_comment = jQuery("#mapping_comment");
+            var mapping_relation = jQuery("#mapping_relation");
+            var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
+        }
+
+        var params = {
+            mapping_type: mapping_type,
+            map_from_bioportal_ontology_id: ontology_from.val(),
+            map_to_bioportal_ontology_id: ontology_to,
+            map_from_bioportal_full_id: concept_from_id.val(),
+            map_to_bioportal_full_id: concept_to_id.val(),
+            mapping_comment: mapping_comment.val(),
+            mapping_relation: mapping_relation.val(),
+            mapping_bidirectional: mapping_bidirectional
+        };
+
+        jQuery.ajax({
+            url: "/mappings",
+            type: "POST",
+            data: params,
+            success: bp_createExternalMapping.success,
+            error: bp_createExternalMapping.error
+        });
+    },
+
+    success: function(data) {
+        jQuery("#create_mapping_spinner").hide();
+        if (jQuery(".mapping_radio:checked").val() == "interportal") {
+            jQuery("#create_mapping_success_messages").prepend(jQuery("<div/>").addClass("success_message").html(
+                    "Mapping from <b>" + jQuery("#map_from").val() + "</b> to <b>" + jQuery("#map_to_interportal_class").val() + "</b> was created"
+            ));
+        } else {
+            jQuery("#create_mapping_success_messages").prepend(jQuery("<div/>").addClass("success_message").html(
+                    "Mapping from <b>" + jQuery("#map_from").val() + "</b> to <b>" + jQuery("#map_to_external_class").val() + "</b> was created"
+            ));
+        }
+
+        // If we have a concept mapping table, update it with new mappings
+        if (document.getElementById("concept_mappings_table") != null) {
+            var url = "/ajax/mappings/get_concept_table?ontologyid=" + ontology_id + "&conceptid=" + encodeURIComponent(currentConcept);
+            jQuery("#concept_mappings_table").load(url, function(){
+                jQuery("#mapping_count").html(jQuery("#mapping_details tbody tr:visible").size());
+            });
+        }
+
+        // Clear the map to side
+        jQuery("#map_to_concept_details").hide();
+
+        jQuery.bioportal.ont_pages["mappings"].retrieve_and_publish();
+        updateMappingDeletePermissions();
+    },
+
+    error: function() {
+        jQuery("#create_mapping_spinner").hide();
+        jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+    },
+
+    validate: function() {
+        var concept_from_input = jQuery("#map_from");
+        var concept_to_input = jQuery("#map_to_class");
+        var error = jQuery("#create_mapping_error");
+        var errors = ["<b>Problem creating mapping:</b>"];
+        var errored = false;
+
+        if (concept_from_input.val() == "" || concept_from_input.val() == concept_from_input.attr("title")) {
+            errors.push("Please select class to map from");
+            errored = true;
+        }
+/*
+        if (concept_to_input.val() == "" || concept_to_input.val() == concept_to_input.attr("title")) {
+            errors.push("Please select class to map to");
+            errored = true;
+        }
+*/
+        if (errors.length > 1)
+            jQuery("#create_mapping_error").html(errors.join("<br/>"));
+
+        return errored;
+    },
+
+    reset: function() {
+        jQuery("#create_mapping_error").html("");
+    }
 }
 

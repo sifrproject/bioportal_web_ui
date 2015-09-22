@@ -7,8 +7,11 @@
 %div{:style => "padding: 1%; width: 98%"}
   - if session[:user].nil?
     = link_to "Create New Mapping", "/login?redirect=/ontologies/#{@ontology.acronym}/?p=classes&t=mappings&conceptid=#{CGI.escape(@concept.id)}", :method => :get, :class => "link_button"
+    = link_to "Create New External Mapping", "/login?redirect=/ontologies/#{@ontology.acronym}/?p=classes&t=mappings&conceptid=#{CGI.escape(@concept.id)}", :method => :get, :class => "link_button"
   - else
     %a#create_new_mapping_href.link_button{:href => "/mappings/new?ontology_from=#{@ontology.id}&conceptid_from=#{escape(@concept.id)}", :rel => "facebox", :title => "New Mapping For #{remove_owl_notation(@concept.prefLabel)}"} Create New Mapping
+    \&nbsp;&nbsp;&nbsp;
+    %a#create_new_mapping_href.link_button{:href => "/mappings/new_external?ontology_from=#{@ontology.id}&conceptid_from=#{escape(@concept.id)}", :rel => "facebox", :title => "New External Mapping For #{remove_owl_notation(@concept.prefLabel)}"} Create New External Mapping
     \&nbsp;&nbsp;&nbsp;
     = link_to "Delete Selected Mappings", "javascript:void(0);", :onclick => "if (confirm('Really delete mappings? This cannot be undone.')) deleteMappings()", :id => "delete_mappings_button", :class => "link_button"
     %span#delete_mappings_spinner{:style => "display: none;"}= loading_spinner(false, true)
