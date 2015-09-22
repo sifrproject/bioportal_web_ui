@@ -11,6 +11,8 @@ class MappingsController < ApplicationController
   EXTERNAL_URL_PARAM_STR = "mappings:external"
   INTERPORTAL_URL_PARAM_STR = "interportal:"
 
+  INTERPORTAL_HASH = $INTERPORTAL_HASH ||= {}
+
   def index
     ontology_list = LinkedData::Client::Models::Ontology.all.select {|o| !o.summaryOnly}
     ontologies_mapping_count = LinkedData::Client::HTTP.get("#{MAPPINGS_URL}/statistics/ontologies")
@@ -171,17 +173,49 @@ class MappingsController < ApplicationController
     end
   end
 
+  def new_external
+    @ontology_from = LinkedData::Client::Models::Ontology.find(params[:ontology_from])
+    @ontology_to = LinkedData::Client::Models::Ontology.find(params[:ontology_to])
+    @concept_from = @ontology_from.explore.single_class({full: true}, params[:conceptid_from]) if @ontology_from
+    @concept_to = @ontology_to.explore.single_class({full: true}, params[:conceptid_to]) if @ontology_to
+
+    @interportal_options = []
+    INTERPORTAL_HASH.each do |key, value|
+      @interportal_options.push([key, key])
+    end
+
+    # Defaults just in case nothing gets provided
+    @ontology_from ||= LinkedData::Client::Models::Ontology.new
+    @ontology_to ||= LinkedData::Client::Models::Ontology.new
+    @concept_from ||= LinkedData::Client::Models::Class.new
+    @concept_to ||= LinkedData::Client::Models::Class.new
+
+    if request.xhr? || params[:no_layout].eql?("true")
+      render :layout => false
+    else
+      render :layout => "ontology"
+    end
+  end
+
   # POST /mappings
   # POST /mappings.xml
   def create
+    if params.has_key?(:mapping_type)
+      # Means its an external or interportal mapping
+      target_ontology = params[:map_to_bioportal_ontology_id]
+      target = params[:map_to_bioportal_full_id]
+    else
+      # Means it's a regular internal mapping
+      target_ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:map_to_bioportal_ontology_id]).first
+      target = target_ontology.explore.single_class(params[:map_to_bioportal_full_id]).id
+      target_ontology = target_ontology.id
+    end
     source_ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:map_from_bioportal_ontology_id]).first
-    target_ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:map_to_bioportal_ontology_id]).first
     source = source_ontology.explore.single_class(params[:map_from_bioportal_full_id])
-    target = target_ontology.explore.single_class(params[:map_to_bioportal_full_id])
     values = {
       classes: {
         source.id => source_ontology.id,
-        target.id => target_ontology.id
+        target => target_ontology
       },
       creator: session[:user].id,
       relation: params[:mapping_relation],
