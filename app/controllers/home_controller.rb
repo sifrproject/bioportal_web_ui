@@ -119,7 +119,7 @@ class HomeController < ApplicationController
       return
     end
 
-    Notifier.feedback(params[:name],params[:email],params[:comment],params[:location]).deliver
+    Notifier.feedback(params[:name],params[:email],params[:comment],params[:location]).deliver_now
 
     if params[:pop].eql?("true")
       render :action => "feedback_complete", :layout => "popup"
