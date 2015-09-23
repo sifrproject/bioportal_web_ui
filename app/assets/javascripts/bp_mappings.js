@@ -82,6 +82,7 @@ function deleteMappings() {
     success: function(data){
       var rowId;
       jQuery("#delete_mappings_spinner").hide();
+      var map_id;
       for (map_id in data.success) {
         rowId = data.success[map_id].replace(/.*\//, "");
         jQuery("#" + rowId).html("").hide();
