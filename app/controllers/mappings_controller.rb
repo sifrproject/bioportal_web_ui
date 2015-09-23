@@ -224,7 +224,7 @@ class MappingsController < ApplicationController
     @mapping = LinkedData::Client::Models::Mapping.new(values: values)
     @mapping_saved = @mapping.save
     if @mapping_saved.errors
-      raise Exception, @mapping_saved.errors
+      render text: @mapping_saved.errors[0], status: :bad_request
     else
       @delete_mapping_permission = check_delete_mapping_permission(@mapping_saved)
       render :json => @mapping_saved
