@@ -209,18 +209,51 @@ var bp_createMapping = {
   }
 }
 
+var bp_popup_mapping_init = function(e) {
+    bp_popup_mapping_cleanup();
+    e.preventDefault();
+    e.stopPropagation()
+
+    var popup = jQuery(e.currentTarget).parents(".popup_container");
+    var popup_list = popup.children(".bp_popup_mapping_list");
+
+    popup.children(".bp_popup_link_container").addClass("bp_popup_shadow");
+    popup.find("a.bp_popup_link").css("z-index", "5000").addClass("bp_popup_link_active");
+
+    // popup fade if the user click outside of it
+    jQuery("body").click(function(){
+        jQuery(".bp_popup_mapping_list").fadeOut().removeClass("active");
+    });
+    jQuery(".bp_popup_mapping_list").click(function(e){
+        e.stopPropagation();
+    });
+
+    popup.children(".bp_popup_mapping_list").show();
+
+    // Check for dropping off edge of screen
+    if (popup_list.width() + popup_list.offset().left > jQuery(window).width()) {
+        popup_list.css("left", "-250px");
+    }
+
+}
+
+var bp_popup_mapping_cleanup = function() {
+    jQuery(".bp_popup_link_container").removeClass("bp_popup_shadow");
+    jQuery(".bp_popup_link").css("z-index", "").removeClass("bp_popup_link_active");
+}
+
 // Popup for advanced options
 var create_mapping_advanced_options = {
   init: function() {
-    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_init(e)});
+    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_mapping_init(e)});
     jQuery("#create_mapping_advanced_options").click(function(e){e.stopPropagation()});
     this.cleanup();
   },
 
   cleanup: function() {
-    jQuery("html").click(bp_popup_cleanup);
+    jQuery("html").click(bp_popup_mapping_cleanup);
     jQuery(document).keyup(function(e) {
-      if (e.keyCode == 27) { bp_popup_cleanup(); } // esc
+      if (e.keyCode == 27) { bp_popup_mapping_cleanup(); } // esc
     });
   }
 
@@ -232,6 +265,15 @@ var bp_createExternalMapping = {
         bp_createExternalMapping.reset();
         jQuery("#create_mapping_spinner").show();
         var errored = bp_createExternalMapping.validate();
+
+        var relation_array = new Array();
+        jQuery.each(jQuery("input[name='mapping_relations']:checked"), function() {
+            relation_array.push(jQuery(this).val());
+        });
+
+        if (jQuery("#relation_text_box").val() != "") {
+            relation_array.push(jQuery("#relation_text_box").val());
+        }
 
         if (errored) {
             jQuery("#create_mapping_spinner").hide();
@@ -246,7 +288,6 @@ var bp_createExternalMapping = {
             var concept_from_id = jQuery("#map_from_bioportal_full_id");
             var concept_to_id = jQuery("#map_to_interportal_class");
             var mapping_comment = jQuery("#mapping_comment");
-            var mapping_relation = jQuery("#mapping_relation");
             var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
         } else {
             var ontology_from = jQuery("#map_from_bioportal_ontology_id");
@@ -254,7 +295,6 @@ var bp_createExternalMapping = {
             var concept_from_id = jQuery("#map_from_bioportal_full_id");
             var concept_to_id = jQuery("#map_to_external_class");
             var mapping_comment = jQuery("#mapping_comment");
-            var mapping_relation = jQuery("#mapping_relation");
             var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
         }
 
@@ -265,7 +305,7 @@ var bp_createExternalMapping = {
             map_from_bioportal_full_id: concept_from_id.val(),
             map_to_bioportal_full_id: concept_to_id.val(),
             mapping_comment: mapping_comment.val(),
-            mapping_relation: mapping_relation.val(),
+            mapping_relation: relation_array,
             mapping_bidirectional: mapping_bidirectional
         };
 
