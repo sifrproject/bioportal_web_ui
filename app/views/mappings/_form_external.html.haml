@@ -1,5 +1,4 @@
 - ontology_from_id = @ontology_from.acronym.nil? ? "all" : @ontology_from.acronym
-- ontology_to_id = @ontology_to.acronym.nil? ? "all" : @ontology_to.acronym
 :javascript
   var BP_INTERNAL_SEARCH_SERVER = "#{$UI_URL}";
 :css
@@ -62,15 +61,30 @@
       %span.popup_container{:style => "padding-left: 1.7em; margin-top: 15px;"}
         %span.bp_popup_link_container
           %a#create_mapping_advanced.bp_popup_link{:href => "javascript:void(0);"} advanced options
-        #create_mapping_advanced_options.bp_popup_list{:style => "display: none;"}
-          %select#mapping_relation{:name => "mapping[relation]", :style => ""}
-            %option{:selected => "selected", :value => "http://www.w3.org/2004/02/skos/core#exactMatch"} Identical (skos:exactMatch)
-            %option{:value => "http://www.w3.org/2004/02/skos/core#closeMatch"} Similar (skos:closeMatch)
-            %option{:value => "http://www.w3.org/2004/02/skos/core#relatedMatch"} Related (skos:relatedMatch)
-            %option{:value => "http://www.w3.org/2004/02/skos/core#broadMatch"} Broader (skos:broadMatch)
-            %option{:value => "http://www.w3.org/2004/02/skos/core#narrowMatch"} Narrower (skos:narrowMatch)
-            %option{:value => "http://purl.org/linguistics/gold/translation"} Translation (gold:translation)
-            %option{:value => "http://purl.org/linguistics/gold/freeTranslation"} Free Translation (gold:freeTranslation)
+        #create_mapping_advanced_options.bp_popup_mapping_list{:style => "display: none;"}
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#exactMatch", :checked => "checked"} Identical (skos:exactMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#closeMatch"} Similar (skos:closeMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#relatedMatch"} Related (skos:relatedMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#broadMatch"} Broader (skos:broadMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#narrowMatch"} Narrower (skos:narrowMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://purl.org/linguistics/gold/translation"} Translation (gold:translation)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://purl.org/linguistics/gold/freeTranslation"} Free Translation (gold:freeTranslation)
+          %br/
+          Other:&nbsp;
+          = text_field_tag :relation_text_box, nil, placeholder: 'Enter the relation URI', :style => "margin-top: 5px; width: 230px; "
       #create_mapping_error{:style => "color: red; margin: 7px 0;"}
       #create_mapping_success_messages{:style => "float: right; clear: both; margin: -35px 0 15px;"}
 

@@ -1975,6 +1975,22 @@ div#search_categories_chzn .chzn-drop {
   z-index: 4001;
 }
 
+.bp_popup_mapping_list {
+  background-color: white;
+  border: thin solid gray;
+  padding: .5em;
+  position: absolute;
+  left: 5px;
+  top: 20px;
+  width: 300px;
+  max-height: 250px;
+  overflow: auto;
+  text-transform: none;
+  box-shadow: 0 0 10px gray;
+  cursor: auto;
+  z-index: 4001;
+}
+
 .matched_in .popup_container #matched_filter_list {
   width: 120px;
 }
