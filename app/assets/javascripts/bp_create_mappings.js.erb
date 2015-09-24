@@ -239,15 +239,15 @@ var bp_popup_mapping_cleanup = function() {
 // Popup for advanced options
 var create_mapping_advanced_options = {
   init: function() {
-    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_init(e)});
+    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_mapping_init(e)});
     jQuery("#create_mapping_advanced_options").click(function(e){e.stopPropagation()});
     this.cleanup();
   },
 
   cleanup: function() {
-    jQuery("html").click(bp_popup_cleanup);
+    jQuery("html").click(bp_popup_mapping_cleanup);
     jQuery(document).keyup(function(e) {
-      if (e.keyCode == 27) { bp_popup_cleanup(); } // esc
+      if (e.keyCode == 27) { bp_popup_mapping_cleanup(); } // esc
     });
   }
 
