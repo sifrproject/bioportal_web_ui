@@ -195,6 +195,39 @@ var bp_createMapping = {
   }
 }
 
+// popup variable changed for mapping
+var bp_popup_mapping_init = function(e) {
+    bp_popup_mapping_cleanup();
+    e.preventDefault();
+    e.stopPropagation()
+
+    var popup = jQuery(e.currentTarget).parents(".popup_container");
+    var popup_list = popup.children(".bp_popup_mapping_list");
+
+    popup.children(".bp_popup_link_container").addClass("bp_popup_shadow");
+    popup.find("a.bp_popup_link").css("z-index", "5000").addClass("bp_popup_link_active");
+
+    // popup fade if the user click outside of it
+    jQuery("body").click(function(){
+        jQuery(".bp_popup_mapping_list").fadeOut().removeClass("active");
+    });
+    jQuery(".bp_popup_mapping_list").click(function(e){
+        e.stopPropagation();
+    });
+
+    popup.children(".bp_popup_mapping_list").show();
+
+    // Check for dropping off edge of screen
+    if (popup_list.width() + popup_list.offset().left > jQuery(window).width()) {
+        popup_list.css("left", "-250px");
+    }
+}
+
+var bp_popup_mapping_cleanup = function() {
+    jQuery(".bp_popup_link_container").removeClass("bp_popup_shadow");
+    jQuery(".bp_popup_link").css("z-index", "").removeClass("bp_popup_link_active");
+}
+
 // Popup for advanced options
 var create_mapping_advanced_options = {
   init: function() {
