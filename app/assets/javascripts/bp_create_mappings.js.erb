@@ -170,9 +170,13 @@ var bp_createMapping = {
     updateMappingDeletePermissions();
   },
 
-  error: function() {
+  error: function(data) {
     jQuery("#create_mapping_spinner").hide();
-    jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+    if (data.responseText !== undefined && data.responseText !== null) {
+      jQuery("#create_mapping_error").html(data.responseText);
+    } else {
+      jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+    }
   },
 
   validate: function() {
