@@ -114,12 +114,20 @@ var bp_createMapping = {
       return false;
     }
 
+    var relation_array = new Array();
+    jQuery.each(jQuery("input[name='mapping_relations']:checked"), function() {
+      relation_array.push(jQuery(this).val());
+    });
+
+    if (jQuery("#relation_text_box").val() != "") {
+      relation_array.push(jQuery("#relation_text_box").val());
+    }
+
     var ontology_from = jQuery("#map_from_bioportal_ontology_id");
     var ontology_to = jQuery("#map_to_bioportal_ontology_id");
     var concept_from_id = jQuery("#map_from_bioportal_full_id");
     var concept_to_id = jQuery("#map_to_bioportal_full_id");
     var mapping_comment = jQuery("#mapping_comment");
-    var mapping_relation = jQuery("#mapping_relation");
     var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
 
     var params = {
@@ -128,7 +136,7 @@ var bp_createMapping = {
       map_from_bioportal_full_id: concept_from_id.val(),
       map_to_bioportal_full_id: concept_to_id.val(),
       mapping_comment: mapping_comment.val(),
-      mapping_relation: mapping_relation.val(),
+      mapping_relation: relation_array,
       mapping_bidirectional: mapping_bidirectional
     };
 
