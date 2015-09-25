@@ -55,6 +55,9 @@ jQuery(document).bind("tree_changed", updateMappingCount);
 function deleteMappings() {
   var mappingsToDelete = [], params;
 
+  var ontology_id = jQuery(document).data().bp.ont_viewer.ontology_id;
+  var concept_id = jQuery(document).data().bp.ont_viewer.concept_id;
+
   jQuery("#delete_mappings_error").html("");
   jQuery("#delete_mappings_spinner").show();
 
