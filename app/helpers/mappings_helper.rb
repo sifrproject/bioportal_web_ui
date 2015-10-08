@@ -7,6 +7,16 @@ module MappingsHelper
     "http://www.w3.org/1999/02/22-rdf-syntax-ns" => "rdf:"
   }
 
+  # Used to replace the full URI by the prefixed URI
+  RELATIONSHIP_PREFIX = {
+      "http://www.w3.org/2004/02/skos/core#" => "skos:",
+      "http://www.w3.org/2000/01/rdf-schema#" => "rdfs:",
+      "http://www.w3.org/2002/07/owl#" => "owl:",
+      "http://www.w3.org/1999/02/22-rdf-syntax-ns#" => "rdf:",
+      "http://purl.org/linguistics/gold/" => "gold:",
+      "http://lemon-model.net/lemon#" => "lemon:"
+  }
+
   INTERPORTAL_HASH = $INTERPORTAL_HASH
 
   def get_short_id(uri)
@@ -30,6 +40,12 @@ module MappingsHelper
       LOG.add :error, "Warning: Mapping relation is not an array"
       false
     end
+  end
+
+  # a little method that returns the uri with a prefix : http://purl.org/linguistics/gold/translation become gold:translation
+  def get_prefixed_uri(uri)
+    RELATIONSHIP_PREFIX.each { |k, v| uri.sub!(k, v) }
+    return uri
   end
 
   # method to get (using http) prefLabel for interportal classes

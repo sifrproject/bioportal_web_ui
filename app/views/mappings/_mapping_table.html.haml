@@ -19,6 +19,7 @@
       %th Mapping To
       %th Ontology
       %th Source
+      %th Relations
   -#%th Linked Data
   - got_internal_mappings = false
 
@@ -61,10 +62,14 @@
             #{map.source} #{(map.process || {})[:source_name]}
             - if is_translation(map.process["relation"])
               %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+          %td
+            - map.process["relation"].each do |relation|
+              = get_prefixed_uri(relation)
+              %br/
   - if !got_internal_mappings
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
-      %td{:colspan => "3"} There are currently no internal mappings for this class.
+      %td{:colspan => "4"} There are currently no internal mappings for this class.
 
 %br
 %h2 Interportal mappings
@@ -75,6 +80,7 @@
       %th Mapping To
       %th Ontology
       %th Source
+      %th Relations
   - got_interportal_mappings = false
 
   - @mappings.each do |map|
@@ -110,10 +116,15 @@
             #{map.source} #{(map.process || {})[:source_name]}
             - if is_translation(map.process["relation"])
               %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+          %td
+            - map.process["relation"].each do |relation|
+              = get_prefixed_uri(relation)
+              %br/
+
   - if !got_interportal_mappings
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
-      %td{:colspan => "3"} There are currently no interportal mappings for this class.
+      %td{:colspan => "4"} There are currently no interportal mappings for this class.
 
 %br
 %h2 External mappings
@@ -124,6 +135,7 @@
       %th Mapping To
       %th Ontology
       %th Source
+      %th Relations
   - got_external_mappings = false
 
   - @mappings.each do |map|
@@ -156,10 +168,14 @@
             #{map.source} #{(map.process || {})[:source_name]}
             - if is_translation(map.process["relation"])
               %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+          %td
+            - map.process["relation"].each do |relation|
+              = get_prefixed_uri(relation)
+              %br/
   - if got_external_mappings == false
     %tr
       %td{:class => 'delete_mappings_column', :style => "display: none;"}
-      %td{:colspan => "3"} There are currently no external mappings for this class.
+      %td{:colspan => "4"} There are currently no external mappings for this class.
 
 :javascript
   jQuery(document).ready(function(){
