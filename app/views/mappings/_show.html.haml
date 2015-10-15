@@ -14,15 +14,20 @@
             - cls = map.classes.shift
             %td
               - if cls.links["self"].to_s.start_with?(LinkedData::Client.settings.rest_url)
+                // Check if it is an internal, interportal or external mapping
                 #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+              - elsif cls.links.has_key?("ui")
+                #{raw("<a href='#{cls.links["ui"]}' target='_blank'>#{cls.prefLabel}</a>")}
               - else
-                #{raw("<a href='#{cls.links["self"]}'>#{cls.prefLabel}</a>")}
+                #{raw("<a href='#{cls.links["self"]}' target='_blank'>#{cls.prefLabel}</a>")}
             - cls = map.classes.shift
             %td
               - if cls.links["self"].to_s.start_with?(LinkedData::Client.settings.rest_url)
                 #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+              - elsif cls.links.has_key?("ui")
+                #{raw("<a href='#{cls.links["ui"]}' target='_blank'>#{cls.prefLabel}</a>")}
               - else
-                #{raw("<a href='#{cls.links["self"]}'>#{cls.prefLabel}</a>")}
+                #{raw("<a href='#{cls.links["self"]}' target='_blank'>#{cls.prefLabel}</a>")}
             %td
               #{map.source} #{(map.process || {})[:source_name]}
     = will_paginate @page_results, :update => 'mappings', :params => { :target => params[:target] }

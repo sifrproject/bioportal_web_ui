@@ -87,4 +87,14 @@ module MappingsHelper
     return prefLabel
   end
 
+  # Replace the interportal mapping ontology URI (that link to the API) by the link to the ontology in the UI
+  def get_interportal_ui_link(uri, process_name)
+    interportal_acronym = process_name.split(" ")[2]
+    if interportal_acronym.nil? || interportal_acronym.empty?
+      return uri
+    else
+      return uri.sub!(INTERPORTAL_HASH[interportal_acronym]["api"], INTERPORTAL_HASH[interportal_acronym]["ui"])
+    end
+  end
+
 end
