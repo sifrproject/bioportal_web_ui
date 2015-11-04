@@ -255,7 +255,7 @@ AjaxAction.prototype.act = function() {
 };
 
 function ResetMemcacheConnection() {
-  AjaxAction.call(this, "POST", "MEMCACHE CONNECTION RESET", "resetcache", false);
+  AjaxAction.call(this, "POST", "UI CACHE CONNECTION RESET", "resetcache", false);
   this.setConfirmMsg('');
 }
 
@@ -267,7 +267,7 @@ ResetMemcacheConnection.act = function() {
 };
 
 function FlushMemcache() {
-  AjaxAction.call(this, "POST", "FLUSHING OF MEMCACHE", "clearcache", false);
+  AjaxAction.call(this, "POST", "FLUSHING OF UI CACHE", "clearcache", false);
   this.setConfirmMsg('');
 }
 
@@ -276,6 +276,18 @@ FlushMemcache.prototype.constructor = FlushMemcache;
 
 FlushMemcache.act = function() {
   new FlushMemcache().ajaxCall();
+};
+
+function ClearBackendCache() {
+  AjaxAction.call(this, "POST", "FLUSHING OF BACKEND CACHE", "clear_backend_cache", false);
+  this.setConfirmMsg('');
+}
+
+ClearBackendCache.prototype = Object.create(AjaxAction.prototype);
+ClearBackendCache.prototype.constructor = ClearBackendCache;
+
+ClearBackendCache.act = function() {
+  new ClearBackendCache().ajaxCall();
 };
 
 function DeleteSubmission(ontology, submissionId) {
@@ -642,7 +654,7 @@ jQuery(document).ready(function() {
     performActionOnOntologies();
   });
 
-  // onclick action for "Flush Memcache" button
+  // onclick action for "Flush UI Cache" button
   jQuery("#flush_memcache_action").click(function() {
     FlushMemcache.act();
   });
@@ -650,6 +662,11 @@ jQuery(document).ready(function() {
   // onclick action for "Reset Memcache Connection" button
   jQuery("#reset_memcache_connection_action").click(function() {
     ResetMemcacheConnection.act();
+  });
+
+  // onclick action for "Flush Backend Cache" button
+  jQuery("#flush_backend_cache_action").click(function() {
+    ClearBackendCache.act();
   });
 
   // onclick action for "Refresh Report" link

@@ -1,25 +1,29 @@
 - @title = "BioPortal Administration"
 #DescriptionDialog{:style => "display:none", :title => "admin description"}
+
 %h1.tab_header Ontology Administration
 %br
 %table.memcached_utilities{:style => "float:left;margin-left:8px;"}
   %tr
-    %td{:valign => "top", :style => "white-space:nowrap;width:123px;"}
-      %a#flush_memcache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
-        %span.ui-button-text Flush Memcache
-    %td{:valign => "top", :style => "white-space:nowrap;width:190px;"}
-      %a#reset_memcache_connection_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
-        %span.ui-button-text Reset Memcache Connection
+    %td{:colspan => 3, :style => "white-space:nowrap;"}
+      Report generated on:&nbsp;&nbsp;
+      %span.date_generated
+      %a#refresh_report_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only", :style => "margin-left:11px;"}
+        %span.ui-button-text{:class => "date_generated_button"}
     %td{:valign => "top", :rowspan => 2}
       %div#progress_message{:class => "alert-box progress"}
       %div#success_message{:class => "alert-box success"}
       %div#error_message{:class => "alert-box error"}
   %tr
-    %td{:colspan => 2, :style => "white-space:nowrap;padding-top:25px;"}
-      Report generated on:&nbsp;&nbsp;
-      %span.date_generated
-      %a#refresh_report_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only", :style => "margin-left:11px;"}
-        %span.ui-button-text{:class => "date_generated_button"}
+    %td{:valign => "top", :style => "white-space:nowrap;"}
+      %a#flush_memcache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
+        %span.ui-button-text Flush UI Cache
+    %td{:valign => "top", :style => "white-space:nowrap;"}
+      %a#reset_memcache_connection_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
+        %span.ui-button-text Reset UI Cache Connection
+    %td{:valign => "top", :style => "white-space:nowrap;"}
+      %a#flush_backend_cache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
+        %span.ui-button-text Flush Backend Cache
 %p.tab_description{:style => "clear:both;"}
 .ontologies_list_container
   %table#adminOntologies.zebra{:cellpadding => "0", :cellspacing => "0", :width => "100%"}
