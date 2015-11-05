@@ -22,14 +22,26 @@ module OntologiesHelper
           if sub.send(metadata).any?
             html << content_tag(:tr) do
               concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              concat(content_tag(:td, raw(sub.send(metadata).join(", "))))
+              metadata_array = []
+              sub.send(metadata).each do |metadata|
+                if metadata.start_with?("http:") || metadata.start_with?("https:")
+                  metadata_array.push("<a href=\"#{metadata}\" target=\"_blank\">#{metadata}</a>")
+                else
+                  metadata_array.push(metadata)
+                end
+              end
+              concat(content_tag(:td, raw(metadata_array.join(", "))))
             end
           end
         else
           if !sub.send(metadata).nil?
             html << content_tag(:tr) do
               concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              concat(content_tag(:td, raw(sub.send(metadata))))
+              if sub.send(metadata).start_with?("http:") || sub.send(metadata).start_with?("https:")
+                concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata)}\" target=\"_blank\">#{sub.send(metadata)}</a>")))
+              else
+                concat(content_tag(:td, raw(sub.send(metadata))))
+              end
             end
           end
         end
