@@ -18,11 +18,31 @@ class SubscriptionsController < ApplicationController
     if subscribed.eql?("true")
       # Already subscribed, so this request must be a delete
       # Note that this routine removes ALL subscriptions for the ontology, regardless of type.
-      u.subscription.delete_if {|sub| sub[:ontology].split('/').last.eql?(ont.acronym) }
+      # Old way to delete subscription : error when u.update if more than 1 subscription in the subscription array
+      #u.subscription.delete_if {|sub| sub[:ontology].split('/').last.eql?(ont.acronym) }
+      # So here we re-generate a new subscription Array (instead of directly updating it, which causes error)
+      all_subs = []
+      u.subscription.each do |subs|
+        # Add all subscription to the array, but not the one to be deleted
+        if !subs.ontology.split('/').last.eql?(ont.acronym)
+          all_subs.push({ontology: subs.ontology, notification_type: subs.notification_type})
+        end
+      end
+      u.subscription = all_subs
     else
       # Not subscribed yet, so this request must be for adding subscription
-      subscription = {ontology: ont.acronym, notification_type: "NOTES"} #NOTIFICATION_TYPES[:notes]}
-      u.subscription.push(subscription)
+      # Old way:
+      #subscription = {ontology: ont.acronym, notification_type: "NOTES"} #NOTIFICATION_TYPES[:notes]}
+      #u.subscription.push(subscription)
+      # This way was not working, updating subscription is failing when more than 1 subscription in the array
+      # And we were updating with different types of object in the subscription array : OpenStruct and hash
+      # So we are generating an array with only hash
+      all_subs = [{ontology: ont.acronym, notification_type: "NOTES"}] # the new subscription
+      u.subscription.each do |subs|
+        # add all existing subscriptions
+        all_subs.push({ontology: subs.ontology, notification_type: subs.notification_type})
+      end
+      u.subscription = all_subs
     end
     # Try to update the user instance and the session user.
     begin
