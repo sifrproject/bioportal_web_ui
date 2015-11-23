@@ -43,6 +43,7 @@ var app = angular.module('FacetedBrowsing.OntologyList', ['checklist-model', 'ng
     this.field('acronym', 100);
     this.field('name', 50);
     this.field('description');
+    this.field('contact');
     this.ref('id');
   });
   $scope.ontIndex.pipeline.reset();
@@ -254,7 +255,9 @@ var app = angular.module('FacetedBrowsing.OntologyList', ['checklist-model', 'ng
       $scope.previous_sort_order = $scope.ontology_sort_order;
     }
     $scope.ontologySortOrder("-search_rank");
+    console.log($scope.ontIndex);
     results = $scope.ontIndex.search($scope.searchText);
+    console.log(results);
 
     angular.forEach(results, function(r){found[r.ref] = r});
     for (i = 0; i < $scope.ontologies.length; i++) {
