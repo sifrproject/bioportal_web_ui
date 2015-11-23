@@ -175,6 +175,9 @@
             <span class="ont-info">
               <b>Uploaded</b>: {{ontology.creationDate | date:'shortDate'}}
             </span>
+            <span class="ont-info" ng-if="ontology.contact">
+              <b>Contact</b>: {{ontology.contact}}
+            </span>
             <span class="ont-info" ng-if="facets.formats.active.length > 1">
               <b>Format</b>: {{ontology.format}}
             </span>
