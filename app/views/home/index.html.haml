@@ -193,7 +193,7 @@
                       - raise "UI-view error for recent mapping ontology #{clsB[:ontology]}" if ontB.nil?
                       - ontAcroA = ontA.acronym
                       - ontAcroB = ontB.acronym
-                    - elsif map.process.name == "Interportal Mapping"
+                    - elsif map.process.name.start_with? "Interportal Mapping"
                       - ontA = clsA.explore.ontology
                       - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
                       - ontAcroA = ontA.acronym
