@@ -39,18 +39,20 @@ class HomeController < ApplicationController
     # calculate bioportal summary statistics
     @ont_count = @ontologies.length
     @cls_count = LinkedData::Client::Models::Metrics.all.map {|m| m.classes.to_i}.sum
-    begin
-      @resources = LinkedData::Client::ResourceIndex.resources # application_controller
-      @ri_resources = @resources.length
-      @ri_record_count = @resources.map {|r| r.count}.sum
-    rescue
-      @resources = []
-      @ri_resources = 0
-      @ri_record_count = 0
+    if $RESOURCE_INDEX_DISABLED == false
+      begin
+        @resources = LinkedData::Client::ResourceIndex.resources # application_controller
+        @ri_resources = @resources.length
+        @ri_record_count = @resources.map {|r| r.count}.sum
+      rescue
+        @resources = []
+        @ri_resources = 0
+        @ri_record_count = 0
+      end
+      @ri_stats = LinkedData::Client::ResourceIndex.annotation_counts
+      @direct_annotations = @ri_stats[:total][:direct]
+      @direct_expanded_annotations = @ri_stats[:total][:ancestors]
     end
-    @ri_stats = LinkedData::Client::ResourceIndex.annotation_counts
-    @direct_annotations = @ri_stats[:total][:direct]
-    @direct_expanded_annotations = @ri_stats[:total][:ancestors]
     @analytics = LinkedData::Client::Analytics.last_month
   end
 
