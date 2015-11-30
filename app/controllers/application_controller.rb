@@ -116,7 +116,8 @@ class ApplicationController < ActionController::Base
         userapikey: get_apikey,
         rest_url: LinkedData::Client.settings.rest_url,
         annotator_url: $ANNOTATOR_URL,
-        biomixer_url: $BIOMIXER_URL
+        biomixer_url: $BIOMIXER_URL,
+        interportal_hash: $INTERPORTAL_HASH
     }
     config[:ncbo_slice] = @subdomain_filter[:acronym] if (@subdomain_filter[:active] && !@subdomain_filter[:acronym].empty?)
     config.to_json

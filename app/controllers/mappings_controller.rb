@@ -123,7 +123,7 @@ class MappingsController < ApplicationController
 
     ontologies = [ontology_acronym, target_acronym]
 
-    @mapping_pages = LinkedData::Client::HTTP.get(MAPPINGS_URL, {page: page, ontologies: ontologies.join(","), display: "prefLabel"})
+    @mapping_pages = LinkedData::Client::HTTP.get(MAPPINGS_URL, {page: page, ontologies: ontologies.join(",")})
     @mappings = @mapping_pages.collection
     @delete_mapping_permission = check_delete_mapping_permission(@mappings)
 
