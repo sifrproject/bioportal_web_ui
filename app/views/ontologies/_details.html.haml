@@ -95,17 +95,4 @@
 
       = raw additional_details
 
-- additional_data = additional_metadata(sub)
-- if additional_data != ""
-  %br/
-  %h2#add_h{:style => "font-size: large;"}
-    Additional Metadata
-  #add_metadata_content
-    %div{:style => "overflow: hidden; min-width: 550px"}
-      %table.form{:width => "100%"}
-        = raw additional_data
-
-:javascript
-  jQuery('#add_h').click(function() {
-    jQuery('#add_metadata_content').toggle();
-  });
+      = raw additional_metadata(sub)
