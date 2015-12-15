@@ -55,12 +55,12 @@ class AdminController < ApplicationController
     if @cache.respond_to?(:flush_all)
       begin
         @cache.flush_all
-        response[:success] = "UI cache successfully flushed"
+        response[:success] = "Cache successfully flushed"
       rescue Exception => e
-        response[:errors] = "Problem flushing the UI cache - #{e.class}: #{e.message}"
+        response[:errors] = "Problem flushing the cache - #{e.message}"
       end
     else
-      response[:errors] = "The UI cache does not respond to the 'flush_all' command"
+      response[:errors] = "The cache does not respond to the 'flush_all' command"
     end
     render :json => response
   end
@@ -71,24 +71,12 @@ class AdminController < ApplicationController
     if @cache.respond_to?(:reset)
       begin
         @cache.reset
-        response[:success] = "UI cache connection successfully reset"
+        response[:success] = "Cache connection successfully reset"
       rescue Exception => e
-        response[:errors] = "Problem resetting the UI cache connection - #{e.message}"
+        response[:errors] = "Problem resetting the cache connection - #{e.message}"
       end
     else
-      response[:errors] = "The UI cache does not respond to the 'reset' command"
-    end
-    render :json => response
-  end
-
-  def clear_backend_cache
-    response = {errors: '', success: ''}
-
-    begin
-      response_raw = LinkedData::Client::HTTP.post("#{ADMIN_URL}clear_backend_cache", params, raw: true)
-      response[:success] = "Backend cache successfully flushed"
-    rescue Exception => e
-      response[:errors] = "Problem flushing the backend cache - #{e.class}: #{e.message}"
+      response[:errors] = "The cache does not respond to the 'reset' command"
     end
     render :json => response
   end
@@ -119,7 +107,10 @@ class AdminController < ApplicationController
       end
     rescue Exception => e
       response[:errors] = "Problem refreshing report - #{e.class}: #{e.message}"
-      # puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n\t")}"
+
+      puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n\t")}"
+
+
     end
     render :json => response
   end

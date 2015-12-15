@@ -13,45 +13,6 @@ module OntologiesHelper
     html.join("")
   end
 
-  def additional_metadata(sub)
-    return "" if $ADDITIONAL_ONTOLOGY_METADATA.nil?
-    html = []
-    begin
-      $ADDITIONAL_ONTOLOGY_METADATA.each do |metadata|
-        if sub.send(metadata).kind_of?(Array)
-          if sub.send(metadata).any?
-            html << content_tag(:tr) do
-              concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              metadata_array = []
-              sub.send(metadata).each do |metadata|
-                if metadata.start_with?("http:") || metadata.start_with?("https:")
-                  metadata_array.push("<a href=\"#{metadata}\" target=\"_blank\">#{metadata}</a>")
-                else
-                  metadata_array.push(metadata)
-                end
-              end
-              concat(content_tag(:td, raw(metadata_array.join(", "))))
-            end
-          end
-        else
-          if !sub.send(metadata).nil?
-            html << content_tag(:tr) do
-              concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              if sub.send(metadata).start_with?("http:") || sub.send(metadata).start_with?("https:")
-                concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata)}\" target=\"_blank\">#{sub.send(metadata)}</a>")))
-              else
-                concat(content_tag(:td, raw(sub.send(metadata))))
-              end
-            end
-          end
-        end
-      end
-    rescue => e
-      LOG.add :debug, "Unable to retrieve additional ontology metadata"
-    end
-    html.join("")
-  end
-
   def count_links(ont_acronym, page_name='summary', count=0)
     ont_url = "/ontologies/#{ont_acronym}"
     if count.nil? || count == 0
