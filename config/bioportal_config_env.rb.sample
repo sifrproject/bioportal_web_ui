@@ -38,6 +38,9 @@ $ANNOTATOR_URL = "http://example.org:8080/annotator/"
 # Where "ncbo" is the namespace used as key in the interportal_hash
 $INTERPORTAL_HASH = {}
 
+# Don't load and don't display recent mappings if false, in case of too many mappings (take longer to load homepage)
+$DISPLAY_RECENT = false
+
 # Legacy REST core service address (BioPortal v3.x and lower)
 $LEGACY_REST_URL = "http://example.org:8080/bioportal"
 

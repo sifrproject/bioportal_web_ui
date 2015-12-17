@@ -35,7 +35,9 @@ class HomeController < ApplicationController
     # Get the latest manual mappings
     # All mapping classes are bidirectional.
     # Each class in the list maps to all other classes in the list.
-    @recent_mappings = get_recent_mappings  # application_controller
+    if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
+      @recent_mappings = get_recent_mappings  # application_controller
+    end
     # calculate bioportal summary statistics
     @ont_count = @ontologies.length
     @cls_count = LinkedData::Client::Models::Metrics.all.map {|m| m.classes.to_i}.sum
