@@ -171,7 +171,7 @@ var bp_createMapping = {
 
     // If we have a concept mapping table, update it with new mappings
     if (document.getElementById("concept_mappings_tables_div") != null) {
-      var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(currentConcept);
+      var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(jQuery(document).data().bp.ont_viewer.concept_id);
       jQuery("#concept_mappings_tables_div").load(url, function(){
         jQuery("#mapping_count").html(jQuery("#mapping_details tbody tr:visible").size());
       });
@@ -342,9 +342,9 @@ var bp_createExternalMapping = {
             ));
         }
 
-        // If we have a concept mapping table, update it with new mappings
+        // If we have a concept mapping table, update it with new mappings by calling the get_concept_table of mappings_controller.rb
         if (document.getElementById("concept_mappings_tables_div") != null) {
-            var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(currentConcept);
+            var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(jQuery(document).data().bp.ont_viewer.concept_id);
             jQuery("#concept_mappings_tables_div").load(url, function(){
                 jQuery("#mapping_count").html(jQuery("#mapping_details tbody tr:visible").size());
             });
