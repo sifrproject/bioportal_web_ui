@@ -16,7 +16,10 @@
       =proposal_html(@notes).html_safe
   %div.reply
     %div.reply_meta
-      %a{href: "#reply", class: "reply_reply", :"data-parent_id" => @notes.id, :"data-parent_type" => "reply" } reply
+      - if session[:user].nil?
+        = link_to "reply", login_index_path
+      - else
+        = link_to "reply", "#reply", class: "reply_reply", data: { parent_id: "#{@notes.id}", parent_type: "reply" }
     - if @notes.reply && !@notes.reply.empty?
       %div.discussion{style: "padding: 1em 0 0 1.5em;"}
         %div.discussion_container

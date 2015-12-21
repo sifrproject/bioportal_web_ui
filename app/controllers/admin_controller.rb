@@ -162,7 +162,7 @@ class AdminController < ApplicationController
   end
 
   def _ontologies_report
-    response = {ontologies: Hash.new, date_generated: REPORT_NEVER_GENERATED, errors: '', success: ''}
+    response = {ontologies: Hash.new, report_date_generated: REPORT_NEVER_GENERATED, errors: '', success: ''}
     start = Time.now
 
     begin
@@ -173,7 +173,7 @@ class AdminController < ApplicationController
         _process_errors(ontologies_data_parsed[:errors], response, true)
       else
         response.merge!(ontologies_data_parsed)
-        response[:success] = "Report successfully regenerated on #{ontologies_data_parsed[:date_generated]}"
+        response[:success] = "Report successfully regenerated on #{ontologies_data_parsed[:report_date_generated]}"
         LOG.add :debug, "Ontologies Report - retrieved #{response[:ontologies].length} ontologies in #{Time.now - start}s"
       end
     rescue Exception => e

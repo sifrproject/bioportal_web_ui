@@ -77,6 +77,11 @@ $CUBE_PORT = 1180
 # Enable client request caching
 $CLIENT_REQUEST_CACHING = true
 
+# Enable debugging of API Ruby client
+$DEBUG_RUBY_CLIENT = false
+# When DEBUG_RUBY_CLIENT is true, this array can limit the cache keys for which to receive debug output. Empty array means output debugging info for ALL keys
+$DEBUG_RUBY_CLIENT_KEYS = []
+
 # If you don't use Airbrake you can have exceptions emailed to the $ERROR_EMAIL address by setting this to 'true'
 $EMAIL_EXCEPTIONS = true
 
@@ -107,6 +112,9 @@ CalendarDateSelect.format = :american
 ENV['USE_RECAPTCHA'] = 'false'
 ENV['RECAPTCHA_PUBLIC_KEY']  = ''
 ENV['RECAPTCHA_PRIVATE_KEY'] = ''
+
+# Memcached servers
+ENV['MEMCACHE_SERVERS'] = 'localhost'
 
 # Custom BioPortal logging
 require 'log'

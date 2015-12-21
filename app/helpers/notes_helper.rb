@@ -17,7 +17,7 @@ module NotesHelper
             #{sanitize reply.body, tags: NOTES_TAGS}<br/>
           </div>
           <div class="reply_meta">
-            <a href="#reply" class="reply_reply" data-parent_id="#{reply.id}" data-parent_type="reply">reply</a>
+            <a href="#reply" class="reply_reply" data-parent-id="#{reply.id}" data-parent-type="reply">reply</a>
           </div>
           <div class="discussion">
             <div class="discussion_container">

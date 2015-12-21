@@ -18,7 +18,7 @@ class SubscriptionsController < ApplicationController
     if subscribed.eql?("true")
       # Already subscribed, so this request must be a delete
       # Note that this routine removes ALL subscriptions for the ontology, regardless of type.
-      # Old way to delete subscription : error when u.update if more than 1 subscription in the subscription array
+      # Previous way to delete subscription: error when u.update if more than 1 subscription in the subscription array:
       #u.subscription.delete_if {|sub| sub[:ontology].split('/').last.eql?(ont.acronym) }
       # So here we re-generate a new subscription Array (instead of directly updating it, which causes error)
       all_subs = []

@@ -47,7 +47,7 @@
         -# ont_acronym = cls.links['ontology'].split('/').last
         -# ont_name = ont_acronym  # no way to get the name here?
         -# ont_link = ''  # no link to restricted ontologies
-        - if ont_access
+        - if ont_access && ont_acronym
           - map_id = map.id.to_s.split("/").last
           %tr.human{:id => map_id}
             %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}

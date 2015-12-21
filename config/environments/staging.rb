@@ -20,10 +20,6 @@ BioportalWebUi::Application.configure do
   # NGINX, varnish or squid.
   # config.action_dispatch.rack_cache = true
 
-  # Disable serving static files from the `/public` folder by default since
-  # Apache or NGINX already handles this.
-  config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
-
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
   # config.assets.css_compressor = :sass
@@ -38,8 +34,8 @@ BioportalWebUi::Application.configure do
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Specifies the header that your server uses for sending files.
-  # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
-  config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
+  config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
+  # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
@@ -77,11 +73,17 @@ BioportalWebUi::Application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # memcache setup
-  config.cache_store = :mem_cache_store, 'localhost', { :namespace => 'BioPortal' }
 
   # Include the BioPortal-specific configuration options
   require Rails.root.join('config', "bioportal_config_#{Rails.env}.rb")
+
+  # memcache setup
+  # https://github.com/mperham/dalli#usage-with-rails-3x-and-4x
+  config.cache_store = :dalli_store, nil, { :namespace => 'bioportal_web_ui', :expires_in => 1.day, :value_max_bytes => 5*1024*1024 }
+
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
+  config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Add custom data attributes to sanitize allowed list
   config.action_view.sanitized_allowed_attributes = ['id', 'class', 'style', 'data-cls', 'data-ont']
