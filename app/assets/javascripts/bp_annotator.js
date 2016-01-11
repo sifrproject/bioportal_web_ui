@@ -740,8 +740,11 @@ function update_annotations_table(rowsArray) {
   }
 
   // Hide columns as necessary
-  if (context_count == 0)
+  if (context_count == 0) {
     annotationsTable.fnSetColumnVis(4, false);
+  } else {
+    annotationsTable.fnSetColumnVis(4, true);
+  }
 
   var match_keys = Object.keys(match_types);
   if (match_keys.length == 1 && match_keys[0] === "")
