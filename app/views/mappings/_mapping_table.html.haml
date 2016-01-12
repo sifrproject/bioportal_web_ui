@@ -47,7 +47,7 @@
         -# ont_acronym = cls.links['ontology'].split('/').last
         -# ont_name = ont_acronym  # no way to get the name here?
         -# ont_link = ''  # no link to restricted ontologies
-        - if ont_access
+        - if ont_access && ont_acronym
           - map_id = map.id.to_s.split("/").last
           %tr.human{:id => map_id}
             %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}
@@ -95,12 +95,7 @@
           - next
         - if !map.process.nil? && map.process["name"].start_with?("Interportal Mapping")
           -# In case this is an interportal mapping, getting cls and ontology informations directly from the cls object
-          - clsLabel = getInterportalPrefLabel(cls.links["self"], cls.links["ui"])
-          - if clsLabel
-            - cls_link = raw("<a href='#{cls.links["ui"]}' target='_blank'>#{clsLabel}</a>")
-          - else
-            - cls_link = raw("<a href='#{cls.links["ui"]}' target='_blank'>#{cls.id}</a>")
-          - ont_acronym = cls.links['ontology']
+          - cls_link = raw(get_link_for_interportal_cls_ajax(cls))
           - ont_name = cls.links['ontology']
           - ont_link = get_interportal_ui_link(cls.links['ontology'], map.process["name"])
           - got_interportal_mappings = true
@@ -150,7 +145,7 @@
           - next
         - if !map.process.nil? && map.process["name"] == "External Mapping"
           -# In case this is an external mapping, getting cls and ontology informations directly from the cls object
-          - clsLabel = getExternalPrefLabel(cls.links["self"])
+          - clsLabel = get_link_for_external_cls(cls.links["self"])
           - cls_link = raw("<a href='#{cls.links["self"]}' target='_blank'>#{clsLabel}</a>")
           - ont_acronym = cls.links['ontology']
           - ont_name = cls.links['ontology']

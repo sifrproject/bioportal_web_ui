@@ -55,12 +55,12 @@ class AdminController < ApplicationController
     if @cache.respond_to?(:flush_all)
       begin
         @cache.flush_all
-        response[:success] = "Cache successfully flushed"
+        response[:success] = "UI cache successfully flushed"
       rescue Exception => e
-        response[:errors] = "Problem flushing the cache - #{e.message}"
+        response[:errors] = "Problem flushing the UI cache - #{e.class}: #{e.message}"
       end
     else
-      response[:errors] = "The cache does not respond to the 'flush_all' command"
+      response[:errors] = "The UI cache does not respond to the 'flush_all' command"
     end
     render :json => response
   end
@@ -71,12 +71,24 @@ class AdminController < ApplicationController
     if @cache.respond_to?(:reset)
       begin
         @cache.reset
-        response[:success] = "Cache connection successfully reset"
+        response[:success] = "UI cache connection successfully reset"
       rescue Exception => e
-        response[:errors] = "Problem resetting the cache connection - #{e.message}"
+        response[:errors] = "Problem resetting the UI cache connection - #{e.message}"
       end
     else
-      response[:errors] = "The cache does not respond to the 'reset' command"
+      response[:errors] = "The UI cache does not respond to the 'reset' command"
+    end
+    render :json => response
+  end
+
+  def clear_backend_cache
+    response = {errors: '', success: ''}
+
+    begin
+      response_raw = LinkedData::Client::HTTP.post("#{ADMIN_URL}clear_backend_cache", params, raw: true)
+      response[:success] = "Backend cache successfully flushed"
+    rescue Exception => e
+      response[:errors] = "Problem flushing the backend cache - #{e.class}: #{e.message}"
     end
     render :json => response
   end
@@ -107,10 +119,7 @@ class AdminController < ApplicationController
       end
     rescue Exception => e
       response[:errors] = "Problem refreshing report - #{e.class}: #{e.message}"
-
-      puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n\t")}"
-
-
+      # puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n\t")}"
     end
     render :json => response
   end
@@ -162,7 +171,7 @@ class AdminController < ApplicationController
   end
 
   def _ontologies_report
-    response = {ontologies: Hash.new, date_generated: REPORT_NEVER_GENERATED, errors: '', success: ''}
+    response = {ontologies: Hash.new, report_date_generated: REPORT_NEVER_GENERATED, errors: '', success: ''}
     start = Time.now
 
     begin
@@ -173,7 +182,7 @@ class AdminController < ApplicationController
         _process_errors(ontologies_data_parsed[:errors], response, true)
       else
         response.merge!(ontologies_data_parsed)
-        response[:success] = "Report successfully regenerated on #{ontologies_data_parsed[:date_generated]}"
+        response[:success] = "Report successfully regenerated on #{ontologies_data_parsed[:report_date_generated]}"
         LOG.add :debug, "Ontologies Report - retrieved #{response[:ontologies].length} ontologies in #{Time.now - start}s"
       end
     rescue Exception => e

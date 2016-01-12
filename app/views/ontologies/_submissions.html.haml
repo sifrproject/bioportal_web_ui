@@ -54,7 +54,7 @@
       %td
         = raw status_link(sub, sub.submissionId==submission_readyId)
       %td
-        = xmldatetime_to_date(sub.released)
+        = xmldatetime_to_date(sub.released) unless sub.released.nil?
       %td
         = xmldatetime_to_date(sub.creationDate)
       - unless ont_restricted

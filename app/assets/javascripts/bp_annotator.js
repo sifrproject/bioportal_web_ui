@@ -63,7 +63,7 @@ function get_annotations() {
   params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
   params.longest_only = jQuery("#longest_only").is(':checked');
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
-  params.whole_word_only = jQuery("#whole_word_only").is(':checked');
+  params.whole_word_only = !jQuery("#match_partial_words").is(':checked');
   params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
 
@@ -740,8 +740,11 @@ function update_annotations_table(rowsArray) {
   }
 
   // Hide columns as necessary
-  if (context_count == 0)
+  if (context_count == 0) {
     annotationsTable.fnSetColumnVis(4, false);
+  } else {
+    annotationsTable.fnSetColumnVis(4, true);
+  }
 
   var match_keys = Object.keys(match_types);
   if (match_keys.length == 1 && match_keys[0] === "")

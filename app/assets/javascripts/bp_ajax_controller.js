@@ -21,6 +21,7 @@ function get_link_for_ont_ajax(ont_acronym) {
 
 var
   ajax_process_cls_interval = null,
+  ajax_process_interportal_cls_interval = null,
   ajax_process_ont_interval = null,
   ajax_process_timeout = 20, // Timeout after 20 sec.
   ajax_process_timing = 250; // It takes about 250 msec to resolve a class ID to a prefLabel
@@ -28,10 +29,13 @@ var
 var ajax_process_init = function () {
   ajax_process_cls_init();
   ajax_process_ont_init();
+  ajax_process_interportal_cls_init();
 };
+
 var ajax_process_halt = function () {
   ajax_process_cls_halt();
   ajax_process_ont_halt();
+  ajax_process_interportal_cls_halt();
 };
 
 
@@ -189,3 +193,79 @@ var ajax_process_cls = function() {
   });
 };
 
+
+// **************************************************************************************
+// INTERPORTAL CLASS LABELS
+
+// Note: If we don't query every time, using the array should be faster; it
+//       means the ajax_process_init must be called after all the elements
+//       are created because they will not be detected in a dynamic iteration.
+var ajax_interportal_cls_array = [];
+
+var ajax_process_interportal_cls_init = function() {
+    ajax_interportal_cls_array = jQuery("a.interportalcls4ajax").toArray();
+    ajax_process_interportal_cls_interval = window.setInterval(ajax_process_interportal_cls, ajax_process_timing);
+};
+
+var ajax_process_interportal_cls_halt = function () {
+    ajax_interportal_cls_array = [];
+    window.clearInterval(ajax_process_interportal_cls_interval); // stop the ajax process
+    // Note: might leave faulty href links, but it usually means moving on to entirely different content
+    //       so it's not likely those links will be available for interaction.
+    // clear all the classes and ontologies to be resolved by ajax
+    //jQuery("a.cls4ajax").removeClass('cls4ajax');
+    //jQuery("a.ajax-modified-cls").removeClass('ajax-modified-cls');
+};
+
+var ajax_process_interportal_cls = function() {
+    // Check on whether to stop the ajax process
+    if( ajax_interportal_cls_array.length === 0 ){
+        ajax_process_interportal_cls_halt();
+        return true;
+    }
+    // Note: If we don't query every time, using the array should be faster; it
+    //       means the ajax_process_init must be called after all the elements
+    //       are created because they will not be detected in a dynamic iteration.
+    //var linkA = jQuery("a.cls4ajax").first();
+    var linkA = ajax_interportal_cls_array.shift(); // put first item in linkA and delete it from array
+    if(linkA === undefined){
+        return true;
+    }
+    linkA = jQuery(linkA);
+    if(linkA.hasClass('ajax-modified-cls') ){
+        // How did we get here? It should not have the interportalcls4ajax class!
+        linkA.removeClass('interportalcls4ajax');
+        return true; // processing or processed this one already.
+    }
+    linkA.removeClass('interportalcls4ajax'); // processing this one.
+    var unique_id = linkA.attr('href');
+
+    var portal_acronym = linkA.attr('portal-cls');
+    var ajax_uri = linkA.attr('data-cls') + jQuery(document).data().bp.config.interportal_hash[portal_acronym].apikey;
+    jQuery.ajax({
+        url: ajax_uri,
+        timeout: ajax_process_timeout * 1000,
+        success: function(data){
+            var label = data.prefLabel
+            if (typeof label !== "undefined" && label.length > 0) {
+                linkA.html(label);
+                linkA.addClass('ajax-modified-cls');
+                // find and process any identical classes (low probability)
+                jQuery( 'a[href="' + unique_id + '"]').each(function(i,e){
+                    var link = jQuery(this);
+                    if(! link.hasClass('ajax-modified-cls') ){
+                        link.removeClass('interportalcls4ajax');   // processing this one.
+                        link.html(label);
+                        link.addClass('ajax-modified-cls'); // processed this one.
+                    }
+                });
+            } else {
+                // remove the unique_id separator and the ontology acronym from the href
+                linkA.addClass('ajax-modified-cls');
+            }
+        },
+        error: function(data){
+            linkA.addClass('ajax-error'); // processed this one.
+        }
+    });
+};

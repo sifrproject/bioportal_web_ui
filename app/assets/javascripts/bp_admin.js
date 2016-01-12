@@ -17,6 +17,21 @@ function millisToMinutesAndSeconds(millis) {
   return minutes + " minutes " + seconds + " seconds";
 }
 
+function parseReportDate(dateStr) {
+  //parse date in a format: 10/05/2011 01:19PM
+  if (dateStr.trim() === "") return "";
+  var reggie = /^(((0[13578]|1[02])[\/\.-](0[1-9]|[12]\d|3[01])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d)(AM|am|PM|pm))|((0[13456789]|1[012])[\/\.-](0[1-9]|[12]\d|30)[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d)(AM|am|PM|pm))|((02)[\/\.-](0[1-9]|1\d|2[0-8])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d)(AM|am|PM|pm))|((02)[\/\.-](29)[\/\.-]((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d)(AM|am|PM|pm)))$/g;
+  var dateArr = reggie.exec(dateStr);
+  dateArr = dateArr.filter(function(e){return e});
+  var hours = Number(dateArr[7]);
+  var ampm = dateArr[9].toUpperCase();
+  if (ampm == "PM" && hours < 12) hours = hours + 12;
+  if (ampm == "AM" && hours == 12) hours = hours - 12;
+  var strHours = hours.toString();
+  var dateObj = new Date(dateArr[5], dateArr[3], dateArr[4], strHours, dateArr[8], "00", "00");
+  return dateObj.toLocaleString();
+}
+
 var AjaxAction = function(httpMethod, operation, path, isLongOperation, params) {
   params = params || {};
   this.httpMethod = httpMethod;
@@ -255,7 +270,7 @@ AjaxAction.prototype.act = function() {
 };
 
 function ResetMemcacheConnection() {
-  AjaxAction.call(this, "POST", "MEMCACHE CONNECTION RESET", "resetcache", false);
+  AjaxAction.call(this, "POST", "UI CACHE CONNECTION RESET", "resetcache", false);
   this.setConfirmMsg('');
 }
 
@@ -267,7 +282,7 @@ ResetMemcacheConnection.act = function() {
 };
 
 function FlushMemcache() {
-  AjaxAction.call(this, "POST", "FLUSHING OF MEMCACHE", "clearcache", false);
+  AjaxAction.call(this, "POST", "FLUSHING OF UI CACHE", "clearcache", false);
   this.setConfirmMsg('');
 }
 
@@ -276,6 +291,18 @@ FlushMemcache.prototype.constructor = FlushMemcache;
 
 FlushMemcache.act = function() {
   new FlushMemcache().ajaxCall();
+};
+
+function ClearBackendCache() {
+  AjaxAction.call(this, "POST", "FLUSHING OF BACKEND CACHE", "clear_backend_cache", false);
+  this.setConfirmMsg('');
+}
+
+ClearBackendCache.prototype = Object.create(AjaxAction.prototype);
+ClearBackendCache.prototype.constructor = ClearBackendCache;
+
+ClearBackendCache.act = function() {
+  new ClearBackendCache().ajaxCall();
 };
 
 function DeleteSubmission(ontology, submissionId) {
@@ -380,7 +407,7 @@ function performActionOnOntologies() {
 function populateOntologyRows(data) {
   var ontologies = data.ontologies;
   var allRows = [];
-  var hideFields = ["format", "date_updated", "errErrorStatus", "errMissingStatus", "problem", "logFilePath"];
+  var hideFields = ["format", "date_created", "report_date_updated", "errErrorStatus", "errMissingStatus", "problem", "logFilePath"];
 
   for (var acronym in ontologies) {
     var errorMessages = [];
@@ -388,7 +415,8 @@ function populateOntologyRows(data) {
     var ontLink = "<a href='" + BP_CONFIG.ui_url + "/ontologies/" + acronym + "' target='_blank' style='" + (ontology["problem"] === true ? "color:red;" : "") + "'>" + acronym + "</a>";
     var bpLinks = '';
     var format = ontology["format"];
-    var dateUpdated = ontology["date_updated"];
+    var reportDateUpdated = parseReportDate(ontology["report_date_updated"]);
+    var ontologyDateCreated = parseReportDate(ontology["date_created"]);
 
     if (ontology["logFilePath"] != '') {
       bpLinks += "<a href='" + BP_CONFIG.ui_url + "/admin/ontologies/" + acronym + "/log' target='_blank'>Log</a>&nbsp;&nbsp;|&nbsp;&nbsp;";
@@ -404,7 +432,7 @@ function populateOntologyRows(data) {
         errorMessages.push(ontology[k]);
       }
     }
-    var row = [ontLink, format, dateUpdated, bpLinks, errStatus, missingStatus, errorMessages.join("<br/>"), ontology["problem"]];
+    var row = [ontLink, format, ontologyDateCreated, reportDateUpdated, bpLinks, errStatus, missingStatus, errorMessages.join("<br/>"), ontology["problem"]];
     allRows.push(row);
   }
   return allRows;
@@ -412,7 +440,7 @@ function populateOntologyRows(data) {
 
 function isDateGeneratedSet(data) {
   var dateRe = /^\d{2}\/\d{2}\/\d{4}\s\d{2}:\d{2}\w{2}$/i;
-  return dateRe.test(data.date_generated);
+  return dateRe.test(data.report_date_generated);
 }
 
 function setDateGenerated(data) {
@@ -421,8 +449,8 @@ function setDateGenerated(data) {
   if (isDateGeneratedSet(data)) {
     buttonText = "Refresh";
   }
-  jQuery(".date_generated").text(data.date_generated).html();
-  jQuery(".date_generated_button").text(buttonText).html();
+  jQuery(".report_date_generated").text(data.report_date_generated).html();
+  jQuery(".report_date_generated_button").text(buttonText).html();
 }
 
 function _showStatusMessages(success, errors, isAppendMode) {
@@ -512,35 +540,43 @@ function displayOntologies(data, ontology) {
         {
           "targets": 2,
           "searchable": true,
-          "title": "Report Date",
-          "width": "110px"
+          "title": "Date Created",
+          "type": "date",
+          "width": "127px"
         },
         {
           "targets": 3,
+          "searchable": true,
+          "title": "Report Date",
+          "type": "date",
+          "width": "127px"
+        },
+        {
+          "targets": 4,
           "searchable": false,
           "orderable": false,
           "title": "URL",
           "width": "140px"
         },
         {
-          "targets": 4,
+          "targets": 5,
           "searchable": true,
           "title": "Error Status",
           "width": "130px"
         },
         {
-          "targets": 5,
+          "targets": 6,
           "searchable": true,
           "title": "Missing Status",
           "width": "130px"
         },
         {
-          "targets": 6,
+          "targets": 7,
           "searchable": true,
           "title": "Issues"
         },
         {
-          "targets": 7,
+          "targets": 8,
           "searchable": true,
           "visible": false
         }
@@ -642,7 +678,7 @@ jQuery(document).ready(function() {
     performActionOnOntologies();
   });
 
-  // onclick action for "Flush Memcache" button
+  // onclick action for "Flush UI Cache" button
   jQuery("#flush_memcache_action").click(function() {
     FlushMemcache.act();
   });
@@ -650,6 +686,11 @@ jQuery(document).ready(function() {
   // onclick action for "Reset Memcache Connection" button
   jQuery("#reset_memcache_connection_action").click(function() {
     ResetMemcacheConnection.act();
+  });
+
+  // onclick action for "Flush Backend Cache" button
+  jQuery("#flush_backend_cache_action").click(function() {
+    ClearBackendCache.act();
   });
 
   // onclick action for "Refresh Report" link

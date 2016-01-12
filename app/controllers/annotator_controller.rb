@@ -35,7 +35,7 @@ class AnnotatorController < ApplicationController
                 :mappings => params[:mappings],
                 :longest_only => params[:longest_only],
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
-                :whole_word_only => (params[:whole_word_only] == "true") ? "false" : "true",  # service default is true
+                :whole_word_only => params[:whole_word_only] ||= "true", # service default is true
                 :exclude_synonyms => params[:exclude_synonyms] ||= "false",  # service default is false
                 :score => params[:score],
                 :ncbo_slice => params[:ncbo_slice] || ''

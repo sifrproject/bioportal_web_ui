@@ -43,16 +43,16 @@ function setupNotesFaceboxSizing() {
 
 function bindAddCommentClick() {
   jQuery("a.add_comment").live('click', function(){
-    var id = jQuery(this).attr("data-parent_id");
-    var type = jQuery(this).attr("data-parent_type");
+    var id = jQuery(this).attr("data-parent-id");
+    var type = jQuery(this).attr("data-parent-type");
     addCommentBox(id, type, this);
   });
 }
 
 function bindAddProposalClick() {
   jQuery("a.add_proposal").live('click', function(){
-    var id = jQuery(this).attr("data-parent_id");
-    var type = jQuery(this).attr("data-parent_type");
+    var id = jQuery(this).attr("data-parent-id");
+    var type = jQuery(this).attr("data-parent-type");
     addProposalBox(id, type, this);
   });
 }
@@ -205,14 +205,14 @@ function addReply(button, note) {
   var replyAuthor = jQuery("<div>").addClass("reply_author").html("<b>"+user["username"]+"</b> seconds ago");
   var replyBody = jQuery("<div>").addClass("reply_body").html(note.body);
   var replyMeta = jQuery("<div>").addClass("reply_meta");
-  replyMeta.append(jQuery("<a>").addClass("reply_reply").attr("data-parent_id", note["id"]).attr("href", "#reply").html("reply"));
+  replyMeta.append(jQuery("<a>").addClass("reply_reply").attr("data-parent-id", note["id"]).attr("href", "#reply").html("reply"));
   reply.append(replyAuthor).append(replyBody).append(replyMeta);
   jQuery(button).closest("div.reply").children(".discussion").children(".discussion_container").prepend(reply);
 }
 
 function addReplyBox(button) {
-  var id = jQuery(button).attr("data-parent_id");
-  var type = jQuery(button).attr("data-parent_type");
+  var id = jQuery(button).attr("data-parent-id");
+  var type = jQuery(button).attr("data-parent-type");
   var formHTML = commentForm(id, type);
   jQuery(button).closest("div.reply").children("div.reply_meta").append(jQuery("<div>").addClass("reply_box").html(formHTML));
 }

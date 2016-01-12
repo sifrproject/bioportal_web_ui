@@ -192,7 +192,7 @@ function formComplete_formatItem(row) {
         var resultOntDiv = jQuery("<div>");
         resultOntDiv.addClass("result_ontology");
         resultOntDiv.attr("style", "overflow: hidden;");
-        resultOntDiv.text(truncateText(resultOnt, 30));
+        resultOntDiv.html(truncateText(resultOnt, 30));
         resultDiv.append(resultOntDiv);
     }
     return obsolete_prefix + resultDiv.html() + obsolete_suffix;

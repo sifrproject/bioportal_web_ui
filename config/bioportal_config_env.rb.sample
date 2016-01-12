@@ -30,13 +30,16 @@ $API_KEY = ""
 $REST_URL = "http://example.org:8080/"
 
 # Annotator REST service address
-$ANNOTATOR_URL = "http://example.org:8080/annotator/"
+$ANNOTATOR_URL = "http://services.example.org/annotator/"
 
 # Used to define other bioportal that can be mapped to
 # Example to map to ncbo bioportal : {"ncbo" => {"api" => "http://data.bioontology.org", "ui" => "http://bioportal.bioontology.org", "apikey" => ""}
 # Then create the mapping using the following class in JSON : "http://purl.bioontology.org/ontology/MESH/C585345": "ncbo:MESH"
 # Where "ncbo" is the namespace used as key in the interportal_hash
 $INTERPORTAL_HASH = {}
+
+# Don't load and don't display recent mappings if false, in case of too many mappings (take longer to load homepage)
+$DISPLAY_RECENT = false
 
 # Legacy REST core service address (BioPortal v3.x and lower)
 $LEGACY_REST_URL = "http://example.org:8080/bioportal"
@@ -74,6 +77,11 @@ $CUBE_PORT = 1180
 # Enable client request caching
 $CLIENT_REQUEST_CACHING = true
 
+# Enable debugging of API Ruby client
+$DEBUG_RUBY_CLIENT = false
+# When DEBUG_RUBY_CLIENT is true, this array can limit the cache keys for which to receive debug output. Empty array means output debugging info for ALL keys
+$DEBUG_RUBY_CLIENT_KEYS = []
+
 # If you don't use Airbrake you can have exceptions emailed to the $ERROR_EMAIL address by setting this to 'true'
 $EMAIL_EXCEPTIONS = true
 
@@ -104,6 +112,9 @@ CalendarDateSelect.format = :american
 ENV['USE_RECAPTCHA'] = 'false'
 ENV['RECAPTCHA_PUBLIC_KEY']  = ''
 ENV['RECAPTCHA_PRIVATE_KEY'] = ''
+
+# Memcached servers
+ENV['MEMCACHE_SERVERS'] = 'localhost'
 
 # Custom BioPortal logging
 require 'log'
