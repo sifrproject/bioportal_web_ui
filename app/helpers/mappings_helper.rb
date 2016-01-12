@@ -48,28 +48,79 @@ module MappingsHelper
     return uri
   end
 
-  # method to get (using http) prefLabel for interportal classes
-  def getInterportalPrefLabel(class_uri, class_ui_url)
-    interportal_key = getInterportalKey(class_ui_url)
-    if interportal_key
-      json_class = JSON.parse(Net::HTTP.get(URI.parse("#{class_uri}?apikey=#{interportal_key}")))
-      if !json_class["prefLabel"].nil?
-        return json_class["prefLabel"]
-      else
-        return nil
-      end
+  def get_link_for_cls_ajax(cls_id, ont_acronym, target=nil)
+    # Note: bp_ajax_controller.ajax_process_cls will try to resolve class labels.
+    # Uses 'http' as a more generic attempt to resolve class labels than .include? ont_acronym; the
+    # bp_ajax_controller.ajax_process_cls will try to resolve class labels and
+    # otherwise remove the UNIQUE_SPLIT_STR and the ont_acronym.
+    if target.nil?
+      target = ""
     else
-      return nil
+      target = " target='#{target}' "
+    end
+    if cls_id.start_with? 'http://'
+      href_cls = " href='#{bp_class_link(cls_id, ont_acronym)}' "
+      data_cls = " data-cls='#{cls_id}' "
+      data_ont = " data-ont='#{ont_acronym}' "
+      return "<a class='cls4ajax' #{data_ont} #{data_cls} #{href_cls} #{target}>#{cls_id}</a>"
+    else
+      return auto_link(cls_id, :all, :target => '_blank')
+    end
+  end
+
+  # method to get (using http) prefLabel for interportal classes
+  # Using bp_ajax_controller.ajax_process_interportal_cls will try to resolve class labels.
+  def get_link_for_interportal_cls_ajax(cls)
+    interportal_acro = get_interportal_acronym(cls.links["ui"])
+    if interportal_acro
+      href_cls = " href='#{cls.links["ui"]}' "
+      data_cls = " data-cls='#{cls.links["self"]}?apikey=' "
+      portal_cls = " portal-cls='#{interportal_acro}' "
+      return "<a class='interportalcls4ajax' #{data_cls} #{portal_cls} #{href_cls} target='_blank'>#{cls.id}</a>"
+    else
+      href_cls = " href='#{cls.links["ui"]}' "
+      return "<a #{href_cls} target='_blank'>#{cls.id}</a>"
+    end
+
+=begin
+    # to use the /ajax/classes/label system
+    # but the bioportal target need to answer with a 'Access-Control-Allow-Origin' header
+    href_cls = " href='#{cls.links["ui"]}' "
+    portal_url = cls.links["ui"].split("/")[0..-3].join("/")
+    cls_ont = cls.links["ontology"].split("/")[-1]
+    data_cls = " data-cls='#{portal_url}/ajax/classes/label?ontology=#{cls_ont}&concept=#{URI.escape(cls.id)}'"
+    return "<a class='interportalcls4ajax' #{data_cls} #{href_cls} target='_blank'>#{cls.id}</a>"
+=end
+
+  end
+
+  def get_link_for_cls_ajax(cls_id, ont_acronym, target=nil)
+    # Note: bp_ajax_controller.ajax_process_cls will try to resolve class labels.
+    # Uses 'http' as a more generic attempt to resolve class labels than .include? ont_acronym; the
+    # bp_ajax_controller.ajax_process_cls will try to resolve class labels and
+    # otherwise remove the UNIQUE_SPLIT_STR and the ont_acronym.
+    if target.nil?
+      target = ""
+    else
+      target = " target='#{target}' "
+    end
+    if cls_id.start_with? 'http://'
+      href_cls = " href='#{bp_class_link(cls_id, ont_acronym)}' "
+      data_cls = " data-cls='#{cls_id}' "
+      data_ont = " data-ont='#{ont_acronym}' "
+      return "<a class='cls4ajax' #{data_ont} #{data_cls} #{href_cls} #{target}>#{cls_id}</a>"
+    else
+      return auto_link(cls_id, :all, :target => '_blank')
     end
   end
 
   # to get the apikey from the interportal instance of the interportal class.
   # The best way to know from which interportal instance the class came is to compare the UI url
-  def getInterportalKey(class_ui_url)
+  def get_interportal_acronym(class_ui_url)
     if !INTERPORTAL_HASH.nil?
       INTERPORTAL_HASH.each do |key, value|
         if class_ui_url.start_with?(value["ui"])
-          return value["apikey"]
+          return key
         else
           return nil
         end
@@ -78,7 +129,7 @@ module MappingsHelper
   end
 
   # method to extract the prefLabel from the external class URI
-  def getExternalPrefLabel(class_uri)
+  def get_link_for_external_cls(class_uri)
     if class_uri.include? "#"
       prefLabel = class_uri.split("#")[-1]
     else

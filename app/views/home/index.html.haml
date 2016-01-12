@@ -24,9 +24,9 @@
     = $FRONT_NOTICE
     \&nbsp;&nbsp;
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
-#release_info{style: "position: absolute; right: 7px; padding-top: 38px; font-size: 1.3em;"}
-  Current Release: 
-  %a{href: "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"} 4.20 (August 2015)
+#release_info{style: "position: absolute; right: 7px; padding-top: 38px; font-size: 1.3em; pointer-events: none;"}
+  Current Release:
+  %a{href: "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank", style: "pointer-events: auto;"} 4.22 (November 2015)
 %div{:style => "padding:10px;margin:10px;"}
   - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
   - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"
@@ -165,81 +165,67 @@
                             = truncate(strip_tags(note[:body]), :length => 100)
                             \&nbsp;
                       - rescue
-      %td{:valign => "top"}
-        %fieldset
-          %legend Latest Mappings
-          %table.minimal{:style => "width:100%"}
-            %tbody
-              - mappings = @recent_mappings[:mappings]
-              - if mappings.nil? || mappings.empty?
-                No recent mappings have been submitted
-              - else
-                - good_count = 0
-                - for map in mappings
-                  - break if good_count == 5
-                  - begin
-                    - mapProc = map.process
-                    - raise "UI-view error for recent mapping process #{map.process}" if mapProc.nil?
-                    - # map.classes might contain more than two items, use first and last.
-                    - clsA = map.classes.first
-                    - clsB = map.classes.last
-                    - next unless clsA.prefLabel && clsB.prefLabel
-                    - raise "UI-view error for recent mapping class #{map.classes.first.id}" if clsA.nil?
-                    - raise "UI-view error for recent mapping class #{map.classes.last.id}" if clsB.nil?
-                    - if map.process.name == "REST Mapping"
-                      - ontA = clsA.explore.ontology
-                      - ontB = clsB.explore.ontology
-                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
-                      - raise "UI-view error for recent mapping ontology #{clsB[:ontology]}" if ontB.nil?
-                      - ontAcroA = ontA.acronym
-                      - ontAcroB = ontB.acronym
-                    - elsif map.process.name == "Interportal Mapping"
-                      - ontA = clsA.explore.ontology
-                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
-                      - ontAcroA = ontA.acronym
-                      - ontAcroB = clsB["links"]["ontology"]
-                    - elsif map.process.name == "External Mapping"
-                      - ontA = clsA.explore.ontology
-                      - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
-                      - ontAcroA = ontA.acronym
-                      - ontAcroB = clsB["links"]["ontology"]
-                    - good_count += 1
-                    %tr
-                      %td
-                        - mapStr = "#{clsA[:prefLabel]} (#{ontAcroA}) <=> #{clsB[:prefLabel]} (#{ontAcroB})"
-                        -# Don't link to map.id, it is a linked-data URI.
-                        -# Use a relative UI link to the first class in the mapping.
-                        - mapLnk = clsA["links"]["ui"].gsub(/^.*\/ontologies/,'/ontologies') + '#mappings'
-                        = link_to mapStr, mapLnk
-                        %br/
-                        %span{:style => "color:#AAAAAA"}
-                          = mapProc.name || 'BioPortal UI'
-                          = xmldatetime_to_date(mapProc.date)
-                          by
-                          = mapProc.creator.gsub(/.*\//,'')
-                  - rescue => e
-                    - LOG.add :error, e.message, e.backtrace.join("\n\t")
-                    - LOG.add :error, "Recent mapping: #{map.id}, classes: #{map.classes.map {|c| "#{c.id}" }.join(', ')}"
-                    - next
+      - if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
+        %td{:valign => "top"}
+          %fieldset
+            %legend Latest Mappings
+            %table.minimal{:style => "width:100%"}
+              %tbody
+                - mappings = @recent_mappings[:mappings]
+                - if mappings.nil? || mappings.empty?
+                  No recent mappings have been submitted
+                - else
+                  - good_count = 0
+                  - for map in mappings
+                    - break if good_count == 5
+                    - begin
+                      - mapProc = map.process
+                      - raise "UI-view error for recent mapping process #{map.process}" if mapProc.nil?
+                      - # map.classes might contain more than two items, use first and last.
+                      - clsA = map.classes.first
+                      - clsB = map.classes.last
+                      - next unless clsA.prefLabel && clsB.prefLabel
+                      - raise "UI-view error for recent mapping class #{map.classes.first.id}" if clsA.nil?
+                      - raise "UI-view error for recent mapping class #{map.classes.last.id}" if clsB.nil?
+                      - if map.process.name == "REST Mapping"
+                        - ontA = clsA.explore.ontology
+                        - ontB = clsB.explore.ontology
+                        - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                        - raise "UI-view error for recent mapping ontology #{clsB[:ontology]}" if ontB.nil?
+                        - ontAcroA = ontA.acronym
+                        - ontAcroB = ontB.acronym
+                      - elsif map.process.name.start_with? "Interportal Mapping"
+                        - ontA = clsA.explore.ontology
+                        - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                        - ontAcroA = ontA.acronym
+                        - ontAcroB = clsB["links"]["ontology"]
+                      - elsif map.process.name == "External Mapping"
+                        - ontA = clsA.explore.ontology
+                        - raise "UI-view error for recent mapping ontology #{clsA[:ontology]}" if ontA.nil?
+                        - ontAcroA = ontA.acronym
+                        - ontAcroB = clsB["links"]["ontology"]
+                      - good_count += 1
+                      %tr
+                        %td
+                          - mapStr = "#{clsA[:prefLabel]} (#{ontAcroA}) <=> #{clsB[:prefLabel]} (#{ontAcroB})"
+                          -# Don't link to map.id, it is a linked-data URI.
+                          -# Use a relative UI link to the first class in the mapping.
+                          - mapLnk = clsA["links"]["ui"].gsub(/^.*\/ontologies/,'/ontologies') + '#mappings'
+                          = link_to mapStr, mapLnk
+                          %br/
+                          %span{:style => "color:#AAAAAA"}
+                            = mapProc.name || 'BioPortal UI'
+                            = xmldatetime_to_date(mapProc.date)
+                            by
+                            = mapProc.creator.gsub(/.*\//,'')
+                    - rescue => e
+                      - LOG.add :error, e.message, e.backtrace.join("\n\t")
+                      - next
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
-  %span Supported by
-  %div
-    %a{href: "http://www.agence-nationale-recherche.fr", style: "text-decoration:none;"}
-      %img{src: "/images/anr_logo.png"} &nbsp;
-  %br
   %span With the collaboration of
   %div
     %a{href: "http://www.bioontology.org", style: "text-decoration:none;"}
-      %img{src: "/images/ncbo_logo.jpg"} &nbsp;
-    %a{href: "http://www.lirmm.fr/sifr/", style: "text-decoration:none;"}
-      %img{src: "/images/sifr_logo.jpg"} &nbsp;
-    %a{href: "http://www.lirmm.fr", style: "text-decoration:none;"}
-      %img{src: "/images/lirmm_logo.jpg"} &nbsp;
-    %a{href: "http://www.umontpellier.fr", style: "text-decoration:none;"}
-      %img{src: "/images/um_logo.jpg"} &nbsp;
-    %a{href: "http://www.cnrs.fr", style: "text-decoration:none;"}
-      %img{src: "/images/cnrs_logo.png"} &nbsp;
-
+      %img{src: "http://www.bioontology.org/sites/all/themes/bioontology/logo.png"} &nbsp;
 
 - ont_names = @ontologies.map{|ont| "[\"#{ont.name} (#{ont.acronym})\",\"#{ont.acronym}\"]"}
 

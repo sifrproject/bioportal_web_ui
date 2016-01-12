@@ -157,7 +157,7 @@ jQuery(document).ready(function () {
     el_text.toggleClass("not_visible");
     if (el_text.attr("highlighted") !== "true") {
       var element = new Element(el.data().elementId, cleanElementId, chosenSearchClasses(), el.data().resourceId);
-      el.parent().append("<span id='" + element.cleanId + "_ani'class='highlighting'>highlighting... <img style='vertical-align: text-bottom;' src='/images/spinners/spinner_000000_16px.gif'></span>");
+      el.parent().append('<span id="' + element.cleanId + '_ani" class="highlighting">highlighting... ' + '<%= image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") %>' + '</span>');
       element.highlightAnnotationPositions();
       el_text.attr("highlighted", "true");
     }

@@ -127,7 +127,7 @@ function nodeClicked(node_id) {
 
     wrapupTabChange(selectedTab);
   } else {
-    jQuery.blockUI({ message: '<h1><img src="/images/tree/spinner.gif" /> Loading Class...</h1>', showOverlay: false });
+    jQuery.blockUI({ message: '<h1>' + '<%= image_tag src="jquery.simple.tree/spinner.gif" %>' + ' Loading Class...</h1>', showOverlay: false });
     jQuery.get('/ajax_concepts/'+jQuery(document).data().bp.ont_viewer.ontology_id+'/?conceptid='+node_id+'&callback=load',
       function(data){
         var tabData = data.split("|||");

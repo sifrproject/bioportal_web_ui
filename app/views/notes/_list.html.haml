@@ -3,9 +3,15 @@
 - @note_link = "/ontologies/#{@ontology.acronym}/notes/"
 .notes_list_container
   .add_comment{style: "float: left; margin-right: 1em;"}
-    <a href='javascript:void(0);' class='add_comment link_button' style="font-size: .9em;" data-parent_id="#{@concept.id}" data-parent_type="class">Add comment</a>
+    - if session[:user].nil?
+      = link_to "Add comment", login_index_path, class: "link_button", style: "font-size: .9em;"
+    - else
+      = link_to "Add comment", "javascript:void(0);", class: "add_comment link_button", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
   .add_proposal{style: "float: left; margin-right: 1em;"}
-    <a href='javascript:void(0);' class='add_proposal link_button' style="font-size: .9em;" data-parent_id="#{@concept.id}" data-parent_type="class">Add proposal</a>
+    - if session[:user].nil?
+      = link_to "Add proposal", login_index_path, class: "link_button", style: "font-size: .9em"
+    - else
+      = link_to "Add proposal", "javascript:void(0);", class: "add_proposal link_button", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
   .subscribe_to_notes.link_button{:style => "float: left;"}
     = subscribe_button(@ontology.acronym)
   .notes_delete{:style => "float: left; margin-left: 1em;"}

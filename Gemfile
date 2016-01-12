@@ -28,7 +28,6 @@ gem "hpricot", "~> 0.8.6"
 gem "recaptcha", "= 0.4.0"
 gem "rest-client", "~> 1.8.0"
 gem "mysql", "~> 2.9.1"
-gem "memcache-client", "~> 1.8.5"
 gem "i18n", "~> 0"
 gem "haml", "~> 4.0.0"
 gem "will_paginate", "~> 3.0"
@@ -41,17 +40,20 @@ gem 'oj'
 gem 'multi_json'
 gem 'rails_autolink'
 gem 'dalli'
+gem 'thin'
 
 # application monitoring
 gem 'newrelic_rpm'
 
-#logs in json format, useful for shipping logs to logstash
-gem 'rackstash', git: "https://github.com/planio-gmbh/rackstash.git"
-gem 'logstash-logger'
-
 gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "master"
 
-#group :development do
+group :staging, :production do
+  #logs in json format, useful for shipping logs to logstash
+  gem 'rackstash', git: "https://github.com/planio-gmbh/rackstash.git"
+  gem 'logstash-logger'
+end
+
+group :development do
     #Capistrano
     gem 'capistrano', '~> 3.4.0', require: false
     # rails specific capistrano funcitons
@@ -60,4 +62,4 @@ gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_rub
     gem 'capistrano-bundler', require: false
     # passenger reload
     gem 'capistrano-passenger', require: false
-#end
+end

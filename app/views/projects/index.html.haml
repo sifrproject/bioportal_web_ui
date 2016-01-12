@@ -97,7 +97,7 @@
             - ontologyCount = 0
             - ontologyLabels = ""
             - for ontology in project.ontologyUsed
-              - ontologyLabels += LinkedData::Client::Models::Ontology.find(ontology).name + "\n" rescue next
+              - ontologyLabels += @ontologies_hash[ontology].name + "\n" rescue next
               - ontologyCount += 1
             - if ontologyCount > 0
               %span{:style => "cursor:help;text-decoration: none; border-bottom:1px dotted;", :title => ontologyLabels}= ontologyCount
