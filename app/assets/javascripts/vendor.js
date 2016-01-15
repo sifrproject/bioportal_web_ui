@@ -8,7 +8,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery2
-//= require jquery-migrate-1.2.1.min
+//= require jquery-migrate-1.3.0.min
 //= require jquery_ujs
 //= require jquery-ui
 //
