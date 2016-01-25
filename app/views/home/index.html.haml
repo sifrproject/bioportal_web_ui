@@ -165,8 +165,8 @@
                             = truncate(strip_tags(note[:body]), :length => 100)
                             \&nbsp;
                       - rescue
-      - if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
-        %td{:valign => "top"}
+      %td{:valign => "top"}
+        - if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
           %fieldset
             %legend Latest Mappings
             %table.minimal{:style => "width:100%"}
@@ -221,6 +221,18 @@
                     - rescue => e
                       - LOG.add :error, e.message, e.backtrace.join("\n\t")
                       - next
+        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
+          %fieldset
+            %legend Slices
+            %table.minimal{:style => "width:100%"}
+              %tbody
+                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
+                  - break if index == 10
+                  - slice_name = "#{slice.name} (#{slice.acronym})"
+                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
+                  %tr
+                    %td
+                      = link_to slice_name, slice_link
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
   %span With the collaboration of
   %div
