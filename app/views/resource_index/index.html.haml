@@ -21,6 +21,14 @@
         %a#resource_index_advanced_options{:href => "javascript:void(0);"}
           %span#hide_advanced_options.not_visible> hide&nbsp;
           advanced options
+      #hierarchy_options{:style => "padding-top: .6em; clear: both;"}
+        %div{style: "margin-top: 1em;"}
+          %h2{:style => "font-size: 10pt; !important; margin-bottom: 3px;"} Hierarchy Expansion
+          Find documents containing: &nbsp;
+          %input{type: "radio", id: "expand_hierarchy_true", name: "expand_hierarchy", value: "false"}
+          %label{for: "expand_hierarchy_true"} Class(es) &nbsp;
+          %input{type: "radio", id: "expand_hierarchy_false", name: "expand_hierarchy", value: "true", checked: true}
+          %label{for: "expand_hierarchy_false"} Class(es) and descendants
       #search_options.not_visible{:style => "padding-top: .6em; clear: both;"}
         %div{style: "margin-top: 1em;"}
           %h2{:style => "font-size: 10pt; !important; margin-bottom: 3px;"} Boolean Options
@@ -29,13 +37,6 @@
           %label{for: "boolean_operator_and"} All classes &nbsp;
           %input{type: "radio", id: "boolean_operator_or", name: "boolean_operator", value: "or"}
           %label{for: "boolean_operator_or"} Any class
-        %div{style: "margin-top: 1em;"}
-          %h2{:style => "font-size: 10pt; !important; margin-bottom: 3px;"} Hierarchy Expansion
-          Find documents containing: &nbsp;
-          %input{type: "radio", id: "expand_hierarchy_true", name: "expand_hierarchy", value: "false", checked: true}
-          %label{for: "expand_hierarchy_true"} Class(es) &nbsp;
-          %input{type: "radio", id: "expand_hierarchy_false", name: "expand_hierarchy", value: "true"}
-          %label{for: "expand_hierarchy_false"} Class(es) and descendants
         %div
           #ontology_picker_options{:style => "margin-top: 1em;"}
             = render :partial => "shared/ontology_picker", :locals => { :sel_text => "Only Show Autocomplete Results From" }

@@ -70,7 +70,7 @@ GEM
       sshkit (~> 1.2)
     capistrano-passenger (0.2.0)
       capistrano (~> 3.0)
-    capistrano-rails (1.1.5)
+    capistrano-rails (1.1.6)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
     coderay (1.1.0)
@@ -134,7 +134,7 @@ GEM
     net-ssh (3.0.2)
     netrc (0.11.0)
     newrelic_rpm (3.14.1.311)
-    nokogiri (1.6.7.1)
+    nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     oj (2.14.3)
     pry (0.10.3)
@@ -256,6 +256,3 @@ DEPENDENCIES
   thin
   uglifier (>= 1.0.3)
   will_paginate (~> 3.0)
-
-BUNDLED WITH
-   1.10.6
