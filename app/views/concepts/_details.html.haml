@@ -120,6 +120,24 @@
             = "<p>#{ajax_links.join('</p><p>')}</p>".html_safe
             -# auto_link("<p>#{values.split("||%||").join("<\/p><p>").gsub("%ONT%", @ontology.acronym)}</p>", :all, :target => "_blank")
 
+    - # Display all instances of the classe
+    - instances = @concept.explore.instances  # no need to include anything, it's naturaly done
+    - LOG.add :debug, "instances: #{instances}"
+    - if !instances.nil? && instances.any?
+      %td.label{:nowrap => ""}
+        Instances
+        %span.slot_labels
+        %td
+          - # iterate all instances and display there label and id
+          - instances.each do |instance|
+            %p= "#{instance.label} : #{link_to instance.id}".html_safe
+            - # retrieve the skos:broader concepts of this instance
+            - instance_broader = instance.properties["http://www.w3.org/2004/02/skos/core#broader"]
+            - if !instance_broader.nil? && instance_broader.any?
+              %p= "&nbsp;&nbsp; Broader concepts:".html_safe
+              - instance_broader.each do |broader_concept|
+                %p= "&nbsp;&nbsp; #{link_to broader_concept}".html_safe # display all broader concept of the instance
+
 :javascript
 
   jQuery(document).ready(function(){
