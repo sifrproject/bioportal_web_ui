@@ -79,9 +79,12 @@ class ConceptsController < ApplicationController
       return
     end
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
-    not_found if @ontology.nil?
-    get_class(params)   # application_controller
-    render :partial => "ontologies/treeview"
+    if @ontology.nil?
+      not_found
+    else 
+      get_class(params)   # application_controller
+      render :partial => "ontologies/treeview"
+    end
   end
 
   def property_tree

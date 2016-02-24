@@ -139,7 +139,7 @@ $RECOMMENDER_FLEX_APIKEY = ""
 $FLEXOVIZ_APIKEY = ""
 
 # URL where BioMixer GWT app is located
-$BIOMIXER_URL = "http://bioportal-integration.bio-mixer.appspot.com"
+$BIOMIXER_URL = 'http://biomixer.bioontology.org'
 
 ##
 # Custom Ontology Details

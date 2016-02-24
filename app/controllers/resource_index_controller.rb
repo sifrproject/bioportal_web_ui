@@ -55,6 +55,11 @@ class ResourceIndexController < ApplicationController
   end
 
   def create
+    if params[:classes].nil?
+      render :text => "No search class(es) provided. Please use the search box above to find classes to search the index with."
+      return
+    end
+
     @bp_last_params = params
     @classes = lookup_classes(params)
     @counts = LinkedData::Client::ResourceIndex.counts(@classes, params)
