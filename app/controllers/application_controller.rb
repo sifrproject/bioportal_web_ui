@@ -85,6 +85,11 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
+    if request.xhr?
+      render text: "Error: load failed"
+      return
+    end
+    
     raise ActiveRecord::RecordNotFound.new('Not Found')
   end
 
