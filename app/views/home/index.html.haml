@@ -26,7 +26,7 @@
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
 #release_info{style: "position: absolute; right: 7px; padding-top: 38px; font-size: 1.3em;"}
   Current Release: 
-  %a{href: "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"} 4.24 (February 2016)
+  = link_to $RELEASE_VERSION, "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"
 %div{:style => "padding:10px;margin:10px;"}
   - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
   - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"

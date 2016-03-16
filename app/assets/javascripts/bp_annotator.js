@@ -58,8 +58,7 @@ function get_annotations() {
   ajax_process_halt();
 
   var params = {},
-    ont_select = jQuery("#ontology_ontologyId"),
-    mappings = [];
+    ont_select = jQuery("#ontology_ontologyId");
 
   params.text = jQuery("#annotation_text").val();
   if (annotator_url === "ncbo_annotatorplus") {
@@ -71,6 +70,7 @@ function get_annotations() {
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
   params.whole_word_only = !jQuery("#match_partial_words").is(':checked');
   params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
+  params.expand_mappings = jQuery("#expand_mappings").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
 
   params.score = jQuery("#score").val();
@@ -96,11 +96,6 @@ function get_annotations() {
   //if (jQuery("#wholeWordOnly:checked").val() !== undefined) {
   //  params.wholeWordOnly = jQuery("#wholeWordOnly:checked").val();
   //}
-
-  jQuery("[name='mappings']:checked").each(function() {
-    mappings.push(jQuery(this).val());
-  });
-  params.mappings = mappings;
 
   if (jQuery("#semantic_types").val() !== null) {
     params.semantic_types = jQuery("#semantic_types").val();
