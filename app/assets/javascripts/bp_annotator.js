@@ -12,7 +12,8 @@ var BP_COLUMNS = {
   types: 2,
   sem_types: 3,
   matched_classes: 5,
-  matched_ontologies: 6
+  matched_ontologies: 6,
+  score: 7
 };
 
 var CONCEPT_MAP = {
@@ -55,8 +56,7 @@ function get_annotations() {
   ajax_process_halt();
 
   var params = {},
-    ont_select = jQuery("#ontology_ontologyId"),
-    mappings = [];
+    ont_select = jQuery("#ontology_ontologyId");
 
   params.text = jQuery("#annotation_text").val();
   params.ontologies = (ont_select.val() === null) ? [] : ont_select.val();
@@ -64,7 +64,15 @@ function get_annotations() {
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
   params.whole_word_only = !jQuery("#match_partial_words").is(':checked');
   params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
+  params.expand_mappings = jQuery("#expand_mappings").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
+
+  params.score = jQuery("#score").val();
+  if (params.score) {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.score, true);
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.score, false);
+  }
 
   var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
   if (maxLevel > 0) {
@@ -82,11 +90,6 @@ function get_annotations() {
   //if (jQuery("#wholeWordOnly:checked").val() !== undefined) {
   //  params.wholeWordOnly = jQuery("#wholeWordOnly:checked").val();
   //}
-
-  jQuery("[name='mappings']:checked").each(function() {
-    mappings.push(jQuery(this).val());
-  });
-  params.mappings = mappings;
 
   if (jQuery("#semantic_types").val() !== null) {
     params.semantic_types = jQuery("#semantic_types").val();
@@ -410,11 +413,13 @@ function annotatorFormatLink(param_string, format) {
   // For now, assume that json and xml will work or should work.
   var format_map = {
     "json": "JSON",
+    "rdf": "RDF",
     "xml": "XML",
     "text": "Text",
     "tabDelimited": "CSV"
   };
-  var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
+  //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
+  var query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   if (format !== 'json') {
     query += "&format=" + format;
   }
@@ -476,6 +481,9 @@ jQuery(document).ready(function() {
       "sWidth": "15%"
     }, {
       "sWidth": "15%"
+    }, {
+      "sWidth": "5%",
+      "bVisible": false
     }]
   });
   filter_ontologies.init();
@@ -590,6 +598,14 @@ function get_annotation_rows(annotation, params) {
   return rows;
 }
 
+function get_annotation_score(cls) {
+  var score = '';
+  if (typeof cls.score !== 'undefined') {
+    score = parseFloat(cls.score).toFixed(3);
+  }
+  return score;
+}
+
 function get_annotation_rows_from_raw(annotation, params) {
   "use strict";
   // data independent var declarations
@@ -606,20 +622,20 @@ function get_annotation_rows_from_raw(annotation, params) {
   // data dependent var declarations
   var cls = get_class_details_from_raw(annotation.annotatedClass);
   if (annotation.annotations.length == 0) {
-    cells = [cls.cls_link, cls.ont_link, "", cls.semantic_types, "", cls.cls_link, cls.ont_link];
+    cells = [cls.cls_link, cls.ont_link, "", cls.semantic_types, "", cls.cls_link, cls.ont_link, get_annotation_score(annotation)];
     rows.push(cells);
   } else {
     jQuery.each(annotation.annotations, function(i, a) {
       text_markup = get_text_markup(params.text, a.from, a.to);
       match_type = match_type_translation[a.matchType.toLowerCase()] || 'direct';
-      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link];
+      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(annotation)];
       rows.push(cells);
       // Add rows for any classes in the hierarchy.
       match_type = 'ancestor';
       var h_c = null;
       jQuery.each(annotation.hierarchy, function(i, h) {
         h_c = get_class_details_from_raw(h.annotatedClass);
-        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link];
+        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(h)];
         rows.push(cells);
       }); // hierarchy loop
       // Add rows for any classes in the mappings. Note the ont_link will be different.
@@ -627,7 +643,7 @@ function get_annotation_rows_from_raw(annotation, params) {
       var m_c = null;
       jQuery.each(annotation.mappings, function(i, m) {
         m_c = get_class_details_from_raw(m.annotatedClass);
-        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link];
+        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(m)];
         rows.push(cells);
       }); // mappings loop
     }); // annotations loop
@@ -752,14 +768,20 @@ function display_annotations(data, params) {
   update_annotations_table(all_rows);
   // Generate parameters for list at bottom of page
   var param_string = generateParameters(); // uses bp_last_param
-  var query = BP_CONFIG.rest_url + "/annotator?" + param_string;
-  var query_encoded = BP_CONFIG.rest_url + "/annotator?" + encodeURIComponent(param_string);
+  var query = BP_CONFIG.annotator_url + "?" + param_string;
+  var query_encoded = BP_CONFIG.annotator_url + "?" + encodeURIComponent(param_string);
   jQuery("#annotator_parameters").html(query);
   jQuery("#annotator_parameters_encoded").html(query_encoded);
   // Add links for downloading results
   //annotatorFormatLink("tabDelimited");
   annotatorFormatLink(param_string, "json");
-  annotatorFormatLink(param_string, "xml");
+  //annotatorFormatLink(param_string, "xml");
+  //TODO: make RDF format works with score
+  jQuery("#download_links_rdf").html("");
+  if (params.score === "") {
+    annotatorFormatLink(param_string, "rdf");
+  }
+
   if (params.raw !== undefined && params.raw === true) {
     // Initiate ajax calls to resolve class ID to prefLabel and ontology acronym to name.
     ajax_process_init(); // see bp_ajax_controller.js

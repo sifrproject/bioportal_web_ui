@@ -6,17 +6,40 @@
     - else
       %table.zebra
         %thead
-          %th #{@ontology.name}
-          %th #{@target_ontology.name}
+          %th #{@ontology_name}
+          %th #{@target_ontology_name}
           %th Source
         - for map in @mappings
           %tr
             - cls = map.classes.shift
             %td
-              #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+              - if cls.links["self"].to_s.start_with?(LinkedData::Client.settings.rest_url)
+                // Check if it is an internal, interportal or external mapping
+                #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+                //#{raw(get_link_for_cls_ajax(cls.id, cls.explore.ontology.acronym))} // Other way to do it, slower
+              - elsif cls.links.has_key?("ui")
+                #{raw(get_link_for_interportal_cls_ajax(cls))}
+                //#{raw("<a href='#{cls.links["ui"]}' target='_blank'>#{cls.id}</a>")}
+              - else
+                #{raw("<a href='#{cls.links["self"]}' target='_blank'>#{get_link_for_external_cls(cls.id)}</a>")}
             - cls = map.classes.shift
             %td
-              #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+              - if cls.links["self"].to_s.start_with?(LinkedData::Client.settings.rest_url)
+                #{link_to "#{cls.id}<span href='/ajax/classes/label?ontology=#{cls.links["ontology"]}&concept=#{CGI.escape(cls.id)}' class='get_via_ajax'></span>".html_safe, :controller => 'visualize', :action => 'virtual', :id => cls.explore.ontology.acronym, :conceptid => cls.id}
+                //#{raw(get_link_for_cls_ajax(cls.id, cls.explore.ontology.acronym))} // Other way to do it, slower
+              - elsif cls.links.has_key?("ui")
+                #{raw(get_link_for_interportal_cls_ajax(cls))}
+              - else
+                #{raw("<a href='#{cls.links["self"]}' target='_blank'>#{get_link_for_external_cls(cls.id)}</a>")}
             %td
               #{map.source} #{(map.process || {})[:source_name]}
     = will_paginate @page_results, :update => 'mappings', :params => { :target => params[:target] }
+
+:javascript
+  jQuery(document).ready(function(){
+    // Ajax globals and functions are in  "/javascripts/bp_ajax_controller.js"
+    // Note: bind any 'responsive elements' to the ajax_proces_halt() function, e.g.
+    // jQuery("#facebox a.close").click(function(event){ ajax_process_halt(); });
+    // Initiate ajax calls to resolve class ID to prefLabel.
+    ajax_process_init();  // see bp_ajax_controller.js
+  })

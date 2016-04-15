@@ -54,7 +54,7 @@ rec.insertSampleKeywords = function() {
     $("#radioItKeywords").prop("checked", true);
 }
 
-rec.colors = ["#234979" , "#cc0000", "#339900", "#ff9900"];
+rec.colors = ["#76A7CC" , "#cc0000", "#339900", "#ff9900"];
 rec.getHighlightedTerms = function(data, rowNumber) {
     var inputText = document.getElementById("inputText").value;
     var newText = '';
@@ -234,7 +234,7 @@ rec.getRecommendations = function() {
                                 + data[i].ontologies[j].acronym + '</a><br />'});
 
                             row += "</td>";
-                            row += '<td><div style="width:120px"><div style="text-align:left;width:' + finalScore.toFixed(0) + '%;color:#ccc;background-color:#234979;border-style:solid;border-width:1px;border-color:#234979">' + finalScore.toFixed(1) + '</div></div>' + '</td>'
+                            row += '<td><div style="width:120px"><div style="text-align:left;width:' + finalScore.toFixed(0) + '%;color:#ccc;background-color:#76A7CC;border-style:solid;border-width:1px;border-color:#76A7CC">' + finalScore.toFixed(1) + '</div></div>' + '</td>'
                             + '<td><div style="width:120px"><div style="text-align:left;width:' + coverageScore.toFixed(0) + '%;background-color:#8cabd6;border-style:solid;border-width:1px;border-color:#3e76b6">' + coverageScore.toFixed(1) + '</div></div>' + '</td>'
                             + '<td><div style="width:120px"><div style="text-align:left;width:' + acceptanceScore.toFixed(0) + '%;background-color:#8cabd6;border-style:solid;border-width:1px;border-color:#3e76b6">' + acceptanceScore.toFixed(1) + '</div></div>' + '</td>'
                             + '<td><div style="width:120px"><div style="text-align:left;width:' + detailScore.toFixed(0) + '%;background-color:#8cabd6;border-style:solid;border-width:1px;border-color:#3e76b6">' + detailScore.toFixed(1) + '</div></div>' + '</td>'

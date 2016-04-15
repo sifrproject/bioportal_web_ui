@@ -1,4 +1,5 @@
 jQuery(document).ready(function() {
+
   jQuery(".ontology_picker_single").live("change", function(){
     var current_side = jQuery(this).attr("id").replace("_picker", "");
     jQuery("#" + current_side)[0].autocompleter.flushCache();
@@ -35,7 +36,18 @@ jQuery(document).ready(function() {
     }
   });
 
-  // Reset mapping UI when tree changes or loaded from ajax
+
+  jQuery(".mapping_radio").live("click", function() {
+    var mapping_type = jQuery(this).val();
+    jQuery("div.mapping_form").hide();
+    if (mapping_type == "interportal") {
+      jQuery("div#interportal_form").show();
+    } else {
+      jQuery("div#external_form").show();
+    }
+  });
+
+    // Reset mapping UI when tree changes or loaded from ajax
   jQuery(document).live("tree_changed", resetMappingUIWithFacebox);
   jQuery(document).live("classes_tab_visible", resetMappingUI);
 
@@ -49,6 +61,7 @@ jQuery(document).ready(function() {
   create_mapping_advanced_options.init();
 
   jQuery("#create_mapping_button").live("click", bp_createMapping.create);
+  jQuery("#create_external_mapping_button").live("click", bp_createExternalMapping.create);
 });
 
 // Also in bp_mappings.js
@@ -106,8 +119,18 @@ function resetMappingUI() {
 var bp_createMapping = {
   create: function() {
     bp_createMapping.reset();
+
     jQuery("#create_mapping_spinner").show();
     var errored = bp_createMapping.validate();
+
+    var relation_array = new Array();
+    jQuery.each(jQuery("input[name='mapping_relations']:checked"), function() {
+      relation_array.push(jQuery(this).val());
+    });
+
+    if (jQuery("#relation_text_box").val() != "") {
+      relation_array.push(jQuery("#relation_text_box").val());
+    }
 
     if (errored) {
       jQuery("#create_mapping_spinner").hide();
@@ -119,7 +142,6 @@ var bp_createMapping = {
     var concept_from_id = jQuery("#map_from_bioportal_full_id");
     var concept_to_id = jQuery("#map_to_bioportal_full_id");
     var mapping_comment = jQuery("#mapping_comment");
-    var mapping_relation = jQuery("#mapping_relation");
     var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
 
     var params = {
@@ -128,7 +150,7 @@ var bp_createMapping = {
       map_from_bioportal_full_id: concept_from_id.val(),
       map_to_bioportal_full_id: concept_to_id.val(),
       mapping_comment: mapping_comment.val(),
-      mapping_relation: mapping_relation.val(),
+      mapping_relation: relation_array,
       mapping_bidirectional: mapping_bidirectional
     };
 
@@ -148,9 +170,9 @@ var bp_createMapping = {
     ));
 
     // If we have a concept mapping table, update it with new mappings
-    if (document.getElementById("concept_mappings_table") != null) {
-      var url = "/ajax/mappings/get_concept_table?ontologyid=" + ontology_id + "&conceptid=" + encodeURIComponent(currentConcept);
-      jQuery("#concept_mappings_table").load(url, function(){
+    if (document.getElementById("concept_mappings_tables_div") != null) {
+      var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(jQuery(document).data().bp.ont_viewer.concept_id);
+      jQuery("#concept_mappings_tables_div").load(url, function(){
         jQuery("#mapping_count").html(jQuery("#mapping_details tbody tr:visible").size());
       });
     }
@@ -162,9 +184,13 @@ var bp_createMapping = {
     updateMappingDeletePermissions();
   },
 
-  error: function() {
+  error: function(data) {
     jQuery("#create_mapping_spinner").hide();
-    jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+    if (data.responseText !== undefined && data.responseText !== null) {
+      jQuery("#create_mapping_error").html(data.responseText);
+    } else {
+      jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+    }
   },
 
   validate: function() {
@@ -195,20 +221,176 @@ var bp_createMapping = {
   }
 }
 
+var bp_popup_mapping_init = function(e) {
+    bp_popup_mapping_cleanup();
+    e.preventDefault();
+    e.stopPropagation()
+
+    var popup = jQuery(e.currentTarget).parents(".popup_container");
+    var popup_list = popup.children(".bp_popup_mapping_list");
+
+    popup.children(".bp_popup_link_container").addClass("bp_popup_shadow");
+    popup.find("a.bp_popup_link").css("z-index", "5000").addClass("bp_popup_link_active");
+
+    // popup fade if the user click outside of it
+    jQuery("body").click(function(){
+        jQuery(".bp_popup_mapping_list").fadeOut().removeClass("active");
+    });
+    jQuery(".bp_popup_mapping_list").click(function(e){
+        e.stopPropagation();
+    });
+
+    popup.children(".bp_popup_mapping_list").show();
+
+    // Check for dropping off edge of screen
+    if (popup_list.width() + popup_list.offset().left > jQuery(window).width()) {
+        popup_list.css("left", "-250px");
+    }
+
+}
+
+var bp_popup_mapping_cleanup = function() {
+    jQuery(".bp_popup_link_container").removeClass("bp_popup_shadow");
+    jQuery(".bp_popup_link").css("z-index", "").removeClass("bp_popup_link_active");
+}
+
 // Popup for advanced options
 var create_mapping_advanced_options = {
   init: function() {
-    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_init(e)});
+    jQuery("#create_mapping_advanced").live("click", function(e){bp_popup_mapping_init(e)});
     jQuery("#create_mapping_advanced_options").click(function(e){e.stopPropagation()});
     this.cleanup();
   },
 
   cleanup: function() {
-    jQuery("html").click(bp_popup_cleanup);
+    jQuery("html").click(bp_popup_mapping_cleanup);
     jQuery(document).keyup(function(e) {
-      if (e.keyCode == 27) { bp_popup_cleanup(); } // esc
+      if (e.keyCode == 27) { bp_popup_mapping_cleanup(); } // esc
     });
   }
 
+}
+
+
+var bp_createExternalMapping = {
+    create: function() {
+        bp_createExternalMapping.reset();
+        jQuery("#create_mapping_spinner").show();
+        var errored = bp_createExternalMapping.validate();
+
+        var relation_array = new Array();
+        jQuery.each(jQuery("input[name='mapping_relations']:checked"), function() {
+            relation_array.push(jQuery(this).val());
+        });
+
+        if (jQuery("#relation_text_box").val() != "") {
+            relation_array.push(jQuery("#relation_text_box").val());
+        }
+
+        if (errored) {
+            jQuery("#create_mapping_spinner").hide();
+            return false;
+        }
+
+        var mapping_type = jQuery(".mapping_radio:checked").val();
+
+        if (mapping_type == "interportal") {
+            var ontology_from = jQuery("#map_from_bioportal_ontology_id");
+            var ontology_to = jQuery("#map_to_interportal").val() + ":" + jQuery("#map_to_interportal_ontology").val();
+            var concept_from_id = jQuery("#map_from_bioportal_full_id");
+            var concept_to_id = jQuery("#map_to_interportal_class");
+            var mapping_comment = jQuery("#mapping_comment");
+            var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
+        } else {
+            var ontology_from = jQuery("#map_from_bioportal_ontology_id");
+            var ontology_to = "ext:" + jQuery("#map_to_external_ontology").val();
+            var concept_from_id = jQuery("#map_from_bioportal_full_id");
+            var concept_to_id = jQuery("#map_to_external_class");
+            var mapping_comment = jQuery("#mapping_comment");
+            var mapping_bidirectional = jQuery("#mapping_bidirectional").is(":checked");
+        }
+
+        var params = {
+            mapping_type: mapping_type,
+            map_from_bioportal_ontology_id: ontology_from.val(),
+            map_to_bioportal_ontology_id: ontology_to,
+            map_from_bioportal_full_id: concept_from_id.val(),
+            map_to_bioportal_full_id: concept_to_id.val(),
+            mapping_comment: mapping_comment.val(),
+            mapping_relation: relation_array,
+            mapping_bidirectional: mapping_bidirectional
+        };
+
+        jQuery.ajax({
+            url: "/mappings",
+            type: "POST",
+            data: params,
+            success: bp_createExternalMapping.success,
+            error: bp_createExternalMapping.error
+        });
+    },
+
+    success: function(data) {
+        jQuery("#create_mapping_spinner").hide();
+        if (jQuery(".mapping_radio:checked").val() == "interportal") {
+            jQuery("#create_mapping_success_messages").prepend(jQuery("<div/>").addClass("success_message").html(
+                    "Mapping from <b>" + jQuery("#map_from").val() + "</b> to <b>" + jQuery("#map_to_interportal_class").val() + "</b> was created"
+            ));
+        } else {
+            jQuery("#create_mapping_success_messages").prepend(jQuery("<div/>").addClass("success_message").html(
+                    "Mapping from <b>" + jQuery("#map_from").val() + "</b> to <b>" + jQuery("#map_to_external_class").val() + "</b> was created"
+            ));
+        }
+
+        // If we have a concept mapping table, update it with new mappings by calling the get_concept_table of mappings_controller.rb
+        if (document.getElementById("concept_mappings_tables_div") != null) {
+            var url = "/ajax/mappings/get_concept_table?ontologyid=" + jQuery(document).data().bp.ont_viewer.ontology_id + "&conceptid=" + encodeURIComponent(jQuery(document).data().bp.ont_viewer.concept_id);
+            jQuery("#concept_mappings_tables_div").load(url, function(){
+                jQuery("#mapping_count").html(jQuery("#mapping_details tbody tr:visible").size());
+            });
+        }
+
+        // Clear the map to side
+        jQuery("#map_to_concept_details").hide();
+
+        jQuery.bioportal.ont_pages["mappings"].retrieve_and_publish();
+        updateMappingDeletePermissions();
+    },
+
+    error: function(data) {
+        jQuery("#create_mapping_spinner").hide();
+        if (data.responseText !== undefined && data.responseText !== null) {
+            jQuery("#create_mapping_error").html(data.responseText);
+        } else {
+            jQuery("#create_mapping_error").html("There was a problem creating the mapping, please try again");
+        }
+    },
+
+    validate: function() {
+        var concept_from_input = jQuery("#map_from");
+        var concept_to_input = jQuery("#map_to_class");
+        var error = jQuery("#create_mapping_error");
+        var errors = ["<b>Problem creating mapping:</b>"];
+        var errored = false;
+
+        if (concept_from_input.val() == "" || concept_from_input.val() == concept_from_input.attr("title")) {
+            errors.push("Please select class to map from");
+            errored = true;
+        }
+/*
+        if (concept_to_input.val() == "" || concept_to_input.val() == concept_to_input.attr("title")) {
+            errors.push("Please select class to map to");
+            errored = true;
+        }
+*/
+        if (errors.length > 1)
+            jQuery("#create_mapping_error").html(errors.join("<br/>"));
+
+        return errored;
+    },
+
+    reset: function() {
+        jQuery("#create_mapping_error").html("");
+    }
 }
 

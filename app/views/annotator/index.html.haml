@@ -21,8 +21,8 @@
       = label_tag :longest_only, "Match Longest Only"
       &nbsp;&nbsp;
       / TODO: When the REST API supports different mapping types, revise this section of the UI.
-      = check_box_tag :mappings, :all, false, :id => "mappings_all"
-      = label_tag :mappings_all, "Include Mappings"
+      = check_box_tag :expand_mappings, :all, false, :id => "expand_mappings"
+      = label_tag :expand_mappings, "Include Mappings"
     %p
       = check_box_tag :exclude_numbers, :all, false, :id => "exclude_numbers"
       = label_tag :exclude_numbers, "Exclude Numbers"
@@ -37,6 +37,11 @@
       &nbsp;&nbsp;
       - options = [["None", 0], *(1..10).map {|i| [i, i]}, ["All", 999]]
       = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 70px;"
+    %p
+      %b Include Score:
+      &nbsp;&nbsp;
+      - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
+      = select_tag :score, options_for_select(options, 0), style: "width: 70px;"
     - if @recognizers.length > 1
       %p
         %b Entity Recognizer:
@@ -95,6 +100,7 @@
             %span.bp_popup_link_container
               %a#filter_matched_ontologies.bp_popup_link{:href => "javascript:void(0);"} filter
           #matched_ontology_filter_list.bp_popup_list{:style => "display: none;"}
+        %th Score
     %tbody
   #download_links{:style => "margin-top: 1.5em;"}
     %p
@@ -102,6 +108,7 @@
         %b Format Results As:
         %span#download_links_tabdelimited.link_button.ui_button
         %span#download_links_json.link_button.ui_button
+        %span#download_links_rdf.link_button.ui_button
         %span#download_links_text.link_button.ui_button
       %span#download_links_xml.link_button.ui_button
     %span{:style => "font-size: 8pt;"}

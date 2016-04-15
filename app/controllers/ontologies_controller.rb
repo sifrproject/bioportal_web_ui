@@ -9,6 +9,8 @@ class OntologiesController < ApplicationController
   before_action :authorize_and_redirect, :only=>[:edit,:update,:create,:new]
 
   KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties"])
+  EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
+  INTERPORTAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/InterportalMappings"
 
   # GET /ontologies
   # GET /ontologies.xml
@@ -247,10 +249,21 @@ class OntologiesController < ApplicationController
         count = counts[acronym]
         # Note: find_by_acronym includes ontology views
         ontology = LinkedData::Client::Models::Ontology.find_by_acronym(acronym.to_s).first
+        if ontology
+          onto_info = {:id => ontology.id, :name => ontology.name, :viewOf => ontology.viewOf}
+        else
+          if acronym.to_s.start_with?(EXTERNAL_MAPPINGS_GRAPH)
+            onto_info = {:id => acronym.to_s, :name => "External Mappings", :viewOf => nil}
+            @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
+          elsif acronym.to_s.start_with?(INTERPORTAL_MAPPINGS_GRAPH)
+            onto_info = {:id => acronym.to_s, :name => "Interportal Mappings - #{acronym.to_s.split("/")[-1].upcase}", :viewOf => nil}
+            @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
+          end
+        end
         next unless ontology
-        @ontologies_mapping_count << {'ontology' => ontology, 'count' => count}
+        @ontologies_mapping_count << {'ontology' => onto_info, 'count' => count}
       end
-      @ontologies_mapping_count.sort! {|a,b| a['ontology'].name.downcase <=> b['ontology'].name.downcase } unless @ontologies_mapping_count.nil? || @ontologies_mapping_count.length == 0
+      @ontologies_mapping_count.sort! {|a,b| a['ontology'][:name].downcase <=> b['ontology'][:name].downcase } unless @ontologies_mapping_count.nil? || @ontologies_mapping_count.length == 0
     end
     @ontology_id = @ontology.acronym
     @ontology_label = @ontology.name

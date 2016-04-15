@@ -5,7 +5,8 @@ class AnnotatorController < ApplicationController
   layout 'ontology'
 
   # REST_URI is defined in application_controller.rb
-  ANNOTATOR_URI = REST_URI + "/annotator"
+  #ANNOTATOR_URI = REST_URI + "/annotator"
+  ANNOTATOR_URI = $ANNOTATOR_URL
 
   def index
     @semantic_types_for_select = []
@@ -31,32 +32,37 @@ class AnnotatorController < ApplicationController
                 :class_hierarchy_max_level => params[:class_hierarchy_max_level].to_i,
                 :expand_class_hierarchy => params[:class_hierarchy_max_level].to_i > 0,
                 :semantic_types => params[:semantic_types],
-                :mappings => params[:mappings],
+                :expand_mappings => params[:expand_mappings],
                 :longest_only => params[:longest_only],
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
                 :whole_word_only => params[:whole_word_only] ||= "true", # service default is true
                 :exclude_synonyms => params[:exclude_synonyms] ||= "false",  # service default is false
+                :score => params[:score],
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 
     start = Time.now
     query = ANNOTATOR_URI
     query += "?text=" + CGI.escape(text_to_annotate)
-    query += "&include=prefLabel"
+    query += "&apikey=" + API_KEY
+    #query += "&include=prefLabel"
+    # Include= prefLabel causes an internal error when retrieving mappings
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0
+    query += "&score=" + options[:score] unless options[:score] == ""
     query += "&ontologies=" + CGI.escape(options[:ontologies].join(',')) unless options[:ontologies].empty?
     query += "&semantic_types=" + options[:semantic_types].join(',') unless options[:semantic_types].empty?
-    query += "&mappings=" + options[:mappings].join(',') unless options[:mappings].empty?
+    query += "&expand_mappings=" + options[:expand_mappings].to_s unless options[:expand_mappings].empty?
     query += "&longest_only=#{options[:longest_only]}"
     query += "&recognizer=#{params[:recognizer]}"
     query += "&exclude_numbers=" + options[:exclude_numbers].to_s unless options[:exclude_numbers].empty?
     query += "&whole_word_only=" + options[:whole_word_only].to_s unless options[:whole_word_only].empty?
     query += "&exclude_synonyms=" + options[:exclude_synonyms].to_s unless options[:exclude_synonyms].empty?
     query += "&ncbo_slice=" + options[:ncbo_slice].to_s unless options[:ncbo_slice].empty?
-
+    
     annotations = parse_json(query) # See application_controller.rb
     #annotations = LinkedData::Client::HTTP.get(query)
+    LOG.add :debug, "Query: #{query}"
     LOG.add :debug, "Retrieved #{annotations.length} annotations: #{Time.now - start}s"
     if annotations.empty? || params[:raw] == "true"
       # TODO: if params contains select ontologies and/or semantic types, only return those selected.

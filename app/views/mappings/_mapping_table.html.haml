@@ -11,51 +11,168 @@
 -# check_box_tag(name, value = "1", checked = false, options = {})
 = check_box_tag "delete_mappings_permission", @delete_mapping_permission, @delete_mapping_permission, :style => "display: none;"
 
-%table#concept_mappings_table.zebra{:width => "100%"}
-  %thead
-    %tr
-      %th{:class => 'delete_mappings_column'} Delete
-      %th Mapping To
-      %th Ontology
-      %th Source
-      -#%th Linked Data
-  - if @mappings.length < 1
-    %tr
-      %td{:class => 'delete_mappings_column', :style => "display: none;"}
-      %td{:colspan => "3"} There are currently no mappings for this class.
+%div#concept_mappings_tables_div
 
-  - @mappings.each do |map|
-    - map.classes.each do |cls|
-      - if cls.id == @concept.id
-        - # process is likely 'same_uris'
-        - next if cls.links['ontology'] == @concept.links['ontology']
-      -# this is a different class or the same class in another ontology (for same_uri mappings).
-      - ont = cls.explore.ontology
-      - next if ont.errors && ont.errors.collect {|e| e.include? "Access denied" }.any?
-      - begin
-        - ont_acronym = ont.acronym
-        - ont_name = ont.name
-        - ont_link = "/ontologies/#{ont_acronym}"
-        - ont_access = true
-      - rescue
-        - ont_access = false
+  %h2 Internal mappings
+  %table#concept_mappings_table.zebra{:width => "100%"}
+    %thead
+      %tr
+        %th{:class => 'delete_mappings_column'} Delete
+        %th Mapping To
+        %th Ontology
+        %th Source
+        %th Relations
+    -#%th Linked Data
+    - got_internal_mappings = false
+
+    - @mappings.each do |map|
+      - map.classes.each do |cls|
+        - if cls.id == @concept.id
+          - # process is likely 'same_uris'
+          - next if cls.links['ontology'] == @concept.links['ontology']
+        -# this is a different class or the same class in another ontology (for same_uri mappings).
+        - if map.process.nil? ||  map.process["name"] == "REST Mapping"
+          - ont = cls.explore.ontology
+          - next if ont.errors && ont.errors.collect {|e| e.include? "Access denied" }.any?
+          - begin
+            - ont_acronym = ont.acronym
+            - ont_name = ont.name
+            - ont_link = "/ontologies/#{ont_acronym}"
+            - cls_link = raw(get_link_for_cls_ajax(cls.id, ont_acronym))
+            - ont_access = true
+            - got_internal_mappings = true
+          - rescue
+            - ont_access = false
         -# Work around ontologies with access restrictions
         -# ont_acronym = cls.links['ontology'].split('/').last
         -# ont_name = ont_acronym  # no way to get the name here?
         -# ont_link = ''  # no link to restricted ontologies
-      - if ont_access && ont_acronym
-        - map_id = map.id.to_s.split("/").last
-        %tr.human{:id => map_id}
-          %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}
-            - if map.id && !map.id.empty? && session[:user] && (session[:user].id.to_i == map.creator || session[:user].admin?)
-              = check_box_tag :delete_mapping_checkbox, map.id
-          %td
-            -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
-            = raw(get_link_for_cls_ajax(cls.id, ont_acronym))
-          %td
-            %a{:href => ont_link}= ont_name
-          %td
-            #{map.source} #{(map.process || {})[:source_name]}
+        - if ont_access && ont_acronym
+          - map_id = map.id.to_s.split("/").last
+          %tr.human{:id => map_id}
+            %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}
+              - if map.id && !map.id.empty? && session[:user] && (session[:user].id.to_i == map.creator || session[:user].admin?)
+                = check_box_tag :delete_mapping_checkbox, map.id
+            %td
+              -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
+              = cls_link
+            %td
+              %a{:href => ont_link}= ont_name
+            %td
+              #{map.source} #{(map.process || {})[:source_name]}
+              - if !map.process.nil?
+                - if is_translation(map.process["relation"])
+                  %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+            %td
+              - if !map.process.nil?
+                - map.process["relation"].each do |relation|
+                  = get_prefixed_uri(relation)
+                  %br/
+    - if !got_internal_mappings
+      %tr
+        %td{:class => 'delete_mappings_column', :style => "display: none;"}
+        %td{:colspan => "4"} There are currently no internal mappings for this class.
+
+  %br
+  %h2 Interportal mappings
+  %table#concept_mappings_table.zebra{:width => "100%"}
+    %thead
+      %tr
+        %th{:class => 'delete_mappings_column'} Delete
+        %th Mapping To
+        %th Ontology
+        %th Source
+        %th Relations
+    - got_interportal_mappings = false
+
+    - @mappings.each do |map|
+      - map.classes.each do |cls|
+        - if cls.id == @concept.id
+          - # process is likely 'same_uris'
+          - next if cls.links['ontology'] == @concept.links['ontology']
+        -# this is a different class or the same class in another ontology (for same_uri mappings).
+        - if map.process.nil?
+          - next
+        - if !map.process.nil? && map.process["name"].start_with?("Interportal Mapping")
+          -# In case this is an interportal mapping, getting cls and ontology informations directly from the cls object
+          - cls_link = raw(get_link_for_interportal_cls_ajax(cls))
+          - ont_name = cls.links['ontology']
+          - ont_link = get_interportal_ui_link(cls.links['ontology'], map.process["name"])
+          - got_interportal_mappings = true
+          - map_id = map.id.to_s.split("/").last
+          %tr.human{:id => map_id}
+            %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}
+              - if map.id && !map.id.empty? && session[:user] && (session[:user].id.to_i == map.creator || session[:user].admin?)
+                = check_box_tag :delete_mapping_checkbox, map.id
+            %td
+              -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
+              = cls_link
+            %td
+              %a{:href => ont_link, :target => "_blank"}= ont_name
+            %td
+              #{map.source} #{(map.process || {})[:source_name]}
+              - if is_translation(map.process["relation"])
+                %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+            %td
+              - map.process["relation"].each do |relation|
+                = get_prefixed_uri(relation)
+                %br/
+
+    - if !got_interportal_mappings
+      %tr
+        %td{:class => 'delete_mappings_column', :style => "display: none;"}
+        %td{:colspan => "4"} There are currently no interportal mappings for this class.
+
+  %br
+  %h2 External mappings
+  %table#concept_mappings_table.zebra{:width => "100%"}
+    %thead
+      %tr
+        %th{:class => 'delete_mappings_column'} Delete
+        %th Mapping To
+        %th Ontology
+        %th Source
+        %th Relations
+    - got_external_mappings = false
+
+    - @mappings.each do |map|
+      - map.classes.each do |cls|
+        - if cls.id == @concept.id
+          - # process is likely 'same_uris'
+          - next if cls.links['ontology'] == @concept.links['ontology']
+        -# this is a different class or the same class in another ontology (for same_uri mappings).
+        - if map.process.nil?
+          - next
+        - if !map.process.nil? && map.process["name"] == "External Mapping"
+          -# In case this is an external mapping, getting cls and ontology informations directly from the cls object
+          - clsLabel = get_link_for_external_cls(cls.links["self"])
+          - cls_link = raw("<a href='#{cls.links["self"]}' target='_blank'>#{clsLabel}</a>")
+          - ont_acronym = cls.links['ontology']
+          - ont_name = cls.links['ontology']
+          - ont_link = cls.links['ontology']
+          - got_external_mappings = true
+          - map_id = map.id.to_s.split("/").last
+          %tr.human{:id => map_id}
+            %td{:class => 'delete_mappings_column', :style => "padding: 6px 12px;"}
+              - if map.id && !map.id.empty? && session[:user] && (session[:user].id.to_i == map.creator || session[:user].admin?)
+                = check_box_tag :delete_mapping_checkbox, map.id
+            %td
+              -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
+              = cls_link
+            %td
+              %a{:href => ont_link, :target => "_blank"}= ont_name
+            %td
+              #{map.source} #{(map.process || {})[:source_name]}
+              - if is_translation(map.process["relation"])
+                %img{:src => asset_path('sifr/english_language_flag.png'), :style => "padding: 5px", :align => "right", :title => "Traduction"}
+            %td
+              - map.process["relation"].each do |relation|
+                = get_prefixed_uri(relation)
+                %br/
+    - if got_external_mappings == false
+      %tr
+        %td{:class => 'delete_mappings_column', :style => "display: none;"}
+        %td{:colspan => "4"} There are currently no external mappings for this class.
 
 :javascript
   jQuery(document).ready(function(){

@@ -4,10 +4,11 @@
 // To get around this, we re-calculate based on the mapping table size
 
 function updateMappingCount() {
-  var rows = jQuery("#concept_mappings_table tbody tr"), mappings_count = null;
-  rows.first().children("td").each(function() {
-    if (this.innerHTML.indexOf("no mappings") > -1) {
-      mappings_count = 0;
+  // Go through every tr in the concept mappings tables. Add 1 to the count if the tr is not filled with "currently no mappings"
+  var rows = jQuery("#concept_mappings_table tbody tr"), mappings_count = 0;
+  rows.each(function() {
+    if (this.innerHTML.indexOf("currently no") < 0) {
+      mappings_count++;
     }
   });
   if (mappings_count === null) {
@@ -54,6 +55,8 @@ jQuery(document).bind("tree_changed", updateMappingCount);
 // in turn, is set by /app/controllers/application_controller.check_delete_mapping_permission()
 function deleteMappings() {
   var mappingsToDelete = [], params;
+  var ontology_id = jQuery(document).data().bp.ont_viewer.ontology_id;
+  var concept_id = jQuery(document).data().bp.ont_viewer.concept_id;
 
   jQuery("#delete_mappings_error").html("");
   jQuery("#delete_mappings_spinner").show();
@@ -79,6 +82,7 @@ function deleteMappings() {
     success: function(data){
       var rowId;
       jQuery("#delete_mappings_spinner").hide();
+      var map_id;
       for (map_id in data.success) {
         rowId = data.success[map_id].replace(/.*\//, "");
         jQuery("#" + rowId).html("").hide();

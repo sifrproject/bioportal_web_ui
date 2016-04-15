@@ -38,8 +38,7 @@
     },
     
     :ontologies => {
-      :intro => 'tyle="padding:10px;margin:10px; border:1px solid #EFEFEF;">
-        <b>Access all ontologies that are available in ' + $ORG_SITE + ':</b>
+      :intro => '<b>Access all ontologies that are available in ' + $ORG_SITE + ':</b>
         You can filter this list by category to display ontologies relevant for a certain domain. 
         You can also filter ontologies that belong to a certain group. <a href = "feed://syndication/rss">Subscribe to the ' + $ORG_SITE + ' RSS feed</a>
         to receive alerts for submissions of new ontologies, new versions of ontologies, new notes, and new projects. You can subscribe to feeds for a specific ontology at 
@@ -108,22 +107,6 @@
       </table>',
       
     :stats => 
-      '<legend>Statistics</legend>
-       <table class="minimal" width="100%">
-         <tbody>
-           <tr>
-             <td>Ontologies</td>
-             <td></td>
-           </tr>
-           <tr>
-             <td>Terms</td>
-             <td></td>
-           </tr>
-           <tr>
-             <td>Resources Indexed</td>
-             <td></td>
-           </tr>
-         </tbody>
-       </table>'
+      ''
   }
 }

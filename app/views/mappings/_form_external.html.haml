@@ -1,0 +1,92 @@
+- ontology_from_id = @ontology_from.acronym.nil? ? "all" : @ontology_from.acronym
+:javascript
+  var BP_INTERNAL_SEARCH_SERVER = "#{$UI_URL}";
+:css
+  div.ontology_picker_single_container div.chzn-container {
+    width: 415px !important;
+  }
+
+  div.ontology_picker_single_container div.chzn-drop {
+    width: 413px !important;
+  }
+
+  div.ontology_picker_single_container div.chzn-search input {
+    width: 378px !important;
+  }
+
+  #facebox .content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+#create_mapping_container{:style => "height: 365px; width: 950px;"}
+  #mapping_from{:style => "float: left; width: 50%; height: 100%;"}
+    %div{:style => "float: right; border-right: thin solid lightGray; margin: 0 10px 0 20px; height: 360px; clear: none;"}
+    #mapping_from_content{:style => "padding: 1em;"}
+      %h2 Mapping from Class
+      = render :partial => "shared/ontology_picker_single", :locals => {:picker_id => "map_from_picker", :selected => @ontology_from.acronym}
+      = text_field_tag :map_from, @concept_from.prefLabel, :class => "bp_internal_form_complete-#{ontology_from_id}-name search_autocomplete", :placeholder => "Start typing to select a class", :style => "width: 415px; margin-top: 5px;"
+      = hidden_field_tag :map_from_bioportal_full_id, @concept_from.id
+      = hidden_field_tag :map_from_bioportal_ontology_id, @ontology_from.acronym
+      #map_from_concept_details{:style => "display: none; margin-top: 2em;"}
+        %h2{:style => "margin-bottom: 5px;"} Class Details
+        #map_from_concept_details_table{:style => "height: 200px; overflow: auto; border: thin solid lightgray"}
+          %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "padding: 5px;"}/
+  #mapping_to{:style => "width: 50%; float: right;"}
+    #mapping_to_content{:style => "padding: 1em;"}
+      %h2 To External Class
+      %p{style: "padding-left: 10px; margin-bottom: 0;", id: "display_options"}
+        %input{type: "radio", name: "mapping_radio", class: "mapping_radio", value: "interportal", id: "interportal_form", autocomplete: "off"}
+          %label{for: "interportal_form"} Interportal
+        %input{type: "radio", name: "mapping_radio", class: "mapping_radio", value: "external", id: "external_form", autocomplete: "off"}
+          %label{for: "external_form"} External
+      %div{:id => "interportal_form", :class => "mapping_form", :style => "display: none;"}
+        %h4{:style => "margin-top: 5px;"} InterPortal
+        - options = @interportal_options
+        = select_tag :map_to_interportal, options_for_select(options, 0), style: "width: 80px;"
+        %h4{:style => "margin-top: 5px;"} Ontology (acronym)
+        = text_field_tag :map_to_interportal_ontology, nil, placeholder: 'Enter the ontology ACRONYM', :style => "width: 415px; margin-top: 5px;"
+        %h4{:style => "margin-top: 5px;"} Class
+        = text_field_tag :map_to_interportal_class, nil, placeholder: 'Enter the class URI', :style => "width: 415px; margin-top: 5px;"
+      %div{:id => "external_form", :class => "mapping_form", :style => "display: none;"}
+        %h4{:style => "margin-top: 5px;"} Ontology
+        = text_field_tag :map_to_external_ontology, nil, placeholder: 'Enter the ontology URI', :style => "width: 415px; margin-top: 5px;"
+        %h4{:style => "margin-top: 5px;"} Class
+        = text_field_tag :map_to_external_class, nil, placeholder: 'Enter the class URI', :style => "width: 415px; margin-top: 5px;"
+  #mapping_options{:style => "margin: 13px; clear: both;"}
+    = text_area(:mapping, :comment, :class => "", :placeholder => "Comment", :style => "padding: 3px; height: 3.2em; width: 100%;")
+    %br/
+    %div{:style => "height: 50px; width: 100%;"}
+      = submit_tag "Create Mapping", :class => "link_button", :style => "margin-top: 10px;", :id => "create_external_mapping_button"
+      %span#create_mapping_spinner{:style => "display: none;"}= loading_spinner
+      %span.popup_container{:style => "padding-left: 1.7em; margin-top: 15px;"}
+        %span.bp_popup_link_container
+          %a#create_mapping_advanced.bp_popup_link{:href => "javascript:void(0);"} advanced options
+        #create_mapping_advanced_options.bp_popup_mapping_list{:style => "display: none;"}
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#exactMatch", :checked => "checked"} Identical (skos:exactMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#closeMatch"} Similar (skos:closeMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#relatedMatch"} Related (skos:relatedMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#broadMatch"} Broader (skos:broadMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://www.w3.org/2004/02/skos/core#narrowMatch"} Narrower (skos:narrowMatch)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://purl.org/linguistics/gold/translation"} Translation (gold:translation)
+          %br/
+          %label
+            %input{:type => "checkbox", :name => "mapping_relations", :value => "http://purl.org/linguistics/gold/freeTranslation"} Free Translation (gold:freeTranslation)
+          %br/
+          Other:&nbsp;
+          = text_field_tag :relation_text_box, nil, placeholder: 'Enter the relation URI', :style => "margin-top: 5px; width: 230px; "
+      #create_mapping_error{:style => "color: red; margin: 7px 0;"}
+      #create_mapping_success_messages{:style => "float: right; clear: both; margin: -35px 0 15px;"}
+
+:javascript
+  bp_internal_formComplete_setup_functions();

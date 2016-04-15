@@ -75,7 +75,7 @@
         <div class="checkbox_list">
           <span ng-repeat="category in categories">
             <input type="checkbox" checklist-model="facets.categories.active" checklist-value="category.id" name="category" id="category_{{category.acronym}}" ng-disabled="!facet_counts['categories'][category.id]">
-            <label for="category_{{category.acronym}}" ng-class="{facet_disabled: !facet_counts['categories'][category.id]}">{{category.name}}</label>
+            <label for="category_{{category.acronym}}" title="{{category.description}}" ng-class="{facet_disabled: !facet_counts['categories'][category.id]}">{{category.name}}</label>
             <span class="smaller">({{facet_counts["categories"][category.id] || 0}})</span>
             <br/>
           </span>
@@ -87,7 +87,7 @@
         <div class="checkbox_list">
           <span ng-repeat="group in groups">
             <input type="checkbox" checklist-model="facets.groups.active" checklist-value="group.id" name="group" id="group_{{group.acronym}}" ng-disabled="!facet_counts['groups'][group.id]">
-            <label for="group_{{group.acronym}}" title="{{group.name}}" ng-class="{facet_disabled: !facet_counts['groups'][group.id]}">{{group.acronym}}</label>
+            <label for="group_{{group.acronym}}" title="{{group.name}} : {{group.description}}" ng-class="{facet_disabled: !facet_counts['groups'][group.id]}">{{group.acronym}}</label>
             <span class="smaller">({{facet_counts["groups"][group.id] || 0}})</span>
             <br/>
           </span>

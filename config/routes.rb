@@ -10,6 +10,7 @@ BioportalWebUi::Application.routes.draw do
 
   resources :reviews
 
+  get '/mappings/new_external' => 'mappings#new_external'
   resources :mappings
 
   resources :margin_notes
