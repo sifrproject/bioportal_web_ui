@@ -29,30 +29,33 @@ module OntologiesHelper
     html = []
     begin
       metadata_list.each do |metadata|
-        # different html build if list or single value
-        if sub.send(metadata).kind_of?(Array)
-          if sub.send(metadata).any?
-            html << content_tag(:tr) do
-              concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              metadata_array = []
-              sub.send(metadata).each do |metadata_value|
-                if metadata_value.to_s.start_with?("http:") || metadata_value.to_s.start_with?("https:")
-                  metadata_array.push("<a href=\"#{metadata_value.to_s}\" target=\"_blank\">#{metadata_value.to_s}</a>")
-                else
-                  metadata_array.push(metadata_value)
+        # Don't display documentation, publication, homepage, status and description, they are already in main details
+        if !metadata.eql?("status") && !metadata.eql?("description") && !metadata.eql?("documentation") && !metadata.eql?("publication") && !metadata.eql?("homepage")
+          # different html build if list or single value
+          if sub.send(metadata).kind_of?(Array)
+            if sub.send(metadata).any?
+              html << content_tag(:tr) do
+                concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                metadata_array = []
+                sub.send(metadata).each do |metadata_value|
+                  if metadata_value.to_s.start_with?("http:") || metadata_value.to_s.start_with?("https:")
+                    metadata_array.push("<a href=\"#{metadata_value.to_s}\" target=\"_blank\">#{metadata_value.to_s}</a>")
+                  else
+                    metadata_array.push(metadata_value)
+                  end
                 end
+                concat(content_tag(:td, raw(metadata_array.join(", "))))
               end
-              concat(content_tag(:td, raw(metadata_array.join(", "))))
             end
-          end
-        else
-          if !sub.send(metadata).nil?
-            html << content_tag(:tr) do
-              concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
-              if sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")
-                concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
-              else
-                concat(content_tag(:td, raw(sub.send(metadata).to_s)))
+          else
+            if !sub.send(metadata).nil?
+              html << content_tag(:tr) do
+                concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                if sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")
+                  concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
+                else
+                  concat(content_tag(:td, raw(sub.send(metadata).to_s)))
+                end
               end
             end
           end
