@@ -166,7 +166,7 @@
     %th
       Viewing Restrictions
     %td
-      - view_restiction_options = [["Public", "public"], ["Private", "private"], ["Licensed", "licensed"]]
+      - view_restiction_options = [["Public", "public"], ["Private", "private"]]
       - selected = @ontology.private? ? "private" : ""
       - selected = @ontology.licensed? ? "licensed" : selected
       - display_private = @ontology.private? ? "" : "hidden"

@@ -28,7 +28,8 @@ function parseReportDate(dateStr) {
   if (ampm == "PM" && hours < 12) hours = hours + 12;
   if (ampm == "AM" && hours == 12) hours = hours - 12;
   var strHours = hours.toString();
-  var dateObj = new Date(dateArr[5], dateArr[3], dateArr[4], strHours, dateArr[8], "00", "00");
+  var strMonth = (Number(dateArr[3]) - 1).toString();
+  var dateObj = new Date(dateArr[5], strMonth, dateArr[4], strHours, dateArr[8], "00", "00");
   return dateObj.toLocaleString();
 }
 

@@ -1,0 +1,50 @@
+=javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"
+=javascript_include_tag "d3pie.min"
+=javascript_include_tag "d3.layout.cloud"
+
+- @title = "Landscape"
+%div{:style => "padding: 1em;", :align => "center"}
+  %h1 Landscape
+
+  %div#naturalLanguagePieChartDiv
+
+  %hr
+  %h1 Properties used in AgroPortal
+
+  %div
+    %div#prefLabelPropertyPieChartDiv{:style => "float: left; width: 50%;"}
+    %div#synonymPropertyPieChartDiv{:style => "float: right; width: 50%;"}
+
+  %div
+    %div#definitionPropertyPieChartDiv{:style => "float: left; width: 50%;"}
+    %div#authorPropertyPieChartDiv{:style => "float: right; width: 50%;"}
+
+  //%div#cloudChart
+
+  %hr
+  %div
+    %h1 Average metrics
+
+    %table.minimal.align-right{width: "30%"}
+      %tbody
+        - for metric in @metrics_average
+          %tr
+            %td
+              = metric[:label]
+            %td
+              = metric[:average]
+
+:javascript
+  // Get the data to generate the pie chart for naturalLanguages
+  var naturalLanguagePieJson = #{@natural_language_json_pie}
+  // Get the data to generate the cloud chart for naturalLanguages
+  var cloudJson = #{@natural_language_json_cloud}
+  // Get the data for the used properties pie charts
+  var prefLabelPieJson = #{@prefLabelProperty_json_pie}
+  var synonymPieJson = #{@synonymProperty_json_pie}
+  var definitionPieJson = #{@definitionProperty_json_pie}
+  var authorPieJson = #{@authorProperty_json_pie}
+
+
+/ This javascript needs to be called after pieJson and cloudJson have been set
+=javascript_include_tag "bp_landscape"
