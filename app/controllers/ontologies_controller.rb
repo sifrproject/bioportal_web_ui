@@ -238,6 +238,7 @@ class OntologiesController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
     redirect_to_home unless session[:user] && @ontology.administeredBy.include?(session[:user].id) || session[:user].admin?
     @categories = LinkedData::Client::Models::Category.all
+    @groups = LinkedData::Client::Models::Group.all
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
   end

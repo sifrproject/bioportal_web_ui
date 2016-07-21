@@ -54,6 +54,7 @@
     jQuery("#ontology_administeredBy").chosen();
     jQuery("#ontology_acl").chosen();
     jQuery("#ontology_hasDomain").chosen();
+    jQuery("#ontology_group").chosen();
 
     // Make acronym upcase as you type
     jQuery("#ontology_acronym").on('input', function(e) {
@@ -188,6 +189,14 @@
       - cat_select = @categories.sort{|a,b| a.name <=> b.name}.map{|c| [c.name, c.id]}
       = f.hidden_field(:hasDomain, {value: "", id: "ontology_hasDomain_empty_select_hack", name: "ontology[hasDomain][]"})
       = f.select(:hasDomain, cat_select, {selected: @ontology.hasDomain}, {multiple: true, :"data-placeholder" => "Select category (domain)"})
+
+  %tr
+    %th
+      Groups:
+    %td
+      - group_select = @groups.sort{|a,b| a.name <=> b.name}.map{|c| [c.name, c.id]}
+      = f.hidden_field(:group, {value: "", id: "ontology_group_empty_select_hack", name: "ontology[group][]"})
+      = f.select(:group, group_select, {selected: @ontology.group}, {multiple: true, :"data-placeholder" => "Select group"})
 
   %tr
     %th
