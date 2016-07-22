@@ -287,6 +287,7 @@ class OntologiesController < ApplicationController
       @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
     end
     @categories = LinkedData::Client::Models::Category.all
+    @groups = LinkedData::Client::Models::Group.all
     @user_select_list = LinkedData::Client::Models::User.all.map {|u| [u.username, u.id]}
     @user_select_list.sort! {|a,b| a[1].downcase <=> b[1].downcase}
   end

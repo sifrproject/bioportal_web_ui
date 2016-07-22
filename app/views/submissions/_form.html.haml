@@ -312,6 +312,21 @@
         Publisher
       %td
         = text_field :submission, :publisher, value: @submission.publisher
+    %tr
+      %th
+        License
+      %td
+        = text_field :submission, :license, value: @submission.license
+    %tr
+      %th
+        Has Ontology Syntax
+      %td
+        = text_field :submission, :hasOntologySyntax, value: @submission.hasOntologySyntax
+    %tr
+      %th
+        Has Formality Level
+      %td
+        = text_field :submission, :hasFormalityLevel, value: @submission.hasFormalityLevel
 
     %tr
       %td{:align => "right", :colspan => "2"}
