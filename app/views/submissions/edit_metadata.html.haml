@@ -1,0 +1,32 @@
+- @title = "Edit submission metadata"
+
+%div{:style => "padding: 1em;"}
+  %h1 Add submission metadata
+
+  <!-- Calls the same page with "POST" (redirect to edit_metadata in sub controller) -->
+  = form_tag do
+
+    - for attr in @metadata
+      - if attr["extracted"]
+        %div{:style => "padding-top: 10px;"}
+          = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
+          - if attr["enforce"].include?("integer")
+            = number_field_tag(attr["attribute"])
+          - elsif attr["enforce"].include?("date_time")
+            = date_field_tag(attr["attribute"])
+          - elsif attr["enforce"].include?("uri")
+            = url_field_tag(attr["attribute"])
+            - if attr["enforce"].include?("list")
+              = url_field_tag(attr["attribute"] + "1")
+              = url_field_tag(attr["attribute"] + "2")
+          - elsif attr["enforce"].include?("boolean")
+            = select_tag(attr["attribute"], "<option>none</option><option>true</option><option>false</option>".html_safe)
+          - else
+            = text_field_tag(attr["attribute"])
+            - if attr["enforce"].include?("list")
+              = text_field_tag(attr["attribute"] + "1")
+              = text_field_tag(attr["attribute"] + "2")
+
+
+    %br
+    = submit_tag("Add metadata")

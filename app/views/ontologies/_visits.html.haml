@@ -1,4 +1,6 @@
 - months_to_show = 18
+- if visits_data[:labels].length < months_to_show
+  - months_to_show = visits_data[:labels].length
 #visits_content{:style => "margin: 2em 1em 0;"}
   %div{:style => "clear:both;"}
   %div{:style => "width: 100%;"}
@@ -25,11 +27,5 @@
 
     jQuery(document).data().bp.ont_chart = {};
     jQuery(document).data().bp.ont_chart.scaleLabel = "<%=' ' + numberWithCommas(value)%>";
-    if (#{months_to_show} > #{visits_data[:labels].length}) {
-      jQuery(document).data().bp.ont_chart.visitsLabels = #{visits_data[:labels][0..-1].to_json};
-      jQuery(document).data().bp.ont_chart.visitsData = #{visits_data[:visits][0..-1].to_json};
-    } else {
-      jQuery(document).data().bp.ont_chart.visitsLabels = #{visits_data[:labels][-1-months_to_show..-1].to_json};
-      jQuery(document).data().bp.ont_chart.visitsData = #{visits_data[:visits][-1-months_to_show..-1].to_json};
-    }
-
+    jQuery(document).data().bp.ont_chart.visitsLabels = #{visits_data[:labels][1-months_to_show..-1].to_json};
+    jQuery(document).data().bp.ont_chart.visitsData = #{visits_data[:visits][1-months_to_show..-1].to_json};

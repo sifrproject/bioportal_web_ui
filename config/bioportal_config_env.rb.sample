@@ -155,12 +155,17 @@ $FLEXOVIZ_APIKEY = ""
 #$BIOMIXER_URL = "http://bioportal-integration.bio-mixer.appspot.com"
 $BIOMIXER_URL = "http://#{$SITE_URL}/BioMixer"
 
+# Array with all the additional ontology metadata to display in the ontology details
+$ADDITIONAL_ONTOLOGY_METADATA = ["naturalLanguage", "hasLicense", "notes", "modificationDate", "URI", "hasContributor", "hasCreator", "endorsedBy", "hasDomain",
+                                 "keyClasses", "keywords", "isOfType", "knowUsage", "designedForOntologyTask", "hasFormalityLevel", "usedImports", "usedKnowledgeRepresentationParadigm",
+                                 "usedOntologyEngineeringMethodology", "usedOntologyEngineeringTool"]
+
 ##
 # Custom Ontology Details
 # Custom details can be added on a per ontology basis using a key/value pair as columns of the details table
 #
 # Example:
-# $ADDITIONAL_ONTOLOGY_DETAILS = { 1000 => { "Additional Detail" => "Text to be shown in the right-hand column." } }
+# $ADDITIONAL_ONTOLOGY_DETAILS = { "STY" => { "Additional Detail" => "Text to be shown in the right-hand column." } }
 ##
 $ADDITIONAL_ONTOLOGY_DETAILS = {}
 

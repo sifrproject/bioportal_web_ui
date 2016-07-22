@@ -55,7 +55,7 @@ end
 
 group :development do
     #Capistrano
-    gem 'capistrano', '~> 3.4.0', require: false
+    gem 'capistrano', '~> 3.4.1', require: false
     # rails specific capistrano funcitons
     gem 'capistrano-rails', '~> 1.1.0', require: false
     # integrate bundler with capistrano

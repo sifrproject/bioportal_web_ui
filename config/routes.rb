@@ -1,5 +1,6 @@
 BioportalWebUi::Application.routes.draw do
 
+
   root :to => 'home#index'
 
   resources :notes, constraints: { id: /.+/ }
@@ -35,6 +36,8 @@ BioportalWebUi::Application.routes.draw do
 
   resources :ncbo_annotatorplus
 
+  resources :landscape
+
   resources :virtual_appliance
 
   get '' => 'home#index'
@@ -66,6 +69,7 @@ BioportalWebUi::Application.routes.draw do
   match '/ontologies/:ontology_id/submissions' => 'submissions#create', :ontology_id => /.+/, via: [:get, :post]
   get '/ontologies/:acronym/classes/:purl_conceptid' => 'ontologies#show', :purl_conceptid => 'root'
   get '/ontologies/:acronym/:purl_conceptid' => 'ontologies#show'
+  match '/ontologies/:acronym/submissions/:id/edit_metadata' => 'submissions#edit_metadata', via: [:get, :post]
 
   # Analytics
   get '/analytics/:action' => 'analytics#(?-mix:search_result_clicked|user_intention_surveys)'

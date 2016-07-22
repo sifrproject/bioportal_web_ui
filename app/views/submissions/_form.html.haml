@@ -308,5 +308,11 @@
       %td
         = text_field :submission, :publication, value: @submission.publication
     %tr
+      %th
+        Publisher
+      %td
+        = text_field :submission, :publisher, value: @submission.publisher
+
+    %tr
       %td{:align => "right", :colspan => "2"}
         = submit_tag button_text
