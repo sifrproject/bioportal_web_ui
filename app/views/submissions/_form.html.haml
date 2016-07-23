@@ -321,12 +321,12 @@
       %th
         Has Ontology Syntax
       %td
-        = text_field :submission, :hasOntologySyntax, value: @submission.hasOntologySyntax
+        = select_tag :hasOntologySyntax, options_for_select(["none"].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), 0)
     %tr
       %th
         Has Formality Level
       %td
-        = text_field :submission, :hasFormalityLevel, value: @submission.hasFormalityLevel
+        = select_tag :hasFormalityLevel, options_for_select(["none"].concat($FORMALITY_LEVELS), 0)
 
     %tr
       %td{:align => "right", :colspan => "2"}

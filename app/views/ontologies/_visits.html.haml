@@ -1,6 +1,4 @@
 - months_to_show = 18
-- if visits_data[:labels].length < months_to_show
-  - months_to_show = visits_data[:labels].length
 #visits_content{:style => "margin: 2em 1em 0;"}
   %div{:style => "clear:both;"}
   %div{:style => "width: 100%;"}
@@ -11,6 +9,8 @@
       - if visits_data
         %a{href: @ontology.links["analytics"] + "?apikey=#{get_apikey}&format=csv", style: "font-size: smaller;", target: "_blank"} Download as CSV
     - if visits_data
+      - if visits_data[:labels].length < months_to_show
+        - months_to_show = visits_data[:labels].length
       %div#visits_chart_container
         %canvas#visits_chart{style: "width: 100% !important; max-width: 600px; height: 300 !important;"}
     - else

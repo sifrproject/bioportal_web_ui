@@ -1,4 +1,4 @@
-# config valid only for Capistrano 3+
+# config valid only for Capistrano 3.1
 lock '3.4.1'
 
 set :application, 'bioportal_web_ui'
