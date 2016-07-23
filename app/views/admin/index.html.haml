@@ -10,20 +10,24 @@
       %span.report_date_generated
       %a#refresh_report_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only", :style => "margin-left:11px;"}
         %span.ui-button-text{:class => "report_date_generated_button"}
-    %td{:valign => "top", :rowspan => 2}
+    %td{:valign => "top", :rowspan => 3}
       %div#progress_message{:class => "alert-box progress"}
       %div#success_message{:class => "alert-box success"}
       %div#error_message{:class => "alert-box error"}
   %tr
     %td{:valign => "top", :style => "white-space:nowrap;"}
       %a#flush_memcache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
-        %span.ui-button-text Flush UI Cache
+        %span.ui-button-text{:style => "width:150px;"} Flush UI Cache
     %td{:valign => "top", :style => "white-space:nowrap;"}
       %a#reset_memcache_connection_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
-        %span.ui-button-text Reset UI Cache Connection
+        %span.ui-button-text{:style => "width:150px;"} Reset UI Cache Connection
+  %tr
     %td{:valign => "top", :style => "white-space:nowrap;"}
-      %a#flush_backend_cache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
-        %span.ui-button-text Flush Backend Cache
+      %a#flush_goo_cache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
+        %span.ui-button-text{:style => "width:150px;"} Flush Goo Cache
+    %td{:valign => "top", :style => "white-space:nowrap;"}
+      %a#flush_http_cache_action{:href => "javascript:;", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
+        %span.ui-button-text{:style => "width:150px;"} Flush HTTP Cache
 %p.tab_description{:style => "clear:both;"}
 .ontologies_list_container
   %table#adminOntologies.zebra{:cellpadding => "0", :cellspacing => "0", :width => "100%"}

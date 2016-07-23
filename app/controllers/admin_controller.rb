@@ -81,14 +81,26 @@ class AdminController < ApplicationController
     render :json => response
   end
 
-  def clear_backend_cache
+  def clear_goo_cache
     response = {errors: '', success: ''}
 
     begin
-      response_raw = LinkedData::Client::HTTP.post("#{ADMIN_URL}clear_backend_cache", params, raw: true)
-      response[:success] = "Backend cache successfully flushed"
+      response_raw = LinkedData::Client::HTTP.post("#{ADMIN_URL}clear_goo_cache", params, raw: true)
+      response[:success] = "Goo cache successfully flushed"
     rescue Exception => e
-      response[:errors] = "Problem flushing the backend cache - #{e.class}: #{e.message}"
+      response[:errors] = "Problem flushing the Goo cache - #{e.class}: #{e.message}"
+    end
+    render :json => response
+  end
+
+  def clear_http_cache
+    response = {errors: '', success: ''}
+
+    begin
+      response_raw = LinkedData::Client::HTTP.post("#{ADMIN_URL}clear_http_cache", params, raw: true)
+      response[:success] = "HTTP cache successfully flushed"
+    rescue Exception => e
+      response[:errors] = "Problem flushing the HTTP cache - #{e.class}: #{e.message}"
     end
     render :json => response
   end

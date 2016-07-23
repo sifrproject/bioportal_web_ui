@@ -4,14 +4,14 @@
   .greyed{
     color:#CFCFCF;
   }
-#social_networking{:style => "position: absolute; right: 7px; padding-top: 4px;"}
-  %div{:style => "float:right;", :title => "Cite BioPortal"}
-    %a.pop_window.help_link{:href => "/help#How_to_cite_NCBO_and_BioPortal", :target => "_blank"}
+#social_networking
+  %div{title: "Cite BioPortal"}
+    %a.pop_window.help_link{href: "/help#How_to_cite_NCBO_and_BioPortal", target: "_blank"}
       %span.ui-icon.ui-icon-note
-    %a.pop_window{:href => "/help#How_to_cite_NCBO_and_BioPortal", :target => "_blank"}
+    %a.pop_window{href: "/help#How_to_cite_NCBO_and_BioPortal", target: "_blank"}
       Cite Us
-  %div{:style => "float:right;"}= t('home.facebook_button').html_safe
-  %div{:style => "float:right;"}= t('home.twitter_button').html_safe
+  %div= t('home.facebook_button').html_safe
+  %div= t('home.twitter_button').html_safe
 - unless $FRONT_NOTICE.nil? || $FRONT_NOTICE.empty? || cookies[:front_page_notice_closed].eql?("true")
   :javascript
     function close_message(){
@@ -24,10 +24,10 @@
     = $FRONT_NOTICE
     \&nbsp;&nbsp;
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
-#release_info{style: "position: absolute; right: 7px; padding-top: 38px; font-size: 1.3em;"}
+#release_info
   Current Release: 
   = link_to $RELEASE_VERSION, "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"
-%div{:style => "padding:10px;margin:10px;"}
+%div{style: "padding:10px; margin:10px;"}
   - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
   - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"
   = t('home.intro').html_safe.nil? || t('home.intro').html_safe.empty? ? bp_welcome.html_safe + help.html_safe : t('home.intro').html_safe

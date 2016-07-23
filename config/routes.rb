@@ -53,7 +53,8 @@ BioportalWebUi::Application.routes.draw do
   get '/layout_partial/:partial' => 'home#render_layout_partial'
 
   # Error pages
-  match ':status', to: 'errors#show', constraints: {status: /\d{3}/}, via: :all
+  match "/404", to: "errors#not_found", via: :all
+  match "/500", to: "errors#internal_server_error", via: :all
 
   # Analytics endpoint
   get '/analytics' => 'analytics#track'
@@ -124,7 +125,8 @@ BioportalWebUi::Application.routes.draw do
   # Admin
   match '/admin/clearcache' => 'admin#clearcache', via: [:post]
   match '/admin/resetcache' => 'admin#resetcache', via: [:post]
-  match '/admin/clear_backend_cache' => 'admin#clear_backend_cache', via: [:post]
+  match '/admin/clear_goo_cache' => 'admin#clear_goo_cache', via: [:post]
+  match '/admin/clear_http_cache' => 'admin#clear_http_cache', via: [:post]
   match '/admin/ontologies_report' => 'admin#ontologies_report', via: [:get]
   match '/admin/refresh_ontologies_report' => 'admin#refresh_ontologies_report', via: [:post]
   match '/admin/ontologies' => 'admin#delete_ontologies', via: [:delete]

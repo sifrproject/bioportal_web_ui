@@ -294,16 +294,28 @@ FlushMemcache.act = function() {
   new FlushMemcache().ajaxCall();
 };
 
-function ClearBackendCache() {
-  AjaxAction.call(this, "POST", "FLUSHING OF BACKEND CACHE", "clear_backend_cache", false);
+function ClearGooCache() {
+  AjaxAction.call(this, "POST", "FLUSHING OF GOO CACHE", "clear_goo_cache", false);
   this.setConfirmMsg('');
 }
 
-ClearBackendCache.prototype = Object.create(AjaxAction.prototype);
-ClearBackendCache.prototype.constructor = ClearBackendCache;
+ClearGooCache.prototype = Object.create(AjaxAction.prototype);
+ClearGooCache.prototype.constructor = ClearGooCache;
 
-ClearBackendCache.act = function() {
-  new ClearBackendCache().ajaxCall();
+ClearGooCache.act = function() {
+  new ClearGooCache().ajaxCall();
+};
+
+function ClearHttpCache() {
+  AjaxAction.call(this, "POST", "FLUSHING OF HTTP CACHE", "clear_http_cache", false);
+  this.setConfirmMsg('');
+}
+
+ClearHttpCache.prototype = Object.create(AjaxAction.prototype);
+ClearHttpCache.prototype.constructor = ClearHttpCache;
+
+ClearHttpCache.act = function() {
+  new ClearHttpCache().ajaxCall();
 };
 
 function DeleteSubmission(ontology, submissionId) {
@@ -689,9 +701,14 @@ jQuery(document).ready(function() {
     ResetMemcacheConnection.act();
   });
 
-  // onclick action for "Flush Backend Cache" button
-  jQuery("#flush_backend_cache_action").click(function() {
-    ClearBackendCache.act();
+  // onclick action for "Flush Goo Cache" button
+  jQuery("#flush_goo_cache_action").click(function() {
+    ClearGooCache.act();
+  });
+
+  // onclick action for "Flush HTTP Cache" button
+  jQuery("#flush_http_cache_action").click(function() {
+    ClearHttpCache.act();
   });
 
   // onclick action for "Refresh Report" link
