@@ -1,7 +1,19 @@
 
-$FORMALITY_LEVELS = ["Name authority list", "Classification scheme", "Dictionary", "Encyclopedia", "Glossary",
-                     "Lexical Database", "Ontology", "Subject heading scheme", "Taxonomy", "Terminology", "Thesaurus", "Topic Tree",
-                     "Gazetteer", "RDFS description vocabulary", "Metadata schema", "Application profile"]
+$FORMALITY_LEVELS = {
+  "http://w3id.org/nkos/nkostype#name_authority_list" => "Name authority list",
+  "http://w3id.org/nkos/nkostype#classification_schema" => "Classification scheme",
+  "http://w3id.org/nkos/nkostype#dictionary" => "Dictionary",
+  #"" => "Encyclopedia",
+  "http://w3id.org/nkos/nkostype#glossary" => "Glossary",
+  #"" => "Lexical Database",
+  "http://w3id.org/nkos/nkostype#ontology" => "Ontology",
+  "http://w3id.org/nkos/nkostype#subject_heading_scheme" => "Subject heading scheme",
+  "http://w3id.org/nkos/nkostype#taxonomy" => "Taxonomy",
+  "http://w3id.org/nkos/nkostype#terminology" => "Terminology",
+  "http://w3id.org/nkos/nkostype#thesaurus" => "Thesaurus",
+  "eeee" => "Topic Tree",
+  "http://w3id.org/nkos/nkostype#gazetteer" => "Gazetteer"
+}
 
 $ONTOLOGY_SYNTAXES = {
   "http://www.w3.org/ns/formats/JSON-LD" => "JSON-LD",
