@@ -316,17 +316,28 @@
       %th
         License
       %td
-        = text_field :submission, :license, value: @submission.license
+        %div{:style => "float:left;width:50%;"}
+          = text_field :submission, :license, value: @submission.license
+        %div{:style => "float:right;width:50%;text-align:right;"}
+          Open property, use URI if possible
     %tr
       %th
         Has Ontology Syntax
       %td
-        = select_tag :hasOntologySyntax, options_for_select(["none"].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), 0)
+        %div{:style => "float:left;width:50%;"}
+          = select_tag :hasOntologySyntax, options_for_select(["none"].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), 0)
+        %div{:style => "float:right;width:50%;text-align:right;"}
+          Properties taken from
+          = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
     %tr
       %th
         Has Formality Level
       %td
-        = select_tag :hasFormalityLevel, options_for_select(["none"].concat($FORMALITY_LEVELS.collect{ |k, v| [v,k] }), 0)
+        %div{:style => "float:left;width:50%;"}
+          = select_tag :hasFormalityLevel, options_for_select(["none"].concat($FORMALITY_LEVELS.collect{ |k, v| [v,k] }), 0)
+        %div{:style => "float:right;width:50%;text-align:right;"}
+          Properties taken from
+          = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
 
     %tr
       %td{:align => "right", :colspan => "2"}
