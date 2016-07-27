@@ -322,7 +322,7 @@
           Open property, use URI if possible
     %tr
       %th
-        Has Ontology Syntax
+        Ontology Syntax
       %td
         %div{:style => "float:left;width:50%;"}
           = select_tag :hasOntologySyntax, options_for_select(["none"].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), 0)
