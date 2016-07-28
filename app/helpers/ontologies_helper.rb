@@ -19,23 +19,28 @@ module OntologiesHelper
   def additional_metadata(sub)
     # Get the list of metadata attribute from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
-    metadata_list = []
+    metadata_list = {}
+    # Get extracted metadata and put them in a hash with their label, if one, as value
     json_metadata.each do |metadata|
       if metadata["extracted"] == true
-        metadata_list << metadata["attribute"]
+        metadata_list[metadata["attribute"]] = metadata["label"]
       end
     end
 
     html = []
     begin
-      metadata_list.each do |metadata|
+      metadata_list.each do |metadata, label|
         # Don't display documentation, publication, homepage, status and description, they are already in main details
         if !metadata.eql?("status") && !metadata.eql?("description") && !metadata.eql?("documentation") && !metadata.eql?("publication") && !metadata.eql?("homepage")
           # different html build if list or single value
           if sub.send(metadata).kind_of?(Array)
             if sub.send(metadata).any?
               html << content_tag(:tr) do
-                concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                if label.nil?
+                  concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                else
+                  concat(content_tag(:th, label))
+                end
                 metadata_array = []
                 sub.send(metadata).each do |metadata_value|
                   if metadata_value.to_s.start_with?("http:") || metadata_value.to_s.start_with?("https:")
@@ -50,7 +55,11 @@ module OntologiesHelper
           else
             if !sub.send(metadata).nil?
               html << content_tag(:tr) do
-                concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                if label.nil?
+                  concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                else
+                  concat(content_tag(:th, label))
+                end
                 if sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")
                   concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
                 else

@@ -74,6 +74,9 @@ class SubmissionsController < ApplicationController
   def edit_metadata
 
     if request.get?
+      @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:acronym]).first
+      submissions = @ontology.explore.submissions
+      @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
       # Get the submission metadata from the REST API
       json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
       @metadata = json_metadata
