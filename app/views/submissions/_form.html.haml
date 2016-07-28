@@ -340,5 +340,15 @@
           = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
 
     %tr
+      %th
+        Natural Language
+      %td
+        %div{:style => "float:left;width:50%;"}
+          = text_field :submission, :naturalLanguage, value: @submission.naturalLanguage
+        %div{:style => "float:right;width:50%;text-align:right;"}
+          Language URI taken from
+          = link_to "lexvo", "http://www.lexvo.org", target: "_blank"
+
+    %tr
       %td{:align => "right", :colspan => "2"}
         = submit_tag button_text
