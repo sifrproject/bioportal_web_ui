@@ -55,7 +55,11 @@ module OntologiesHelper
           else
             if !sub.send(metadata).nil?
               html << content_tag(:tr) do
-                concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                if label.nil?
+                  concat(content_tag(:th, metadata.gsub(/(?=[A-Z])/, " ")))
+                else
+                  concat(content_tag(:th, label))
+                end
                 if sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")
                   concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
                 else
