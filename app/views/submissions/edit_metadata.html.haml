@@ -11,13 +11,13 @@
         - if attr["extracted"]
           - if @submission.send(attr["attribute"]).nil? || @submission.send(attr["attribute"]).empty?
             %tr
-              %th
+              %th{:style => "padding-bottom: 2%;"}
                 - if ["notes", "keywords", ].include?(attr["attribute"])
                   = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
                 - else
                   = label_tag(attr["attribute"], attr["attribute"])
                 = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
-              %td{:style => "padding-bottom: 1%;"}
+              %td{:style => "padding-bottom: 2%;"}
                 - if attr["enforce"].include?("integer")
                   = number_field_tag(attr["attribute"])
                 - elsif attr["enforce"].include?("date_time")
