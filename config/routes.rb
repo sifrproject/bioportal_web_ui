@@ -36,7 +36,7 @@ BioportalWebUi::Application.routes.draw do
 
   resources :ncbo_annotatorplus
 
-  resources :landscape
+  #resources :landscape
 
   resources :virtual_appliance
 
