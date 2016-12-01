@@ -67,6 +67,7 @@ class SubmissionsController < ApplicationController
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
     @ontology.update
     # TODO: really slow!
+    # Seems like we also have a "DalliError: Response error 3: Value too large" which means it is too big to be cached
     error_response = @submission.update
 
     if error_response

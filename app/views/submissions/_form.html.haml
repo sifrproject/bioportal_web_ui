@@ -354,6 +354,8 @@
           = select_tag :naturalLanguageSelect, options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] })
           = text_field :submission, :naturalLanguage, value: "none", :style => 'display:none;margin-top:7px;'
         %div{:style => "float:right;width:50%;text-align:right;"}
+          Add a natural language to the list
+          %br
           Consider using a
           = link_to "Lexvo URI", "http://www.lexvo.org", target: "_blank"
           with ISO639-3 code
