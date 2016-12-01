@@ -43,21 +43,30 @@ class SubmissionsController < ApplicationController
     @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
   end
 
+  # When editing a submission (called when submit "Edit submission information" form)
   def update
     # Make the contacts an array
     params[:submission][:contact] = params[:submission][:contact].values
     # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
     params[:submission][:hasOntologySyntax] = params[:hasOntologySyntax] if params[:hasOntologySyntax] != "none"
     params[:submission][:hasFormalityLevel] = params[:hasFormalityLevel] if params[:hasFormalityLevel] != "none"
+    params[:submission][:hasLicense] = params[:submission][:hasLicense] if params[:submission][:hasLicense] != "none"
 
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     submissions = @ontology.explore.submissions
     @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
 
+    # Add new language to naturalLanguage list
+    natural_languages = @submission.naturalLanguage
+    natural_languages = [] if natural_languages.nil?
+    natural_languages.push(params[:submission][:naturalLanguage]) if params[:submission][:naturalLanguage] != "none"
+    params[:submission][:naturalLanguage] = natural_languages
+
     @submission.update_from_params(params[:submission])
     # Update summaryOnly on ontology object
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
     @ontology.update
+    # TODO: really slow!
     error_response = @submission.update
 
     if error_response

@@ -151,7 +151,7 @@
                 The root concept of the concept tree is <b>owl:Thing</b>.
             %tr
               %th
-                Prefered Name Property
+                Preferred Name Property
                 %br/
                 %span.default_owl
                   default:
@@ -317,15 +317,21 @@
         License
       %td
         %div{:style => "float:left;width:50%;"}
-          = text_field :submission, :license, value: @submission.license
+          = select_tag :licenseSelect, options_for_select($LICENSES.collect{ |k, v| [v,k] })
+          = text_field :submission, :hasLicense, :style => 'display:none;margin-top:7px;'
         %div{:style => "float:right;width:50%;text-align:right;"}
-          Open property, use URI if possible
+          Consider using a
+          = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
+          %br
+          Consider using
+          = link_to "INRIA licentia", "http://licentia.inria.fr/", target: "_blank"
+          to choose your license
     %tr
       %th
         Ontology Syntax
       %td
         %div{:style => "float:left;width:50%;"}
-          = select_tag :hasOntologySyntax, options_for_select(["none"].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), 0)
+          = select_tag :hasOntologySyntax, options_for_select($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] })
         %div{:style => "float:right;width:50%;text-align:right;"}
           Properties taken from
           = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
@@ -334,7 +340,7 @@
         Has Formality Level
       %td
         %div{:style => "float:left;width:50%;"}
-          = select_tag :hasFormalityLevel, options_for_select(["none"].concat($FORMALITY_LEVELS.collect{ |k, v| [v,k] }), 0)
+          = select_tag :hasFormalityLevel, options_for_select($FORMALITY_LEVELS.collect{ |k, v| [v,k] })
         %div{:style => "float:right;width:50%;text-align:right;"}
           Properties taken from
           = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
@@ -344,12 +350,39 @@
         Natural Language
       %td
         %div{:style => "float:left;width:50%;"}
-          = text_field :submission, :naturalLanguage, value: @submission.naturalLanguage
+          = #text_field :submission, :naturalLanguage, value: @submission.naturalLanguage
+          = select_tag :naturalLanguageSelect, options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] })
+          = text_field :submission, :naturalLanguage, value: "none", :style => 'display:none;margin-top:7px;'
         %div{:style => "float:right;width:50%;text-align:right;"}
-          We recommand using
-          = link_to "Lexvo", "http://www.lexvo.org", target: "_blank"
-          URI with ISO639-3 codes
+          Consider using a
+          = link_to "Lexvo URI", "http://www.lexvo.org", target: "_blank"
+          with ISO639-3 code
+          %br
+          e.g.: http://lexvo.org/id/iso639-3/eng
 
     %tr
       %td{:align => "right", :colspan => "2"}
         = submit_tag button_text
+
+:javascript
+
+  $(function() {
+    $('#licenseSelect').change(function() {
+      if ($('#licenseSelect').val() == "other") {
+        $('#submission_hasLicense').val("");
+        $('#submission_hasLicense').show();
+      } else {
+        $('#submission_hasLicense').val($('#licenseSelect').val());
+        $('#submission_hasLicense').hide();
+      }
+    });
+    $('#naturalLanguageSelect').change(function() {
+      if ($('#naturalLanguageSelect').val() == "other") {
+        $('#submission_naturalLanguage').val("");
+        $('#submission_naturalLanguage').show();
+      } else {
+        $('#submission_naturalLanguage').val($('#naturalLanguageSelect').val());
+        $('#submission_naturalLanguage').hide();
+      }
+    });
+  })
