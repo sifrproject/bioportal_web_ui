@@ -3,6 +3,7 @@ class SubmissionsController < ApplicationController
   layout 'ontology'
   before_action :authorize_and_redirect, :only=>[:edit, :update, :create, :new, :edit_metadata]
 
+  # Called by create (what's the point of that?)
   def new
     @ontology = LinkedData::Client::Models::Ontology.get(CGI.unescape(params[:ontology_id])) rescue nil
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first unless @ontology
@@ -10,12 +11,19 @@ class SubmissionsController < ApplicationController
     @submission ||= LinkedData::Client::Models::OntologySubmission.new
   end
 
+  # Called when form to "Add submission" is submitted
   def create
     # Make the contacts an array
     params[:submission][:contact] = params[:submission][:contact].values
     # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
     params[:submission][:hasOntologySyntax] = params[:hasOntologySyntax] if params[:hasOntologySyntax] != "none"
     params[:submission][:hasFormalityLevel] = params[:hasFormalityLevel] if params[:hasFormalityLevel] != "none"
+    params[:submission][:hasLicense] = params[:submission][:hasLicense] if params[:submission][:hasLicense] != "none"
+
+    # Add new language to naturalLanguage list
+    natural_languages = []
+    natural_languages.push(params[:submission][:naturalLanguage]) if params[:submission][:naturalLanguage] != "none"
+    params[:submission][:naturalLanguage] = natural_languages
 
     @submission = LinkedData::Client::Models::OntologySubmission.new(values: params[:submission])
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
@@ -31,6 +39,7 @@ class SubmissionsController < ApplicationController
       else
         redirect_to "/ontologies/success/#{@ontology.acronym}"
       end
+      #Rails.logger.warn "ERRROR: #{@errors}"
       render "new"
     else
       redirect_to "/ontologies/success/#{@ontology.acronym}"
