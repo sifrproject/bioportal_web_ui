@@ -266,6 +266,7 @@ jQuery(document).ready(function() {
 
 // Parent class to ontology pages
 // We're using a monkeypatched function to setup prototyping, see bioportal.js
+// This make the call to get ontology concepts as a tree
 jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_name, nav_text, init) {
   this.id = id;
   this.location_path = location_path;
@@ -336,9 +337,9 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
       } else {
         var _this = this;
         var publishRetry = setInterval(function() {
-          console.log("retrying!!! " + _this.retrieved)
+          //console.log("retrying " + _this.retrieved)
           if (_this.retrieved) {
-            console.log("publishing!!!")
+            //console.log("publishing")
             _this.publishAction();
             clearInterval(publishRetry);
           }
@@ -356,7 +357,9 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
   // Setup AJAX page objects
   jQuery.bioportal.ont_pages = [];
 
-  jQuery.bioportal.ont_pages["classes"] = new jQuery.bioportal.OntologyPage("classes", "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id + "?p=classes&ajax=true" + jQuery(document).data().bp.ont_viewer.concept_param, "Problem retrieving classes", jQuery(document).data().bp.ont_viewer.ontology_name + jQuery(document).data().bp.ont_viewer.concept_name_title + " - Classes", "Classes", function() {
+  jQuery.bioportal.ont_pages["classes"] = new jQuery.bioportal.OntologyPage("classes", "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id + "?p=classes&ajax=true" + jQuery(document).data().bp.ont_viewer.concept_param,
+      "Problem retrieving classes, check if the tree root concepts are properly extracted: <a href='" + jQuery(document).data().bp.config.rest_url + "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id + "/classes/roots'>" + jQuery(document).data().bp.config.rest_url + "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id + "/classes/roots</a>",
+      jQuery(document).data().bp.ont_viewer.ontology_name + jQuery(document).data().bp.ont_viewer.concept_name_title + " - Classes", "Classes", function() {
     jQuery(document).data().bp.classesTab.classes_init();
     jQuery(document).data().bp.classesTab.search_box_init();
     setupNotesFacebox();
