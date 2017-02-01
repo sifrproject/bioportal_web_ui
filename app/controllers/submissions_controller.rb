@@ -33,11 +33,13 @@ class SubmissionsController < ApplicationController
     @submission_saved = @submission.save
     if !@submission_saved || @submission_saved.errors
       @errors = response_errors(@submission_saved) # see application_controller::response_errors
-      if @errors[:error][:uploadFilePath] && @errors[:error][:uploadFilePath].first[:options]
-        @masterFileOptions = @errors[:error][:uploadFilePath].first[:options]
-        @errors = ["Please select a main ontology file from your uploaded zip"]
-      else
-        redirect_to "/ontologies/success/#{@ontology.acronym}"
+      if @errors[:error].is_a?(Hash)
+        if @errors[:error][:uploadFilePath] && @errors[:error][:uploadFilePath].first[:options]
+          @masterFileOptions = @errors[:error][:uploadFilePath].first[:options]
+          @errors = ["Please select a main ontology file from your uploaded zip"]
+        else
+          redirect_to "/ontologies/success/#{@ontology.acronym}"
+        end
       end
       #Rails.logger.warn "ERRROR: #{@errors}"
       render "new"

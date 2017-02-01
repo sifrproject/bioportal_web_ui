@@ -68,7 +68,7 @@ function get_annotations() {
   }
   params.longest_only = jQuery("#longest_only").is(':checked');
   params.exclude_numbers = jQuery("#exclude_numbers").is(':checked');
-  params.whole_word_only = !jQuery("#match_partial_words").is(':checked');
+  params.whole_word_only = !jQuery("#whole_word_only").is(':checked'); // in the UI it's the opposite value (Match partial words)
   params.exclude_synonyms = jQuery("#exclude_synonyms").is(':checked');
   params.expand_mappings = jQuery("#expand_mappings").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
