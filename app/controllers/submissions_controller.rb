@@ -25,8 +25,6 @@ class SubmissionsController < ApplicationController
     natural_languages.push(params[:submission][:naturalLanguage]) if params[:submission][:naturalLanguage] != "none"
     params[:submission][:naturalLanguage] = natural_languages
 
-    # Log to production.log:
-    Rails.logger.warn "Submission params: #{params[:submission]}"
     @submission = LinkedData::Client::Models::OntologySubmission.new(values: params[:submission])
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     # Update summaryOnly on ontology object
@@ -35,8 +33,6 @@ class SubmissionsController < ApplicationController
     @submission_saved = @submission.save
     if !@submission_saved || @submission_saved.errors
       @errors = response_errors(@submission_saved) # see application_controller::response_errors
-
-      # Le probleme semble venir d'ici: sûrement qu'on utilise des symbols alors qu'il s'attend à des entiers (array au lieu de hash)
       if @errors[:error].is_a?(Hash)
         if @errors[:error][:uploadFilePath] && @errors[:error][:uploadFilePath].first[:options]
           @masterFileOptions = @errors[:error][:uploadFilePath].first[:options]

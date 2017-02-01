@@ -7,6 +7,8 @@ A rails application for biological ontologies, see http://bioportal.bioontology.
 
 * Ca lag beaucoup sur des ontos avec beaucoup de submissions (comme TRANSMAT sur AgroPortal)
 
+* En particulier quand on ajoute une nouvelle submission
+
 * Add New submission bug parfois (avec uploadFile) : faire des tests, s'il faut ça fait un moment que ça plante sans qu'on s'en rende compte (on utilise beaucoup l'URL en ce moment)
 ```ruby
 TypeError (no implicit conversion of Symbol into Integer):
@@ -20,3 +22,8 @@ end
 ```
 
 
+## Log to production.log
+
+```ruby
+Rails.logger.warn "Submission params: #{params[:submission]}"
+```
