@@ -98,9 +98,9 @@
       - for error in @errors
         %li
           = error
-%div{:style => "width:500px"}
+%div{:style => "width: 50%;margin: 0 auto;"}
   %span.asterik{:style => "float:right;"} * fields are required
-  %h1 #{title_text}
+  %h1{:style => "text-align: center;"} #{title_text}
   = hidden_field :submission, :ontology, value: @ontology.id
   %table#new_ontology.form{style: "min-width: 800px;"}
     %tr
@@ -317,8 +317,12 @@
         License
       %td
         %div{:style => "float:left;width:50%;"}
-          = select_tag :licenseSelect, options_for_select($LICENSES.collect{ |k, v| [v,k] })
-          = text_field :submission, :hasLicense, :style => 'display:none;margin-top:7px;'
+          - if $LICENSES.include?(@submission.hasLicense) && !@submission.hasLicense.nil? && !@submission.hasLicense.eql?("")
+            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => @submission.hasLicense })
+            = text_field :submission, :licenseText, :style => 'display:none;margin-top:7px;'
+          - else
+            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => "other" })
+            = text_field :submission, :licenseText, :style => 'margin-top:7px;', value: @submission.hasLicense
         %div{:style => "float:right;width:50%;text-align:right;"}
           Consider using a
           = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
@@ -331,7 +335,7 @@
         Ontology Syntax
       %td
         %div{:style => "float:left;width:50%;"}
-          = select_tag :hasOntologySyntax, options_for_select($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] })
+          = select("submission", "hasOntologySyntax", [["None", "none"]].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), { :selected => @submission.hasOntologySyntax })
         %div{:style => "float:right;width:50%;text-align:right;"}
           Properties taken from
           = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
@@ -340,19 +344,29 @@
         Has Formality Level
       %td
         %div{:style => "float:left;width:50%;"}
-          = select_tag :hasFormalityLevel, options_for_select($FORMALITY_LEVELS.collect{ |k, v| [v,k] })
+          = select("submission", "hasFormalityLevel", [["None", "none"]].concat($FORMALITY_LEVELS.collect{ |k, v| [v,k] }), { :selected => @submission.hasFormalityLevel })
         %div{:style => "float:right;width:50%;text-align:right;"}
           Properties taken from
           = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
 
     %tr
       %th
+        Is Of Type
+      %td
+        %div{:style => "float:left;width:50%;"}
+          = select("submission", "isOfType", [["None", "none"]].concat($IS_OF_TYPE.collect{ |k, v| [v,k] }), { :selected => @submission.isOfType })
+
+    %tr
+      %th
         Natural Language
       %td
         %div{:style => "float:left;width:50%;"}
-          = #text_field :submission, :naturalLanguage, value: @submission.naturalLanguage
-          = select_tag :naturalLanguageSelect, options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] })
-          = text_field :submission, :naturalLanguage, value: "none", :style => 'display:none;margin-top:7px;'
+          = select_tag "naturalLanguageSelect[]", options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] }, @submission.naturalLanguage),
+          :multiple => 'true', "data-placeholder".to_sym => "Click here to select ontologies",:style => "margin-bottom: 15px;", :id => 'naturalLanguageSelect'
+          %br
+          %button#naturalLanguageBtn{:style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => 'addInput("naturalLanguage", "text")'} Add new language
+          %div#naturalLanguageDiv
+
         %div{:style => "float:right;width:50%;text-align:right;"}
           Add a natural language to the list
           %br
@@ -362,20 +376,119 @@
           %br
           e.g.: http://lexvo.org/id/iso639-3/eng
 
-    %tr
-      %td{:align => "right", :colspan => "2"}
-        = submit_tag button_text
+  %div{:style => "text-align: center;"}
+    %button#simpleBtn{:style => "margin-top: 2em;", :type => "button", :class => "btn btn-success", :onclick => "toggleSimple()"} Show common metadata
+    %br
+
+  %div#simpleMetadataDiv{:style => "margin-top: 2em;display: none;"}
+    %h2 Common metadata:
+
+    %table.form{style: "min-width: 800px;"}
+      - for attr in @metadata
+        - if attr["display"].eql? "simple"
+          %tr
+            %th{:style => "padding-bottom: 2%;"}
+              - if ["notes", "keywords", ].include?(attr["attribute"])
+                = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
+              - else
+                = label_tag(attr["attribute"], attr["attribute"])
+              = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
+            %td{:style => "padding-bottom: 2%;"}
+              - if attr["enforce"].include?("integer")
+                = number_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
+
+              - elsif attr["enforce"].include?("date_time")
+                - if @submission.send(attr["attribute"]).nil?
+                  - date_value = nil
+                - else
+                  - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
+                = date_field :submission, attr["attribute"].to_s.to_sym, value: date_value
+
+              - elsif attr["enforce"].include?("uri")
+                - if @submission.send(attr["attribute"]).nil?
+                  - uri_value = ""
+                - else
+                  - uri_value = @submission.send(attr["attribute"])
+                = url_field :submission, attr["attribute"].to_s.to_sym, value: uri_value
+                - if attr["enforce"].include?("list")
+                  %br
+                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'url')"} Add new value
+                  %div{:id => "#{attr["attribute"]}Div"}
+
+              - elsif attr["enforce"].include?("boolean")
+                = select("submission", attr["attribute"].to_s, ["none", "true", "false"], { :selected => @submission.send(attr["attribute"])})
+
+              - else
+                = text_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
+                - if attr["enforce"].include?("list")
+                  %br
+                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'text')"} Add new value
+                  %div{:id => "#{attr["attribute"]}Div"}
+
+  %div{:style => "text-align: center;"}
+    %button#completeBtn{:style => "margin-top: 2em;", :type => "button", :class => "btn btn-success", :onclick => "toggleComplete()"} Show detailed metadata
+    %br
+
+  %div#completeMetadataDiv{:style => "margin-top: 2em;display: none;"}
+
+    %h2 Detailed metadata:
+
+    %table.form{style: "min-width: 800px;"}
+      - for attr in @metadata
+        - if attr["display"].eql? "complete"
+          %tr
+            %th{:style => "padding-bottom: 2%;"}
+              - if ["notes", "keywords", ].include?(attr["attribute"])
+                = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
+              - else
+                = label_tag(attr["attribute"], attr["attribute"])
+              = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
+            %td{:style => "padding-bottom: 2%;"}
+              - if attr["enforce"].include?("integer")
+                = number_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
+                = #number_field_tag(attr["attribute"])
+
+              - elsif attr["enforce"].include?("date_time")
+                - if @submission.send(attr["attribute"]).nil?
+                  - date_value = nil
+                - else
+                  - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
+                = date_field :submission, attr["attribute"].to_s.to_sym, value: date_value
+
+              - elsif attr["enforce"].include?("uri")
+                - if @submission.send(attr["attribute"]).nil?
+                  - uri_value = ""
+                - else
+                  - uri_value = @submission.send(attr["attribute"])
+                = url_field :submission, attr["attribute"].to_s.to_sym, value: uri_value
+                - if attr["enforce"].include?("list")
+                  %br
+                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'url')"} Add new value
+                  %div{:id => "#{attr["attribute"]}Div"}
+
+              - elsif attr["enforce"].include?("boolean")
+                = select("submission", attr["attribute"].to_s, ["none", "true", "false"], { :selected => @submission.send(attr["attribute"])})
+
+              - else
+                = text_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
+                - if attr["enforce"].include?("list")
+                  %br
+                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'text')"} Add new value
+                  %div{:id => "#{attr["attribute"]}Div"}
+
+  %div{:style => "text-align: center;"}
+    = submit_tag button_text, {:style => "margin-top: 2em;margin-bottom: 2em;", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
 
 :javascript
 
   $(function() {
-    $('#licenseSelect').change(function() {
-      if ($('#licenseSelect').val() == "other") {
-        $('#submission_hasLicense').val("");
-        $('#submission_hasLicense').show();
+    $('#submission_hasLicense').change(function() {
+      if ($('#submission_hasLicense').val() == "other") {
+        $('#submission_licenseText').val("");
+        $('#submission_licenseText').show();
       } else {
-        $('#submission_hasLicense').val($('#licenseSelect').val());
-        $('#submission_hasLicense').hide();
+        $('#submission_licenseText').val($('#submission_hasLicense').val());
+        $('#submission_licenseText').hide();
       }
     });
     $('#naturalLanguageSelect').change(function() {
@@ -388,3 +501,53 @@
       }
     });
   })
+
+  /**
+   * To add a new input when btn clicked. Using the given attribute to get elements id
+   */
+  function addInput(attr, inputType)
+  {
+    var container = document.createElement("div");
+    container.innerHTML = '<input type="' + inputType + '" name="added' + attr + '[]" id="added' + attr + '" style="margin-bottom: 0.3em;"><br>';
+    document.getElementById(attr + 'Div').appendChild(container);
+  }
+
+  /**
+   * To show/hide the simple metadata div
+   */
+  function toggleSimple()
+  {
+    var e = document.getElementById("simpleMetadataDiv");
+    if (e.style.display == 'block') {
+      e.style.display = 'none';
+      document.getElementById("simpleBtn").innerText = "Show common metadata";
+    } else {
+      e.style.display = 'block';
+      document.getElementById("simpleBtn").innerText = "Hide common metadata";
+    }
+  }
+
+  /**
+   * To show/hide the complete metadata div
+   */
+  function toggleComplete()
+  {
+    var e = document.getElementById("completeMetadataDiv");
+    if (e.style.display == 'block') {
+      e.style.display = 'none';
+      document.getElementById("completeBtn").innerText = "Show detailed metadata";
+    } else {
+      e.style.display = 'block';
+      document.getElementById("completeBtn").innerText = "Hide detailed metadata";
+    }
+  }
+
+  /**
+   * For natural language multiple select
+   */
+  jQuery(document).ready(function() {
+    "use strict";
+    jQuery("#naturalLanguageSelect").chosen({
+      search_contains: true
+    });
+  });

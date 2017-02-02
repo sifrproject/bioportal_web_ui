@@ -624,7 +624,7 @@ function chosenSearchClasses() {
   var chosenClassesMap = {};
   // get selected option values, an array of combined_uri strings.
   var combined_uris = jQuery("#resource_index_classes").val();
-  if (combined_uris === null){
+  if (combined_uris == null){
     return chosenClassesMap;
   } else if (typeof combined_uris === "string"){
     combined_uris = combined_uris.split(); // coerce it to an Array
