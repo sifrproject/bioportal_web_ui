@@ -69,6 +69,10 @@ $INTERPORTAL_HASH = {}
 # Don't load and don't display recent mappings if false, in case of too many mappings (take longer to load homepage)
 $DISPLAY_RECENT = false
 
+# Remove download for these ontologies. Default:
+# ["CPT","ICD10","ICNP","ICPC2P","MDDB","MEDDRA","MSHFRE","MSHSPA_1","NDDF","NDFRT","NIC","RCD","SCTSPA","SNOMEDCT","WHO-ART"]
+$RESTRICTED_DOWNLOADS = ["MDRFRE", "WHO-ARTFRE", "MSHFRE", "CIM-10"]
+
 # Max number of children to return when rendering a tree view
 $MAX_CHILDREN = 2500
 

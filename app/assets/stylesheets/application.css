@@ -9,6 +9,8 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ * Bootstrap need to be before require_tree to avoid conflict in css
+ *= require bootstrap.min
  *= require jquery-ui
  *= require_tree .
  *

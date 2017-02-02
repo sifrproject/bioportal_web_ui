@@ -1,6 +1,9 @@
 %div{:style => "padding: 1em;"}
   %div{:style => "float: right; width: 40%"}
     %div{style: "padding-left: 1em;"}
+      %a{:href => "#{@submission_latest.id}?display=all", :class => "new_ontology_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
+      :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"}
+        %span{:class => "ui-button-text"} Go to the REST API JSON entry
       = render :partial => 'metrics'
       = render :partial => 'visits'
   %div{style: "width: 60%;"}

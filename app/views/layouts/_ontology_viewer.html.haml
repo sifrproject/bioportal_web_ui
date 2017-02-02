@@ -102,8 +102,6 @@
           - unless @submission_latest.nil? || (@submission_latest.respond_to?(:status) && @submission_latest.status == 404)
             %li
               = link_to "Edit submission information (#{@submission_latest.version})", "/ontologies/#{@ontology.acronym}/submissions/#{@submission_latest.submissionId}/edit"
-            %li
-              = link_to "Add metadata", "/ontologies/#{@ontology.acronym}/submissions/#{@submission_latest.submissionId}/edit_metadata"
 
   %div{:style => "clear: both; margin-bottom: 1em;"}
   #ontology_content{:style => "background: white;"}
