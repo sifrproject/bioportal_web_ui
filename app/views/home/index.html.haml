@@ -71,17 +71,18 @@
                         - @groups.to_a.each do |group|
                           %li
                             %a{:href => "/ontologies?filter=#{CGI.escape(group[:acronym])}"}= group[:name]
-      %td{:valign => "top", :width => "33%"}
-        %fieldset
-          %legend Search resources
-          %table
-            %tr
-              %td{:nowrap => ""}
-                %input#find_resource.greyed{:onclick => "greybox(this)", :size => "30", :style => "width:240px;", :type => "text", :value => "Enter a concept, e.g. Melanoma"}/
-                %input.home_button{:onclick => "jumpToValueResource()", :type => "button", :value => "Search"}/
-            %tr
-              %td{:style => "padding-left:15px"}
-                %a{:href => "/resource_index"} Advanced Resource Search
+      - if $RESOURCE_INDEX_DISABLED == false
+        %td{:valign => "top", :width => "33%"}
+          %fieldset
+            %legend Search resources
+            %table
+              %tr
+                %td{:nowrap => ""}
+                  %input#find_resource.greyed{:onclick => "greybox(this)", :size => "30", :style => "width:240px;", :type => "text", :value => "Enter a concept, e.g. Melanoma"}/
+                  %input.home_button{:onclick => "jumpToValueResource()", :type => "button", :value => "Search"}/
+              %tr
+                %td{:style => "padding-left:15px"}
+                  %a{:href => "/resource_index"} Advanced Resource Search
     %tr
       %td{:valign => "top"}
         %fieldset
@@ -144,6 +145,19 @@
         - else
           %fieldset
             = t('stats').html_safe
+
+        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
+          %fieldset
+            %legend Slices
+            %table.minimal{:style => "width:100%"}
+              %tbody
+                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
+                  - break if index == 10
+                  - slice_name = "#{slice.name} (#{slice.acronym})"
+                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
+                  %tr
+                    %td
+                      = link_to slice_name, slice_link
       %td{:valign => "top"}
         %fieldset
           %legend Latest Notes
@@ -166,7 +180,6 @@
                             = truncate(strip_tags(note[:body]), :length => 100)
                             \&nbsp;
                       - rescue
-      %td{:valign => "top"}
         - if $DISPLAY_RECENT.nil? || $DISPLAY_RECENT == true
           %fieldset
             %legend Latest Mappings
@@ -222,18 +235,35 @@
                     - rescue => e
                       - LOG.add :error, e.message, e.backtrace.join("\n\t")
                       - next
-        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
-          %fieldset
-            %legend Slices
-            %table.minimal{:style => "width:100%"}
-              %tbody
-                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
-                  - break if index == 10
-                  - slice_name = "#{slice.name} (#{slice.acronym})"
-                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
-                  %tr
-                    %td
-                      = link_to slice_name, slice_link
+      %td{:valign => "top"}
+        %fieldset
+          %legend News
+          %p
+            %ul
+              %li
+                Sept 2016: AgroPortal 1.2 released!
+                %a{href: "https://docs.google.com/document/d/1Qdo0cWv5xW_NLFdVLnqDGZiNz7p7yQ1rdpzO8axpxrY/edit#heading=h.9gn6s2kg3v6l", target: "blank"}
+                  See Release Notes
+              %li
+                July 2016: New ontology metadata model. Use any of the 350 properties described here to describe your ontologies, and AgroPortal will extract them.
+                %a{href: "https://github.com/agroportal/documentation/tree/master/metadata", target: "blank"}
+                  See documentation
+              %li
+                June 2016: First AgroHackathon in Montpellier, France
+                %a{href: "http://www.meetup.com/agrohackathon", style: "text-decoration:none;", target: "blank"}
+                  See event
+        %fieldset
+          %legend Links
+          %div{style: "text-align: center;"}
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/agroportal/documentation/wiki", style: "text-decoration:none;", title: "API documentation", target: "blank"}
+                %img{src: "images/books_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "#{$REST_URL}", style: "text-decoration:none;", target: "blank", title: "BioPortal RESTful API"}
+                %img{src: "images/api_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
+                %img{src: "images/github_logo.png", style: "width: 15%;"} &nbsp;
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
   %span Supported by
   %div
