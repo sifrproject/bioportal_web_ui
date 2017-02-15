@@ -28,6 +28,9 @@ address, caption, cite, code, dfn, em, strong, th, var {
   font-style:normal;
   font-weight:normal;
 }
+.bulletlist {
+  list-style:disc;
+}
 ul li {
   list-style:none;
 }
@@ -94,8 +97,12 @@ body {
   background: #fff;
   font-family: "Myriad Pro", "Myriad Web Pro", "Myriad Web", "Myriad", "Trebuchet MS","Tahoma","Helvetica", "Arial",sans-serif;
 }
+hr {
+  width: 50%;
+  margin: 40px 0px
+}
 h1 {
-  font-size:160%;
+  font-size: 300%;
 }
 h2 {
   font-size:140%;

@@ -18,6 +18,53 @@ Le but c'est d'avoir des résultats visibles
   * Toutes les prop qui ont la valeur S (colonne Q de docs.google Review of metadata prop) pour Simple
   * Toutes les prop qui ont la valeur C (colonne Q de docs.google Review of metadata prop) pour Complete
 
+**SEPARER License, onto hasSyntax, etc. Des meatdata de base de NCBO**
+
+**Change tout**
+* Premier bloc avec les metadata pas du tout extraites (formats, contact, file upload...)
+* 2eme bloc avec les metadata que le portal utilise: description, documentation...
+* Expliquer que quand on ajoute un fichier les metadata sont updatés avec les metadata contenues dans le fichier (après le bloc des metadata non extraites)a
+
+Add contact > même type de bouton que Add new Language (voir mail Clément)
+
+Petit ? quand tu le survoles on dit qu'on extrait normalement cette metadata de l'onto à partir de: list des metadata mappings
+Et on note "omv:description + rdfs:comment" quand on prend les valeurs de chaque propriété
+Trouver comment montrer qu'on prend omv:naturalLanguage plusieurs fois si remplis plusieurs fois
+
+Rassembler toutes les dates ensembles (au lieu de simple et complete) dans un même table
+
+Attention date picker par défaut marche pas sur firefox (utiliser date picker de jQuery, celui used par NCBO)
+
+Mettre des espaces : HASCONTRIBUTOR & cie
+
+Afficher dans l'interface graphique quelle metadata on remplis par défaut (on les met toutes au même endroit ?)
+
+On ne met pas 
+
+TODO list : mettre un champ text plus gros ? (comme description)
+
+Le but est d'éviter d'avoir un gros listing indigeste de metadata
+
+Exemple :
+Sous description ajouter bouton "voulez-vous ajouter un abstract?" 
+Sous release date "voulez-vous ajouter d'autre dates"
+Sous contact "voulez-vous ajouter d'autres peoples" ?
+Sous publisher "voulez-vous ajouter d'autre rôle d'institut etc"
+
+Depiction et logo à côté l'un de l'autre
+
+Generalizes, HASDISJUNCTIONSWITH, et toutes les metadata de relations entre onto: faire en sorte de pouvoir choisir des ontos dans BioPortal (pitit popip)
+
+Dans Default Properties sur le spreadsheet des metadata elles sont groupées
+
+
+* Dans browse: permettre de trier dans l'ordre alphabétique
+* Ajouter des petits drapeaux à côté des naturalLang (dans browse et dans la page de présentation des submissions)
+
+* IncludedInDataCatalog: faudrait avoir des boutons plutôt (voir avec logo, pour les catalogs connus comme ontobee)
+
+
+
 * Possibilité de saisir plusieurs lang
 
 * Handling des metadata plus propre et
