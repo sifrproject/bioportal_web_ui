@@ -60,7 +60,8 @@ module OntologiesHelper
                 else
                   concat(content_tag(:th, label))
                 end
-                if sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")
+                if (sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")) && !sub.send(metadata).to_s.include?(",")
+                  # Don't create a link if it seems to be a concatenated list with ","
                   concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
                 else
                   concat(content_tag(:td, raw(sub.send(metadata).to_s)))

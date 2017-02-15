@@ -7,6 +7,17 @@ A rails application for biological ontologies, see http://bioportal.bioontology.
 
 ### Finir les metadata (grosse prio)
 
+#### Grosses tâches
+
+* Faire en sorte de bien récupèrer quand on a des array de metadata (en ajoutant les champs)
+  * Faire une method générique (genre une class) qui permet de facilement distinguer les types de metadata (pas besoin d'ajouter les champs en dur dans le code)
+
+* Passer à bootstrap pour faire le joli layout?
+  * Dans un premier temps import bootstrap seulement dans le form?
+  * On pourrait faire des col pour ranger les metadata par "dates", "description", "links" dans des panels bootstrap
+
+#### Plein de petits todo
+
 * Permettre de filtrer les ontos en fct des metadata 
 Voir col P : https://docs.google.com/spreadsheets/d/1r1twxJvXdQXrkX0Ocis6YY08nlO5cGneCAQ5F7U_CoA/edit#gid=0
 Surtout dans les pages browse et welcome (voir les trucs en orange). Page Landscape plus tard
@@ -18,6 +29,7 @@ Le but c'est d'avoir des résultats visibles
   * Toutes les prop qui ont la valeur S (colonne Q de docs.google Review of metadata prop) pour Simple
   * Toutes les prop qui ont la valeur C (colonne Q de docs.google Review of metadata prop) pour Complete
 
+
 **SEPARER License, onto hasSyntax, etc. Des meatdata de base de NCBO**
 
 **Change tout**
@@ -25,7 +37,7 @@ Le but c'est d'avoir des résultats visibles
 * 2eme bloc avec les metadata que le portal utilise: description, documentation...
 * Expliquer que quand on ajoute un fichier les metadata sont updatés avec les metadata contenues dans le fichier (après le bloc des metadata non extraites)a
 
-Add contact > même type de bouton que Add new Language (voir mail Clément)
+X Add contact > même type de bouton que Add new Language
 
 Petit ? quand tu le survoles on dit qu'on extrait normalement cette metadata de l'onto à partir de: list des metadata mappings
 Et on note "omv:description + rdfs:comment" quand on prend les valeurs de chaque propriété
@@ -33,13 +45,11 @@ Trouver comment montrer qu'on prend omv:naturalLanguage plusieurs fois si rempli
 
 Rassembler toutes les dates ensembles (au lieu de simple et complete) dans un même table
 
-Attention date picker par défaut marche pas sur firefox (utiliser date picker de jQuery, celui used par NCBO)
+X Attention date picker par défaut marche pas sur firefox (utiliser date picker de jQuery, celui used par NCBO)
 
 Mettre des espaces : HASCONTRIBUTOR & cie
 
 Afficher dans l'interface graphique quelle metadata on remplis par défaut (on les met toutes au même endroit ?)
-
-On ne met pas 
 
 TODO list : mettre un champ text plus gros ? (comme description)
 
@@ -63,11 +73,8 @@ Dans Default Properties sur le spreadsheet des metadata elles sont groupées
 
 * IncludedInDataCatalog: faudrait avoir des boutons plutôt (voir avec logo, pour les catalogs connus comme ontobee)
 
-
-
-* Possibilité de saisir plusieurs lang
-
 * Handling des metadata plus propre et
+
 
 ### Fermer les issues
 

@@ -3,7 +3,7 @@
 
 :javascript
   jQuery(function(){
-    jQuery("#datepicker").datepicker({
+    jQuery(".datepicker").datepicker({
       showOn: 'button',
       buttonImage: "#{image_path('calendar.gif')}",
       buttonImageOnly: true,
@@ -221,7 +221,7 @@
         Release Date
         %span.asterik *
       %td
-        = text_field :submission, :released, :id => "datepicker", value: "#{@submission.released}", :required => true
+        = text_field :submission, :released, :class => "datepicker", value: "#{@submission.released}", :required => true
         %span{:style => "font-size: 90%; color: grey;"}
     %tr
       %th
@@ -275,7 +275,7 @@
       %td
         %div#contacts
           %div#contact_button{style: "float: right; margin-top -1em;"}
-            = button_to 'Add contact', '#', id: 'add_contact_button'
+            = button_to 'Add contact', '#', id: 'add_contact_button', class: "btn btn-info"
           - if @submission.contact
             - @submission.contact.each_with_index do |contact, i|
               %div.contact
@@ -317,7 +317,10 @@
         License
       %td
         %div{:style => "float:left;width:50%;"}
-          - if $LICENSES.include?(@submission.hasLicense) && !@submission.hasLicense.nil? && !@submission.hasLicense.eql?("")
+          - if @submission.hasLicense.nil? || @submission.hasLicense.eql?("")
+            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => "none" })
+            = text_field :submission, :licenseText, :style => 'display:none;margin-top:7px;'
+          - elsif $LICENSES.include?(@submission.hasLicense)
             = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => @submission.hasLicense })
             = text_field :submission, :licenseText, :style => 'display:none;margin-top:7px;'
           - else
@@ -389,9 +392,10 @@
           %tr
             %th{:style => "padding-bottom: 2%;"}
               - if ["notes", "keywords", ].include?(attr["attribute"])
+                = # TODO: highlight in bold NOT WORKING. Find another way to do it.
                 = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
               - else
-                = label_tag(attr["attribute"], attr["attribute"])
+                = label_tag(attr["attribute"].gsub(/(?=[A-Z])/, " "))
               = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
             %td{:style => "padding-bottom: 2%;"}
               - if attr["enforce"].include?("integer")
@@ -402,7 +406,7 @@
                   - date_value = nil
                 - else
                   - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
-                = date_field :submission, attr["attribute"].to_s.to_sym, value: date_value
+                = text_field :submission, attr["attribute"].to_s.to_sym, :class => "datepicker", value: "#{date_value}"
 
               - elsif attr["enforce"].include?("uri")
                 - if @submission.send(attr["attribute"]).nil?
@@ -441,7 +445,7 @@
               - if ["notes", "keywords", ].include?(attr["attribute"])
                 = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
               - else
-                = label_tag(attr["attribute"], attr["attribute"])
+                = label_tag(attr["attribute"].gsub(/(?=[A-Z])/, " "))
               = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
             %td{:style => "padding-bottom: 2%;"}
               - if attr["enforce"].include?("integer")
@@ -453,7 +457,7 @@
                   - date_value = nil
                 - else
                   - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
-                = date_field :submission, attr["attribute"].to_s.to_sym, value: date_value
+                = text_field :submission, attr["attribute"].to_s.to_sym, :class => "datepicker", value: "#{date_value}"
 
               - elsif attr["enforce"].include?("uri")
                 - if @submission.send(attr["attribute"]).nil?
