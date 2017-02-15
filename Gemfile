@@ -6,8 +6,11 @@ gem 'rails', '4.2.1'
 gem 'sass-rails', '~> 5.0'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'uglifier', '>= 1.0.3'
+
+# Uncomment this line to compile assets on the CentOS server (it needs a java runtime)
 # See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'therubyracer', platforms: :ruby
+#gem 'therubyracer', platforms: :ruby
+
 # gem 'duktape'
 
 gem 'jquery-ui-rails'

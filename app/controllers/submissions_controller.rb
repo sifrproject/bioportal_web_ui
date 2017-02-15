@@ -22,6 +22,7 @@ class SubmissionsController < ApplicationController
     # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
     params[:submission][:hasOntologySyntax] = "" if params[:submission][:hasOntologySyntax].eql?("none")
     params[:submission][:hasFormalityLevel] = "" if params[:submission][:hasFormalityLevel].eql?("none")
+    params[:submission][:isOfType] = "" if params[:submission][:isOfType].eql?("none")
     params[:submission][:hasLicense] = "" if params[:submission][:hasLicense].eql?("none")
     if params[:submission][:hasLicense].eql?("other")
       params[:submission][:hasLicense] = params[:submission][:licenseText]
