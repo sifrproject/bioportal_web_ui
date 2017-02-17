@@ -27,7 +27,7 @@
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
 #release_info
   Current Release: 
-  = link_to $RELEASE_VERSION, "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"
+  = link_to $RELEASE_VERSION, "https://github.com/sifrproject/bioportal_web_ui/wiki/Release-notes", target: "_blank"
 %div{style: "padding:10px; margin:10px;"}
   - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
   - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"
@@ -239,12 +239,16 @@
           %legend Links
           %div{style: "text-align: center;"}
             %div{style: "display: inline;"}
-              %a{href: "https://github.com/agroportal/documentation/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
-                %img{src: "images/books_logo.png", style: "width: 15%;"} &nbsp;
-            %div{style: "display: inline; padding: 3%;"} &nbsp;
-            %div{style: "display: inline;"}
               %a{href: "#{$REST_URL}", style: "text-decoration:none;", target: "blank", title: "BioPortal RESTful API"}
                 %img{src: "images/api_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "http://sparql.#{$SITE_URL}/test", style: "text-decoration:none;", title: "SPARQL endpoint", target: "blank"}
+                %img{src: "images/sparql_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/sifrproject/bioportal_web_ui/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
+                %img{src: "images/books_logo.png", style: "width: 15%;"} &nbsp;
             %div{style: "display: inline; padding: 3%;"} &nbsp;
             %div{style: "display: inline;"}
               %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
