@@ -15,7 +15,10 @@ var BP_COLUMNS = {
   sem_types: 3,
   matched_classes: 5,
   matched_ontologies: 6,
-  score: 7
+  score: 7,
+  negation: 8,
+  experiencer: 9,
+  temporality: 10
 };
 
 var CONCEPT_MAP = {
@@ -37,6 +40,9 @@ function insertSampleText() {
   jQuery("#annotation_text").val(text);
 }
 
+/**
+ * Main function called when the Get annotations button is clicked in the Annotator
+ */
 function get_annotations() {
   jQuery("#results_error").html("");
   jQuery("#annotator_error").html("");
@@ -73,11 +79,30 @@ function get_annotations() {
   params.expand_mappings = jQuery("#expand_mappings").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
 
+  params.negation = jQuery("#negation").is(':checked');
+  params.experiencer = jQuery("#experiencer").is(':checked');
+  params.temporality = jQuery("#temporality").is(':checked');
+
   params.score = jQuery("#score").val();
   if (params.score) {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.score, true);
   } else {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.score, false);
+  }
+  if (params.negation) {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.negation, true);
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.negation, false);
+  }
+  if (params.experiencer) {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.experiencer, true);
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.experiencer, false);
+  }
+  if (params.temporality) {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, true);
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, false);
   }
 
   var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
@@ -114,6 +139,8 @@ function get_annotations() {
     dataType: "json",
     success: function(data) {
       set_last_params(params);
+      console.log("dataaaa");
+      console.log(data);
       display_annotations(data, bp_last_params);
       jQuery(".annotator_spinner").hide(200);
       jQuery("#annotations_container").show(300);
@@ -481,21 +508,41 @@ jQuery(document).ready(function() {
       sZeroRecords: "No annotations found"
     },
     "aoColumns": [{
+      // Class column
       "sWidth": "15%"
     }, {
+      // Ontology column
       "sWidth": "15%"
     }, {
+      // Type column
       "sWidth": "5%"
     }, {
+      // column not displayed
       "sWidth": "5%",
       "bVisible": false
     }, {
-      "sWidth": "30%"
+      // Context column
+      "sWidth": "20%"
     }, {
+      // Matched class column
       "sWidth": "15%"
     }, {
+      // matchedOntology column
       "sWidth": "15%"
     }, {
+      // Score column
+      "sWidth": "5%",
+      "bVisible": false
+    }, {
+      // Negation column
+      "sWidth": "5%",
+      "bVisible": false
+    }, {
+      // Experiencer column
+      "sWidth": "5%",
+      "bVisible": false
+    }, {
+      // Temporality column
       "sWidth": "5%",
       "bVisible": false
     }]
@@ -631,6 +678,18 @@ function get_annotation_score(cls) {
   return score;
 }
 
+/**
+ * Set context value (negation, temporality or experienced) to empty string to avoid useless dataTable warning
+ * @param context
+ * @returns {*}
+ */
+function get_context_value(context) {
+  if (typeof context === 'undefined') {
+    return '';
+  }
+  return context;
+}
+
 function get_annotation_rows_from_raw(annotation, params) {
   "use strict";
   // data independent var declarations
@@ -651,16 +710,17 @@ function get_annotation_rows_from_raw(annotation, params) {
     rows.push(cells);
   } else {
     jQuery.each(annotation.annotations, function(i, a) {
+      console.log(a);
       text_markup = get_text_markup(params.text, a.from, a.to);
       match_type = match_type_translation[a.matchType.toLowerCase()] || 'direct';
-      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(annotation)];
+      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(annotation), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
       rows.push(cells);
       // Add rows for any classes in the hierarchy.
       match_type = 'ancestor';
       var h_c = null;
       jQuery.each(annotation.hierarchy, function(i, h) {
         h_c = get_class_details_from_raw(h.annotatedClass);
-        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(h)];
+        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(h), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
         rows.push(cells);
       }); // hierarchy loop
       // Add rows for any classes in the mappings. Note the ont_link will be different.
@@ -668,8 +728,10 @@ function get_annotation_rows_from_raw(annotation, params) {
       var m_c = null;
       jQuery.each(annotation.mappings, function(i, m) {
         m_c = get_class_details_from_raw(m.annotatedClass);
-        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(m)];
+        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(m), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
         rows.push(cells);
+      console.log("rooooowwww");
+      console.log(rows);
       }); // mappings loop
     }); // annotations loop
   }
@@ -776,11 +838,14 @@ function display_annotations(data, params) {
   "use strict";
   var annotations = data.annotations;
   var all_rows = [];
+  console.log("DANS DISPLAY");
   if (params.raw !== undefined && params.raw === true) {
     // The annotator_controller does not 'massage' the REST data.
     // The class prefLabel and ontology name must be resolved with ajax.
     annotator_ontologies = data.ontologies;
     for (var i = 0; i < annotations.length; i++) {
+      console.log("ANNNNNNOOOO");
+      console.log(annotations);
       all_rows = all_rows.concat(get_annotation_rows_from_raw(annotations[i], params));
     }
   } else {
