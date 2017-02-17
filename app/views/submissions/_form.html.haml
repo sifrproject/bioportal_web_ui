@@ -98,7 +98,7 @@
       - for error in @errors
         %li
           = error
-%div{:style => "width: 50%;margin: 0 auto;"}
+%div#editMetadataDiv{:style => "width: 50%;margin: 0 auto;"}
   %span.asterik{:style => "float:right;"} * fields are required
   %h1{:style => "text-align: center;"} #{title_text}
   = hidden_field :submission, :ontology, value: @ontology.id
@@ -281,7 +281,7 @@
               %div.contact
                 Name:&nbsp;
                 = text_field :submission, :"contact[#{i}][name]", value: contact["name"]
-                &nbsp;&nbsp;
+                %br
                 Email:&nbsp;
                 = text_field :submission, :"contact[#{i}][email]", value: contact["email"]
           - else

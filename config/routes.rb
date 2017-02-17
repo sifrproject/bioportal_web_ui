@@ -45,6 +45,7 @@ BioportalWebUi::Application.routes.draw do
   match '/feedback', to: 'home#feedback', via: [:get, :post]
   get '/account' => 'home#account'
   get '/help' => 'home#help'
+  get '/about' => 'home#about'
   get '/robots.txt' => 'home#robots'
   get '/site_config' => 'home#site_config'
   get '/validate_ontology_file' => 'home#validate_ontology_file_show'

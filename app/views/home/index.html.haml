@@ -27,7 +27,7 @@
     %a{:href => "#", :onclick => "close_message(); return false;", :style => "font-size: small; color: darkGray;"} [close]
 #release_info
   Current Release: 
-  = link_to $RELEASE_VERSION, "http://www.bioontology.org/wiki/index.php/BioPortal_Release_Notes", target: "_blank"
+  = link_to $RELEASE_VERSION, "https://github.com/sifrproject/bioportal_web_ui/wiki/Release-notes", target: "_blank"
 %div{style: "padding:10px; margin:10px;"}
   - bp_welcome = "<p><span style='font-size:1.75em; font-weight:bold;'>Welcome to #{$SITE}</span><span style='font-size:1.6em'>, the world&rsquo;s most comprehensive repository of biomedical ontologies.</span></p>"
   - help = "<p style='font-size:1.3em'>For help using #{$SITE}, click on this icon: #{help_icon('/help#Home_Page')}</p>"
@@ -85,6 +85,18 @@
                   %a{:href => "/resource_index"} Advanced Resource Search
     %tr
       %td{:valign => "top"}
+        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
+          %fieldset
+            %legend Slices
+            %table.minimal{:style => "width:100%"}
+              %tbody
+                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
+                  - break if index == 10
+                  - slice_name = "#{slice.name} (#{slice.acronym})"
+                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
+                  %tr
+                    %td
+                      = link_to slice_name, slice_link
         %fieldset
           %legend
             Ontology Visits #{"in full #{$SITE} " if at_slice?} (#{@analytics.date.strftime("%B %Y")})
@@ -145,19 +157,6 @@
         - else
           %fieldset
             = t('stats').html_safe
-
-        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
-          %fieldset
-            %legend Slices
-            %table.minimal{:style => "width:100%"}
-              %tbody
-                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
-                  - break if index == 10
-                  - slice_name = "#{slice.name} (#{slice.acronym})"
-                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
-                  %tr
-                    %td
-                      = link_to slice_name, slice_link
       %td{:valign => "top"}
         %fieldset
           %legend Latest Notes
@@ -237,27 +236,39 @@
                       - next
       %td{:valign => "top"}
         %fieldset
-          %legend News
-          %ul
-            %li{style: "margin-bottom: 2%;"}
-              %b July 2016:
-              New ontology metadata model. Use any of the 350 properties described here to describe your ontologies, and BioPortal will extract them.
-              %a{href: "https://github.com/agroportal/documentation/tree/master/metadata", target: "blank"}
-                See documentation
-        %fieldset
           %legend Links
           %div{style: "text-align: center;"}
-            %div{style: "display: inline;"}
-              %a{href: "https://github.com/agroportal/documentation/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
-                %img{src: "images/books_logo.png", style: "width: 15%;"} &nbsp;
-            %div{style: "display: inline; padding: 3%;"} &nbsp;
             %div{style: "display: inline;"}
               %a{href: "#{$REST_URL}", style: "text-decoration:none;", target: "blank", title: "BioPortal RESTful API"}
                 %img{src: "images/api_logo.png", style: "width: 15%;"} &nbsp;
             %div{style: "display: inline; padding: 3%;"} &nbsp;
             %div{style: "display: inline;"}
+              %a{href: "http://sparql.#{$SITE_URL}/test", style: "text-decoration:none;", title: "SPARQL endpoint", target: "blank"}
+                %img{src: "images/sparql_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/sifrproject/bioportal_web_ui/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
+                %img{src: "images/books_logo.png", style: "width: 15%;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
               %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
                 %img{src: "images/github_logo.png", style: "width: 15%;"} &nbsp;
+        %fieldset
+          %legend Origine des ontologies
+          %p Les ontologies du SIFR BioPortal sont soit:
+          %ul
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              extraites en français de l’UMLS (quand une version française existe),
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              récupérées automatiquement du NCBO BioPortal (vue française des ontologies multilingues),
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              chargées directement par les utilisateurs,
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              fournies par
+              %a{href: "www.chu-rouen.fr/cismef/", target: "blank"} CISMeF
+              , suite au développement d’un export OWL pour la plateforme
+              %a{href: "http://www.hetop.eu/hetop/", target: "blank"} HeTOP
+              \. Pour obtenir une ontologie ou terminologie au format OWL veuillez contacter CISMeF directement.
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
   %span Supported by
   %div
