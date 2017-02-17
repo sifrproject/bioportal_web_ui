@@ -85,6 +85,18 @@
                   %a{:href => "/resource_index"} Advanced Resource Search
     %tr
       %td{:valign => "top"}
+        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
+          %fieldset
+            %legend Slices
+            %table.minimal{:style => "width:100%"}
+              %tbody
+                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
+                  - break if index == 10
+                  - slice_name = "#{slice.name} (#{slice.acronym})"
+                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
+                  %tr
+                    %td
+                      = link_to slice_name, slice_link
         %fieldset
           %legend
             Ontology Visits #{"in full #{$SITE} " if at_slice?} (#{@analytics.date.strftime("%B %Y")})
@@ -145,19 +157,6 @@
         - else
           %fieldset
             = t('stats').html_safe
-
-        - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
-          %fieldset
-            %legend Slices
-            %table.minimal{:style => "width:100%"}
-              %tbody
-                - LinkedData::Client::Models::Slice.all.each_with_index do |slice, index|
-                  - break if index == 10
-                  - slice_name = "#{slice.name} (#{slice.acronym})"
-                  - slice_link = "http://#{slice.acronym}.#{$UI_URL.sub("http://", "")}"
-                  %tr
-                    %td
-                      = link_to slice_name, slice_link
       %td{:valign => "top"}
         %fieldset
           %legend Latest Notes
