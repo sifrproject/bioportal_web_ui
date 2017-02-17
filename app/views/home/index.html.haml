@@ -253,6 +253,22 @@
             %div{style: "display: inline;"}
               %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
                 %img{src: "images/github_logo.png", style: "width: 15%;"} &nbsp;
+        %fieldset
+          %legend Origine des ontologies
+          %p Les ontologies du SIFR BioPortal sont soit:
+          %ul
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              extraites en français de l’UMLS (quand une version française existe),
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              récupérées automatiquement du NCBO BioPortal (vue française des ontologies multilingues),
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              chargées directement par les utilisateurs,
+            %li.bulletlist{style: "margin-bottom: 2%;margin-left: 2em;"}
+              fournies par
+              %a{href: "www.chu-rouen.fr/cismef/", target: "blank"} CISMeF
+              , suite au développement d’un export OWL pour la plateforme
+              %a{href: "http://www.hetop.eu/hetop/", target: "blank"} HeTOP
+              \. Pour obtenir une ontologie ou terminologie au format OWL veuillez contacter CISMeF directement.
 %div{style: "padding: 3.5em 0 0; text-align: center;"}
   %span Supported by
   %div
