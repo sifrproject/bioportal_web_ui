@@ -625,6 +625,24 @@ table.align-right th:nth-child(2) {
   border-left: 1px solid #C1DAD7;
   border-right: 1px solid #C1DAD7;
 }
+
+/* Ontology submission details */
+
+#editMetadataDiv input[type="text"], input[type="url"], textarea {
+  width: 90%;
+  max-width: 500px;
+}
+
+.contact {
+  margin-bottom: 2%;
+}
+
+.contact input {
+  margin-bottom: 1%;
+  width: 50% !important;
+}
+
+
 /* Resources Tab*/
 
 .resources caption {
