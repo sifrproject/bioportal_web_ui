@@ -122,12 +122,13 @@ ActionMailer::Base.smtp_settings = {
 
 # Announcements mailman mailing list REQUEST address, EX: list-request@lists.example.org
 # NOTE: You must use the REQUEST address for the mailing list. ONLY WORKS WITH MAILMAN LISTS.
-$ANNOUNCE_LIST = nil
+$ANNOUNCE_LIST = "sifrportal-users@lirmm.fr"
 
 # Email addresses used for sending notifications (errors, feedback, support)
-$SUPPORT_EMAIL = "notifications@example.org"
-$ADMIN_EMAIL = "notifications@example.org"
-$ERROR_EMAIL = "notifications@example.org"
+$SUPPORT_EMAIL = "sifrportal-support@lirmm.fr"
+
+# Email used to send notifications
+$NOTIFICATION_EMAIL = "notifications@bioportal.lirmm.fr"
 
 # reCAPTCHA
 # In order to use reCAPTCHA on the user account creation page:

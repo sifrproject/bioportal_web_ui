@@ -6,7 +6,7 @@ class Notifier < ActionMailer::Base
   def lost_password(user, password)
     # Email header info MUST be added here
     recipients user.email
-    from "#{$SUPPORT_EMAIL}"
+    from "#{$NOTIFICATION_EMAIL}"
     subject "[#{$ORG_SITE}] Password Reset"
   
     # Email body substitutions go here
@@ -14,15 +14,15 @@ class Notifier < ActionMailer::Base
   end
   
   def error(error)
-    recipients $ERROR_EMAIL
-    from "#{$ADMIN_EMAIL}"
+    recipients $NOTIFICATION_EMAIL
+    from "#{$NOTIFICATION_EMAIL}"
     subject "Exception Mailer"
     body :exception_message => error.message, :trace => error.backtrace
   end
   
   def endlessloop(node)
-    recipients $ERROR_EMAIL
-    from "#{$ADMIN_EMAIL}"
+    recipients $NOTIFICATION_EMAIL
+    from "#{$NOTIFICATION_EMAIL}"
     subject "Exception Mailer"
     body :node => node.inspect
   end
@@ -34,14 +34,14 @@ class Notifier < ActionMailer::Base
     @location = location
 
     mail(:to => "#{$SUPPORT_EMAIL}, #{email}",
-         :from => "#{$SUPPORT_EMAIL}",
+         :from => "#{$NOTIFICATION_EMAIL}",
          :subject => "[#{$SITE}] Feedback from #{name}")
   end
   
   def register_for_announce_list(email)
     unless $ANNOUNCE_LIST.nil? || $ANNOUNCE_LIST.empty?
       recipients "#{$ANNOUNCE_LIST}"
-      from "#{$ADMIN_EMAIL}"
+      from "#{$NOTIFICATION_EMAIL}"
       subject "subscribe address=#{email}"
     end
   end
