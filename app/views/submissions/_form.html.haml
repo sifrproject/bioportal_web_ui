@@ -392,42 +392,12 @@
           %tr
             %th{:style => "padding-bottom: 2%;"}
               - if ["notes", "keywords", ].include?(attr["attribute"])
-                = # TODO: highlight in bold NOT WORKING. Find another way to do it.
                 = label_tag(attr["attribute"], attr["attribute"], style: "font-weight: bold;")
               - else
                 = label_tag(attr["attribute"].gsub(/(?=[A-Z])/, " "))
               = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
             %td{:style => "padding-bottom: 2%;"}
-              - if attr["enforce"].include?("integer")
-                = number_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
-
-              - elsif attr["enforce"].include?("date_time")
-                - if @submission.send(attr["attribute"]).nil?
-                  - date_value = nil
-                - else
-                  - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
-                = text_field :submission, attr["attribute"].to_s.to_sym, :class => "datepicker", value: "#{date_value}"
-
-              - elsif attr["enforce"].include?("uri")
-                - if @submission.send(attr["attribute"]).nil?
-                  - uri_value = ""
-                - else
-                  - uri_value = @submission.send(attr["attribute"])
-                = url_field :submission, attr["attribute"].to_s.to_sym, value: uri_value
-                - if attr["enforce"].include?("list")
-                  %br
-                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'url')"} Add new value
-                  %div{:id => "#{attr["attribute"]}Div"}
-
-              - elsif attr["enforce"].include?("boolean")
-                = select("submission", attr["attribute"].to_s, ["none", "true", "false"], { :selected => @submission.send(attr["attribute"])})
-
-              - else
-                = text_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
-                - if attr["enforce"].include?("list")
-                  %br
-                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'text')"} Add new value
-                  %div{:id => "#{attr["attribute"]}Div"}
+              = raw generate_attribute_input(attr)
 
   %div{:style => "text-align: center;"}
     %button#completeBtn{:style => "margin-top: 2em;", :type => "button", :class => "btn btn-success", :onclick => "toggleComplete()"} Show detailed metadata
@@ -448,37 +418,7 @@
                 = label_tag(attr["attribute"].gsub(/(?=[A-Z])/, " "))
               = "(#{(attr["enforce"] - ["no_list"]).map(&:capitalize).join(", ")})" if attr["enforce"].length > 1
             %td{:style => "padding-bottom: 2%;"}
-              - if attr["enforce"].include?("integer")
-                = number_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
-                = #number_field_tag(attr["attribute"])
-
-              - elsif attr["enforce"].include?("date_time")
-                - if @submission.send(attr["attribute"]).nil?
-                  - date_value = nil
-                - else
-                  - date_value = DateTime.parse(@submission.send(attr["attribute"])).to_date.to_s
-                = text_field :submission, attr["attribute"].to_s.to_sym, :class => "datepicker", value: "#{date_value}"
-
-              - elsif attr["enforce"].include?("uri")
-                - if @submission.send(attr["attribute"]).nil?
-                  - uri_value = ""
-                - else
-                  - uri_value = @submission.send(attr["attribute"])
-                = url_field :submission, attr["attribute"].to_s.to_sym, value: uri_value
-                - if attr["enforce"].include?("list")
-                  %br
-                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'url')"} Add new value
-                  %div{:id => "#{attr["attribute"]}Div"}
-
-              - elsif attr["enforce"].include?("boolean")
-                = select("submission", attr["attribute"].to_s, ["none", "true", "false"], { :selected => @submission.send(attr["attribute"])})
-
-              - else
-                = text_field :submission, attr["attribute"].to_s.to_sym, value: @submission.send(attr["attribute"])
-                - if attr["enforce"].include?("list")
-                  %br
-                  %button{:id => "add#{attr["attribute"]}", :style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => "addInput('#{attr["attribute"]}', 'text')"} Add new value
-                  %div{:id => "#{attr["attribute"]}Div"}
+              = raw generate_attribute_input(attr)
 
   %div{:style => "text-align: center;"}
     = submit_tag button_text, {:style => "margin-top: 2em;margin-bottom: 2em;", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only"}
