@@ -16,6 +16,7 @@ module OntologiesHelper
     html.join("")
   end
 
+  # Add additional metadata as html for a submission
   def additional_metadata(sub)
     # Get the list of metadata attribute from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
@@ -43,7 +44,8 @@ module OntologiesHelper
                 end
                 metadata_array = []
                 sub.send(metadata).each do |metadata_value|
-                  if metadata_value.to_s.start_with?("http:") || metadata_value.to_s.start_with?("https:")
+                  if metadata_value.to_s =~ /\A#{URI::regexp(['http', 'https'])}\z/
+                    # Don't create a link if it not an URI
                     metadata_array.push("<a href=\"#{metadata_value.to_s}\" target=\"_blank\">#{metadata_value.to_s}</a>")
                   else
                     metadata_array.push(metadata_value)
@@ -60,8 +62,8 @@ module OntologiesHelper
                 else
                   concat(content_tag(:th, label))
                 end
-                if (sub.send(metadata).to_s.start_with?("http:") || sub.send(metadata).to_s.start_with?("https:")) && !sub.send(metadata).to_s.include?(",")
-                  # Don't create a link if it seems to be a concatenated list with ","
+                if sub.send(metadata).to_s =~ /\A#{URI::regexp(['http', 'https'])}\z/
+                  # Don't create a link if it not an URI
                   concat(content_tag(:td, raw("<a href=\"#{sub.send(metadata).to_s}\" target=\"_blank\">#{sub.send(metadata).to_s}</a>")))
                 else
                   concat(content_tag(:td, raw(sub.send(metadata).to_s)))
