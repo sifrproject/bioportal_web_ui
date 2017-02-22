@@ -72,6 +72,7 @@ class AnnotatorController < ApplicationController
     query += "&longest_only=#{options[:longest_only]}"
     query += "&recognizer=#{params[:recognizer]}"
     query += "&exclude_numbers=" + options[:exclude_numbers].to_s unless options[:exclude_numbers].empty?
+    query += "&lemmatize=" + options[:lemmatize].to_s unless options[:lemmatize].empty?
     query += "&whole_word_only=" + options[:whole_word_only].to_s unless options[:whole_word_only].empty?
     query += "&exclude_synonyms=" + options[:exclude_synonyms].to_s unless options[:exclude_synonyms].empty?
     query += "&ncbo_slice=" + options[:ncbo_slice].to_s unless options[:ncbo_slice].empty?
