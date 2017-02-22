@@ -83,6 +83,25 @@
               %tr
                 %td{:style => "padding-left:15px"}
                   %a{:href => "/resource_index"} Advanced Resource Search
+      %td{:valign => "top", :width => "33%"}
+        %fieldset
+          %legend Links
+          %div{style: "text-align: center;"}
+            %div{style: "display: inline;"}
+              %a{href: "#{$REST_URL}", style: "text-decoration:none;", target: "blank", title: "BioPortal RESTful API"}
+                %img{src: "images/api_logo.png", style: "width: 8%; min-width: 40px;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "http://sparql.#{$SITE_URL}/test", style: "text-decoration:none;", title: "SPARQL endpoint", target: "blank"}
+                %img{src: "images/sparql_logo.png", style: "width: 8%; min-width: 40px;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/sifrproject/bioportal_web_ui/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
+                %img{src: "images/books_logo.png", style: "width: 8%; min-width: 40px;"} &nbsp;
+            %div{style: "display: inline; padding: 3%;"} &nbsp;
+            %div{style: "display: inline;"}
+              %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
+                %img{src: "images/github_logo.png", style: "width: 8%; min-width: 40px;"} &nbsp;
     %tr
       %td{:valign => "top"}
         %fieldset
@@ -223,24 +242,6 @@
                       - LOG.add :error, e.message, e.backtrace.join("\n\t")
                       - next
       %td{:valign => "top"}
-        %fieldset
-          %legend Links
-          %div{style: "text-align: center;"}
-            %div{style: "display: inline;"}
-              %a{href: "#{$REST_URL}", style: "text-decoration:none;", target: "blank", title: "BioPortal RESTful API"}
-                %img{src: "images/api_logo.png", style: "width: 10%; min-width: 40px;"} &nbsp;
-            %div{style: "display: inline; padding: 3%;"} &nbsp;
-            %div{style: "display: inline;"}
-              %a{href: "http://sparql.#{$SITE_URL}/test", style: "text-decoration:none;", title: "SPARQL endpoint", target: "blank"}
-                %img{src: "images/sparql_logo.png", style: "width: 10%; min-width: 40px;"} &nbsp;
-            %div{style: "display: inline; padding: 3%;"} &nbsp;
-            %div{style: "display: inline;"}
-              %a{href: "https://github.com/sifrproject/bioportal_web_ui/wiki", style: "text-decoration:none;", title: "Documentation", target: "blank"}
-                %img{src: "images/books_logo.png", style: "width: 10%; min-width: 40px;"} &nbsp;
-            %div{style: "display: inline; padding: 3%;"} &nbsp;
-            %div{style: "display: inline;"}
-              %a{href: "https://github.com/sifrproject/", style: "text-decoration:none;", title: "GitHub project", target: "blank"}
-                %img{src: "images/github_logo.png", style: "width: 10%; min-width: 40px;"} &nbsp;
         - if !$ENABLE_SLICES.nil? && $ENABLE_SLICES == true && !at_slice?
           %fieldset
             %legend Slices
