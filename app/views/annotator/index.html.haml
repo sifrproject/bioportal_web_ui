@@ -1,5 +1,5 @@
 - @title = "Annotator"
-%div{:style => "padding: 1em;"}
+%div{:style => "padding: 2em;"}
   %h1 Annotator
   %p
     = t('home.annotate.intro').html_safe.nil? || t('home.annotate.intro').html_safe.empty? ? "Get annotations for biomedical text with concepts from the ontologies #{help_icon("/help#Annotator_Tab")}".html_safe : t('home.annotate.intro').html_safe
@@ -23,18 +23,17 @@
       %br/
     %p
       = check_box_tag :longest_only, :all, false, :id => "longest_only"
-      = label_tag :longest_only, "Match Longest Only"
-      &nbsp;&nbsp;
-      / TODO: When the REST API supports different mapping types, revise this section of the UI.
+      = label_tag :longest_only, "Match Longest Only", :style => "margin-right: 3em;"
+
+      = check_box_tag :whole_word_only, :all, false, :id => "whole_word_only"
+      = label_tag :whole_word_only, "Match Partial Words", :style => "margin-right: 3em;"
+
       = check_box_tag :expand_mappings, :all, false, :id => "expand_mappings"
-      = label_tag :expand_mappings, "Include Mappings"
+      = label_tag :expand_mappings, "Include Mappings", :style => "margin-right: 3em;", :style => "margin-right: 3em;"
     %p
       = check_box_tag :exclude_numbers, :all, false, :id => "exclude_numbers"
-      = label_tag :exclude_numbers, "Exclude Numbers"
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      = check_box_tag :whole_word_only, :all, false, :id => "whole_word_only"
-      = label_tag :whole_word_only, "Match Partial Words"
-    %p
+      = label_tag :exclude_numbers, "Exclude Numbers", :style => "margin-right: 3em;"
+
       = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
       = label_tag :exclude_synonyms, "Exclude Synonyms"
     %p
