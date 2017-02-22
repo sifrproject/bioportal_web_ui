@@ -498,6 +498,9 @@ jQuery(document).ready(function() {
   jQuery("#ncbo_ontologies").chosen({
     search_contains: true
   });
+  jQuery("#semantic_groups").chosen({
+    search_contains: true
+  });
   jQuery("#insert_text_link").click(insertSampleText);
   // Init annotation table
   annotationsTable = jQuery("#annotations").dataTable({
