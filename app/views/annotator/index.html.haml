@@ -6,7 +6,7 @@
   %div{:style => "padding-bottom: 1em;"}
     %div{:style => "width: 610px;"}
       %a#insert_text_link{:href => "javascript:void(0);", :style => "font-size: 8pt; text-decoration: none; float: right; margin-bottom: 3px;"} insert sample text
-    %div
+    %div{:style => "display: inline-block;"}
       %div{:style => "display: inline-block;"}
         - textarea_title = "Enter or paste text to be annotated"
         = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
