@@ -54,15 +54,15 @@ class SubmissionsController < ApplicationController
         end
       end
       if hash["enforce"].include?("list") && !hash["display"].include?("no")
+        metadata_value_array = []
         if !params[:submission][hash["attribute"]].nil? && !params[:submission][hash["attribute"]].eql?("")
-          params[:submission][hash["attribute"]] = [params[:submission][hash["attribute"]]]
-          if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
-            # Get added values for list
-            params[:submission][hash["attribute"]] = params[:submission][hash["attribute"]].concat(params["added#{hash["attribute"]}".to_sym])
-          end
-        else
-          params[:submission][hash["attribute"]] = nil
+          metadata_value_array.push(params[:submission][hash["attribute"]])
         end
+        if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
+          # Get added values for list
+          metadata_value_array = metadata_value_array.concat(params["added#{hash["attribute"]}".to_sym])
+        end
+        params[:submission][hash["attribute"]] = metadata_value_array
       end
     end
 
@@ -142,15 +142,15 @@ class SubmissionsController < ApplicationController
         end
       end
       if hash["enforce"].include?("list") && !hash["display"].include?("no")
+        metadata_value_array = []
         if !params[:submission][hash["attribute"]].nil? && !params[:submission][hash["attribute"]].eql?("")
-          params[:submission][hash["attribute"]] = [params[:submission][hash["attribute"]]]
-          if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
-            # Get added values for list
-            params[:submission][hash["attribute"]] = params[:submission][hash["attribute"]].concat(params["added#{hash["attribute"]}".to_sym])
-          end
-        else
-          params[:submission][hash["attribute"]] = nil
+          metadata_value_array.push(params[:submission][hash["attribute"]])
         end
+        if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
+          # Get added values for list
+          metadata_value_array = metadata_value_array.concat(params["added#{hash["attribute"]}".to_sym])
+        end
+        params[:submission][hash["attribute"]] = metadata_value_array
       end
     end
 
