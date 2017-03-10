@@ -21,6 +21,11 @@
       = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
       %br/
       %br/
+      %b Select UMLS Semantic Groups
+      %br/
+      = select_tag :semantic_groups, options_for_select(@semantic_groups_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic groups", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
+      %br/
+      %br/
     %p
       = check_box_tag :longest_only, :all, false, :id => "longest_only"
       = label_tag :longest_only, "Match Longest Only", :style => "margin-right: 3em;"
@@ -36,6 +41,9 @@
 
       = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
       = label_tag :exclude_synonyms, "Exclude Synonyms"
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      = check_box_tag :lemmatize, :all, false, :id => "lemmatize"
+      = label_tag :lemmatize, "Lemmatize"
     %p
       %b Include Ancestors Up To Level:
       &nbsp;&nbsp;

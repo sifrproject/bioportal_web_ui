@@ -83,6 +83,8 @@ function get_annotations() {
   params.experiencer = jQuery("#experiencer").is(':checked');
   params.temporality = jQuery("#temporality").is(':checked');
 
+  params.lemmatize = jQuery("#lemmatize").is(':checked');
+
   params.score = jQuery("#score").val();
   if (params.score) {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.score, true);
@@ -129,6 +131,15 @@ function get_annotations() {
   } else {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, false);
   }
+
+  if (jQuery("#semantic_groups").val() !== null) {
+    params.semantic_groups = jQuery("#semantic_groups").val();
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, true);
+    jQuery("#results_error").html("Only results from ontologies with semantic types available are displayed.");
+  } else {
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.sem_types, false);
+  }
+
 
   params["recognizer"] = jQuery("#recognizer").val();
 
@@ -495,9 +506,14 @@ jQuery(document).ready(function() {
   jQuery("#semantic_types").chosen({
     search_contains: true
   });
+
   jQuery("#ncbo_ontologies").chosen({
     search_contains: true
   });
+  jQuery("#semantic_groups").chosen({
+    search_contains: true
+  });
+
   jQuery("#insert_text_link").click(insertSampleText);
   // Init annotation table
   annotationsTable = jQuery("#annotations").dataTable({
