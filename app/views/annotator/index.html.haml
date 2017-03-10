@@ -1,54 +1,79 @@
 - @title = "Annotator"
+- # Load bootstrap for this page from public/stylesheets
+%link{:type => "text/css", :rel => "stylesheet", :href => "/stylesheets/bootstrap.css"}
+%link{:type => "text/css", :rel => "stylesheet", :href => "/stylesheets/bootstrap-theme.css"}
+
 %div{:style => "padding: 2em;"}
-  %h1 Annotator
+  %h1{:style => "margin-top: 0px"} Annotator
   %p
     = t('home.annotate.intro').html_safe.nil? || t('home.annotate.intro').html_safe.empty? ? "Get annotations for biomedical text with concepts from the ontologies #{help_icon("/help#Annotator_Tab")}".html_safe : t('home.annotate.intro').html_safe
   %div{:style => "padding-bottom: 1em;"}
-    %div{:style => "width: 610px;"}
-      %a#insert_text_link{:href => "javascript:void(0);", :style => "font-size: 8pt; text-decoration: none; float: right; margin-bottom: 3px;"} insert sample text
-    - textarea_title = "Enter or paste text to be annotated"
-    = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 600px;", :class => "help_text"
-    %br{:style => "margin-bottom: 10px;"}/
-    = render :partial => "shared/ontology_picker", :locals => { :custom_ontologies => @annotator_ontologies }
-    - if @sem_type_ont
-      %b Select UMLS Semantic Types
-      %br/
-      = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
-      %br/
-      %br/
-      %b Select UMLS Semantic Groups
-      %br/
-      = select_tag :semantic_groups, options_for_select(@semantic_groups_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic groups", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
-      %br/
-      %br/
-    %p
-      = check_box_tag :longest_only, :all, false, :id => "longest_only"
-      = label_tag :longest_only, "Match Longest Only", :style => "margin-right: 3em;"
+    %div{:style => "width: 60%;"}
+      - textarea_title = "Enter or paste text to be annotated"
+      = text_area :annotation, :text, :title => textarea_title, :rows => 15, :style => "box-shadow: 0 0 3px gray; padding: 5px; width: 100%; max-width: 100%;", :class => "help_text"
+    %a#insert_text_link{:href => "javascript:void(0);", :style => "font-size: 8pt; text-decoration: none; margin-bottom: 1em;"} insert sample text
+    %div
+      %div{:class => "panel panel-primary", :style => "width: 460px; display: inline-block;"}
+        %div{:class => "panel-heading"}
+          %h3{:class => "panel-title"} Ontology filters
+        %div{:class => "panel-body"}
+          = render :partial => "shared/ontology_picker", :locals => { :custom_ontologies => @annotator_ontologies }
+          - if @sem_type_ont
+            %b Select UMLS Semantic Types
+            %br/
+            = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
+            %br/
+            %br/
+            %b Select UMLS Semantic Groups
+            %br/
+            = select_tag :semantic_groups, options_for_select(@semantic_groups_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic groups", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
+            %br/
+            %br/
 
-      = check_box_tag :whole_word_only, :all, false, :id => "whole_word_only"
-      = label_tag :whole_word_only, "Match Partial Words", :style => "margin-right: 3em;"
+      %div{:class => "panel panel-info", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
+        %div{:class => "panel-heading"}
+          %h3{:class => "panel-title"} Matching parameters
+        %div{:class => "panel-body"}
+          = check_box_tag :longest_only, :all, false, :id => "longest_only"
+          = label_tag :longest_only, "Match Longest Only", :style => "margin-right: 3em;"
+          %br
+          = check_box_tag :whole_word_only, :all, false, :id => "whole_word_only"
+          = label_tag :whole_word_only, "Match Partial Words", :style => "margin-right: 3em;"
+          %br
+          = check_box_tag :expand_mappings, :all, false, :id => "expand_mappings"
+          = label_tag :expand_mappings, "Include Mappings", :style => "margin-right: 3em;", :style => "margin-right: 3em;"
+          %br
+          = check_box_tag :exclude_numbers, :all, false, :id => "exclude_numbers"
+          = label_tag :exclude_numbers, "Exclude Numbers", :style => "margin-right: 3em;"
+          %br
+          = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
+          = label_tag :exclude_synonyms, "Exclude Synonyms"
+          %hr{:style => "margin: 0.5em auto;"}
+          = check_box_tag :lemmatize, :all, false, :id => "lemmatize"
+          = label_tag :lemmatize, "Lemmatize (beta)"
 
-      = check_box_tag :expand_mappings, :all, false, :id => "expand_mappings"
-      = label_tag :expand_mappings, "Include Mappings", :style => "margin-right: 3em;", :style => "margin-right: 3em;"
-    %p
-      = check_box_tag :exclude_numbers, :all, false, :id => "exclude_numbers"
-      = label_tag :exclude_numbers, "Exclude Numbers", :style => "margin-right: 3em;"
+      %div{:class => "panel panel-primary", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
+        %div{:class => "panel-heading"}
+          %h3{:class => "panel-title"} ConText
+        %div{:class => "panel-body"}
+          %p{title: "Detect if a concept has been negated (affirmed, negated, possible)", style: "margin-top: 40px;"}
+            = check_box_tag :negation, :all, false, :id => "negation"
+            = label_tag :negation, "Detect negation"
+          %p{title: "Detect who experienced the found concept (patient, other)"}
+            = check_box_tag :experiencer, :all, false, :id => "experiencer"
+            = label_tag :experiencer, "Detect experiencer"
+          %p{title: "Detect when the annotated concept occurred (recent, historical, hypothetical)"}
+            = check_box_tag :temporality, :all, false, :id => "temporality"
+            = label_tag :temporality, "Detect temporality"
 
-      = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
-      = label_tag :exclude_synonyms, "Exclude Synonyms"
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      = check_box_tag :lemmatize, :all, false, :id => "lemmatize"
-      = label_tag :lemmatize, "Lemmatize"
-    %p
+    %div
       %b Include Ancestors Up To Level:
-      &nbsp;&nbsp;
       - options = [["None", 0], *(1..10).map {|i| [i, i]}, ["All", 999]]
-      = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 70px;"
-    %p
+      = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
+    %div{style: "margin-top: 1em;"}
       %b Include Score:
-      &nbsp;&nbsp;
       - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
-      = select_tag :score, options_for_select(options, 0), style: "width: 70px;"
+      = select_tag :score, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
     - if @recognizers.length > 1
       %p
         %b Entity Recognizer:
@@ -56,23 +81,10 @@
         - default_recognizer = @recognizers.include?("mgrep") ? "mgrep" : @recognizers.first
         = select_tag :recognizer, options_for_select(@recognizers.map {|r| [r,r]}, default_recognizer)
 
-    %fieldset{style: "width: 20em;"}
-      %legend ConText
-      %div{style: "text-align: center;"}
-        %p{title: "Detect if a concept has been negated (affirmed, negated, possible)"}
-          = check_box_tag :negation, :all, false, :id => "negation"
-          = label_tag :negation, "Detect negation"
-        %p{title: "Detect who experienced the found concept (patient, other)"}
-          = check_box_tag :experiencer, :all, false, :id => "experiencer"
-          = label_tag :experiencer, "Detect experiencer"
-        %p{title: "Detect when the annotated concept occurred (recent, historical, hypothetical)"}
-          = check_box_tag :temporality, :all, false, :id => "temporality"
-          = label_tag :temporality, "Detect temporality"
-
 
     %div{style: "margin-top: 30px;"}
       / annotator_button calls 'get_annotations' in bp_annotator.js
-      %input#annotator_button.link_button{:type => "button", :value => "Get Annotations"}/
+      %input#annotator_button{:class => "btn btn-primary", :type => "button", :value => "Get Annotations"}/
       %span.annotator_spinner{:style => "display: none;"}
         %img{:src => asset_path('spinners/spinner_000000_16px.gif'), :style => "vertical-align: middle;"}/
       %span#annotator_error.annotator_error{:style => "color: red; vertical-align: middle; margin-left: 3px;"}
