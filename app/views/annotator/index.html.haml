@@ -53,6 +53,19 @@
         - default_recognizer = @recognizers.include?("mgrep") ? "mgrep" : @recognizers.first
         = select_tag :recognizer, options_for_select(@recognizers.map {|r| [r,r]}, default_recognizer)
 
+    %fieldset{style: "width: 20em;"}
+      %legend ConText
+      %div{style: "text-align: center;"}
+        %p{title: "Detect if a concept has been negated (affirmed, negated, possible)"}
+          = check_box_tag :negation, :all, false, :id => "negation"
+          = label_tag :negation, "Detect negation"
+        %p{title: "Detect who experienced the found concept (patient, other)"}
+          = check_box_tag :experiencer, :all, false, :id => "experiencer"
+          = label_tag :experiencer, "Detect experiencer"
+        %p{title: "Detect when the annotated concept occurred (recent, historical, hypothetical)"}
+          = check_box_tag :temporality, :all, false, :id => "temporality"
+          = label_tag :temporality, "Detect temporality"
+
 
     %div{style: "margin-top: 30px;"}
       / annotator_button calls 'get_annotations' in bp_annotator.js
@@ -105,6 +118,9 @@
               %a#filter_matched_ontologies.bp_popup_link{:href => "javascript:void(0);"} filter
           #matched_ontology_filter_list.bp_popup_list{:style => "display: none;"}
         %th Score
+        %th Negation
+        %th Experiencer
+        %th Temporality
     %tbody
   #download_links{:style => "margin-top: 1.5em;"}
     %p
