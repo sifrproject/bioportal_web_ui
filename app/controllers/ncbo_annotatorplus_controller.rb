@@ -6,12 +6,20 @@ class NcboAnnotatorplusController < ApplicationController
 
   def index
     @semantic_types_for_select = []
+    @semantic_groups_for_select = []
     @semantic_types ||= get_semantic_types
     @sem_type_ont = LinkedData::Client::Models::Ontology.find_by_acronym('STY').first
+    @semantic_groups ||= {"ACTI" => "Activities & Behaviors", "ANAT" => "Anatomy", "CHEM" => "Chemicals & Drugs","CONC" => "Concepts & Ideas",
+                          "DEVI" => "Devices", "DISO" => "Disorders", "GENE" => "Genes & Molecular Sequences", "GEOG" => "Geographic Areas", "LIVB" => "Living Beings",
+                          "OBJC" => "Objects", "OCCU" => "Occupations", "ORGA" => "Organizations", "PHEN" => "Phenomena", "PHYS" => "Physiology","PROC" => "Procedures"}
     @semantic_types.each_pair do |code, label|
       @semantic_types_for_select << ["#{label} (#{code})", code]
     end
+    @semantic_groups.each_pair do |group, label|
+      @semantic_groups_for_select << ["#{label} (#{group})", group]
+    end
     @semantic_types_for_select.sort! {|a,b| a[0] <=> b[0]}
+    @semantic_groups_for_select.sort! {|a,b| a[0] <=> b[0]}
     @recognizers = parse_json(REST_URI + "/annotator/recognizers")
     @annotator_ontologies = LinkedData::Client::Models::Ontology.all
     @ontologies_for_select = get_ontologies_for_select
@@ -23,6 +31,7 @@ class NcboAnnotatorplusController < ApplicationController
     params[:max_level] ||= 0
     params[:ontologies] ||= []
     params[:semantic_types] ||= []
+    params[:semantic_groups] ||= []
     text_to_annotate = params[:text].strip.gsub("\r\n", " ").gsub("\n", " ")
 
     options = { :ontologies => params[:ontologies],
@@ -34,7 +43,11 @@ class NcboAnnotatorplusController < ApplicationController
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
                 :whole_word_only => params[:whole_word_only] ||= "true", # service default is true
                 :exclude_synonyms => params[:exclude_synonyms] ||= "false",  # service default is false
+                :negation => params[:negation] ||= "false",  # service default is false
+                :experiencer => params[:experiencer] ||= "false",  # service default is false
+                :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
+                :lemmatize => params[:lemmatize] ||= "false",
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 
@@ -46,8 +59,12 @@ class NcboAnnotatorplusController < ApplicationController
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0
     query += "&score=" + options[:score] unless options[:score] == ""
+    query += "&negation=" + options[:negation] unless options[:negation].empty?
+    query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
+    query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
     query += "&ontologies=" + CGI.escape(options[:ontologies].join(',')) unless options[:ontologies].empty?
     query += "&semantic_types=" + options[:semantic_types].join(',') unless options[:semantic_types].empty?
+    query += "&semantic_groups=" + options[:semantic_groups].join(',') unless options[:semantic_groups].empty?
     query += "&mappings=" + options[:mappings].join(',') unless options[:mappings].empty?
     query += "&longest_only=#{options[:longest_only]}"
     query += "&recognizer=#{params[:recognizer]}"
