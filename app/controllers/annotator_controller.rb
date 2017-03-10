@@ -10,12 +10,18 @@ class AnnotatorController < ApplicationController
 
   def index
     @semantic_types_for_select = []
+    @semantic_groups_for_select = []
     @semantic_types ||= get_semantic_types
     @sem_type_ont = LinkedData::Client::Models::Ontology.find_by_acronym('STY').first
+    @semantic_groups ||= {"ACTI" => "Activities & Behaviors", "ANAT" => "Anatomy", "CHEM" => "Chemicals & Drugs","CONC" => "Concepts & Ideas","DEVI" => "Devices", "DISO" => "Disorders", "GENE" => "Genes & Molecular Sequences", "GEOG" => "Geographic Areas", "LIVB" => "Living Beings","OBJC" => "Objects", "OCCU" => "Occupations", "ORGA" => "Organizations", "PHEN" => "Phenomena", "PHYS" => "Physiology","PROC" => "Procedures"}
     @semantic_types.each_pair do |code, label|
       @semantic_types_for_select << ["#{label} (#{code})", code]
     end
+    @semantic_groups.each_pair do |group, label|
+        @semantic_groups_for_select << ["#{label} (#{group})", group]
+    end 
     @semantic_types_for_select.sort! {|a,b| a[0] <=> b[0]}
+    @semantic_groups_for_select.sort! {|a,b| a[0] <=> b[0]}
     @recognizers = parse_json(REST_URI + "/annotator/recognizers")
     @annotator_ontologies = LinkedData::Client::Models::Ontology.all
   end
@@ -26,12 +32,14 @@ class AnnotatorController < ApplicationController
     params[:max_level] ||= 0
     params[:ontologies] ||= []
     params[:semantic_types] ||= []
+    params[:semantic_groups] ||= []
     text_to_annotate = params[:text].strip.gsub("\r\n", " ").gsub("\n", " ")
 
     options = { :ontologies => params[:ontologies],
                 :class_hierarchy_max_level => params[:class_hierarchy_max_level].to_i,
                 :expand_class_hierarchy => params[:class_hierarchy_max_level].to_i > 0,
                 :semantic_types => params[:semantic_types],
+                :semantic_groups => params[:semantic_groups],
                 :expand_mappings => params[:expand_mappings],
                 :longest_only => params[:longest_only],
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
@@ -41,6 +49,7 @@ class AnnotatorController < ApplicationController
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
+                :lemmatize => params[:lemmatize] ||= "false",
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 
@@ -58,10 +67,12 @@ class AnnotatorController < ApplicationController
     query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
     query += "&ontologies=" + CGI.escape(options[:ontologies].join(',')) unless options[:ontologies].empty?
     query += "&semantic_types=" + options[:semantic_types].join(',') unless options[:semantic_types].empty?
+    query += "&semantic_groups=" + options[:semantic_groups].join(',') unless options[:semantic_groups].empty?   
     query += "&expand_mappings=" + options[:expand_mappings].to_s unless options[:expand_mappings].empty?
     query += "&longest_only=#{options[:longest_only]}"
     query += "&recognizer=#{params[:recognizer]}"
     query += "&exclude_numbers=" + options[:exclude_numbers].to_s unless options[:exclude_numbers].empty?
+    query += "&lemmatize=" + options[:lemmatize].to_s unless options[:lemmatize].empty?
     query += "&whole_word_only=" + options[:whole_word_only].to_s unless options[:whole_word_only].empty?
     query += "&exclude_synonyms=" + options[:exclude_synonyms].to_s unless options[:exclude_synonyms].empty?
     query += "&ncbo_slice=" + options[:ncbo_slice].to_s unless options[:ncbo_slice].empty?
@@ -103,6 +114,7 @@ class AnnotatorController < ApplicationController
     end
     semantic_types
   end
+
 
   def massage_annotated_classes(annotations, options)
     # Get the class details required for display, assume this is necessary
