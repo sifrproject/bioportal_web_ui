@@ -47,7 +47,6 @@ class NcboAnnotatorplusController < ApplicationController
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
-                :lemmatize => params[:lemmatize] ||= "false",
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 
