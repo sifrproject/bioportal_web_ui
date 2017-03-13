@@ -2132,6 +2132,16 @@ div#annotations_filter, div#annotations_info {
   display: none;
 }
 
+div#ontology_ontologyId_chzn #search-field {
+  width: 100%;
+  height:100%;
+}
+        
+div#ontology_ontologyId_chzny {
+  height:2em;
+}
+ 
+
 .result_count {
   font-weight: bold;
 }
