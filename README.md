@@ -16,6 +16,9 @@ A rails application for biological ontologies, see http://bioportal.bioontology.
   * Dans un premier temps import bootstrap seulement dans le form?
   * On pourrait faire des col pour ranger les metadata par "dates", "description", "links" dans des panels bootstrap
 
+* Meilleur affichage des metadata :
+  * Bouton pour les valeurs qui reviennent tout le temps
+
 #### Plein de petits todo
 
 * Permettre de filtrer les ontos en fct des metadata 
@@ -109,6 +112,15 @@ TypeError (no implicit conversion of Symbol into Integer):
 if @errors[:error][:uploadFilePath] && @errors[:error][:uploadFilePath].first[:options]
 end
 ```
+
+## How to
+
+### Add a facet filter for a metadata in browse
+
+In 3 files :
+* app/views/ontologies/browse.html.erb
+* public/browse/app.js
+* app/controllers/ontologies_controller.rb
 
 
 ## Log to production.log
