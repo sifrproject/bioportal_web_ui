@@ -57,6 +57,23 @@ $IS_OF_TYPE = {
     "Vocabulary" => "Vocabulary"
 }
 
+$ONTOLOGY_TOOLS = {
+    "NeOn-Toolkit" => "NeOn-Toolkit",
+    "Protégé" => "Protégé",
+    "SWOOP" => "SWOOP",
+    "OntoStudio" => "OntoStudio",
+    "Altova" => "Altova",
+    "SemanticWorks" => "SemanticWorks",
+    "OilEd" => "OilEd",
+    "IsaViz" => "IsaViz",
+    "WebODE" => "WebODE",
+    "OntoBuilder" => "OntoBuilder",
+    "WSMO Studio" => "WSMO Studio",
+    "VocBench" => "VocBench",
+    "TopBraid" => "TopBraid",
+    "other" => "Other"
+}
+
 =begin
 $DC_TYPE = {
     "http://purl.org/dc/dcmitype/Collection" => "Collection",

@@ -142,6 +142,19 @@
         </div>
       </div>
 
+      <div id="is_of_type_facet" class="facet">
+        <h4>Is of Type</h4>
+        <div class="checkbox_list">
+          <span ng-repeat="(is_of_type_uri,is_of_type_label) in is_of_type">
+            <input type="checkbox" checklist-model="facets.is_of_type.active" checklist-value="is_of_type_uri" name="is_of_type"
+                   id="is_of_type_{{is_of_type_label.toLowerCase().split(' ').join('_')}}" ng-disabled="!facet_counts['is_of_type'][is_of_type_uri]">
+            <label for="is_of_type_{{is_of_type_label.toLowerCase().split(' ').join('_')}}" ng-class="{facet_disabled: !facet_counts['is_of_type'][is_of_type_uri]}">{{is_of_type_label}}</label>
+            <span class="smaller">({{facet_counts["is_of_type"][is_of_type_uri] || 0}})</span>
+            <br/>
+          </span>
+        </div>
+      </div>
+
       <div id="missing_status_facet" class="facet admin" ng-show="admin">
         <h4>Missing Status</h4>
         <div class="checkbox_list">
@@ -171,6 +184,7 @@
             <option value="-note_count">Notes</option>
             <!-- <option value="ratings">Rating</option> -->
             <option value="-creationDate">Upload Date</option>
+            <option value="-released">Release Date</option>
             <option value="-search_rank" ng-show="searchText.length > 0">Search Rank</option>
           </select>
         </div>
@@ -280,6 +294,7 @@
 
   jQuery(document).data().bp.formality_levels = <%=MultiJson.dump($FORMALITY_LEVELS).html_safe%>;
   jQuery(document).data().bp.natural_languages = <%=MultiJson.dump($NATURAL_LANGUAGES).html_safe%>;
+  jQuery(document).data().bp.is_of_type = <%=MultiJson.dump($IS_OF_TYPE).html_safe%>;
 </script>
 
 <script src="lib/lunr.js/lunr.min.js"></script>
