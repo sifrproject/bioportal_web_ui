@@ -335,7 +335,7 @@
             %button#usageBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('usage', 'description')"} Define usage
 
           %div{:class => "col-md-3"}
-            %button#methodologyBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('methodology', 'description')"} Add methodology informations
+            %button#methodologyBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('methodology', 'description')"} Methodology informations
 
           %div{:class => "col-md-3"}
             %button#linksBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('links', 'description')"} Add links
@@ -495,9 +495,12 @@
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql?("relations") || attr["display"].eql?("isOntology")
-                = generate_attribute_label(attr["attribute"])
-                = raw generate_attribute_input(attr["attribute"])
-                %br
+                %div{:class => "row"}
+                  %div{:class => "col-md-3"}
+                    = generate_attribute_label(attr["attribute"])
+                  %div{:class => "col-md-9"}
+                    = raw generate_attribute_input(attr["attribute"])
+                  %br
 
     %div{:class => "panel panel-primary"}
       %div{:class => "panel-heading"}
@@ -621,8 +624,23 @@
     jQuery(".selectOntology").chosen({
       search_contains: true
     });
-    // only way to change select width... Lib poorly written.
-    jQuery(".chzn-container").css("width", "auto");
-    jQuery(".chzn-container").css("min-width", "20em");
-    jQuery("input.default").css("width", "100%");
+
+    $('.tooltip').tooltipster({
+      interactive: true,
+      position: "right",
+      contentAsHTML: true,
+      animation: 'fade',
+      delay: 200,
+      theme: 'tooltipster-light',
+      trigger: 'hover'
+    });
+  });
+
+  /**
+   * To link text field with button (allowing enter in text field to submit button)
+   */
+  $("#id_of_textbox").keyup(function(event){
+    if(event.keyCode == 13){
+        $("#id_of_button").click();
+    }
   });

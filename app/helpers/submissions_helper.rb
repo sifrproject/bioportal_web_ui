@@ -3,12 +3,24 @@ module SubmissionsHelper
   def generate_attribute_label(attr_label)
     # Get the attribute hash corresponding to the given attribute
     attr = @metadata.select{ |attr_hash| attr_hash["attribute"].to_s.eql?(attr_label) }.first
+    label_html = ''.html_safe
+
+    if !attr["namespace"].nil?
+      fullProperty = "#{attr["namespace"]}:#{attr["attribute"]}"
+    else
+      fullProperty = "bioportal:#{attr["attribute"]}"
+    end
 
     if !attr["label"].nil?
-      label_tag("submission_#{attr_label}", attr["label"])
+      label_html << label_tag("submission_#{attr_label}", attr["label"], title: fullProperty)
     else
-      label_tag("submission_#{attr_label}", attr_label.underscore.humanize)
+      label_html << label_tag("submission_#{attr_label}", attr_label.underscore.humanize, title: fullProperty)
     end
+
+    if (attr["helpText"] != nil)
+      label_html << help_tooltip(attr["helpText"], {:id => "tooltip#{attr["attribute"]}", :style => "opacity: inherit; display: inline;position: initial;margin-right: 1em;"}).html_safe
+    end
+    return label_html
   end
 
   # Generate the HTML input for every attributes
@@ -41,11 +53,10 @@ module SubmissionsHelper
           end
         end
       else
-        puts "olala #{metadata_values.to_s}"
+
         if !select_values.flatten.include?(metadata_values)
           select_values << metadata_values
         end
-        puts select_values.to_s
       end
 
       if attr["enforce"].include?("list")
@@ -57,8 +68,9 @@ module SubmissionsHelper
                    :style => "margin-bottom: 15px; width: 100%;", :id => "select_#{attr["attribute"]}", :class => "selectOntology", :include_blank => true)
       end
       # Button and field to add new value (not in the select)
-      input_html << text_field_tag("add_#{attr["attribute"].to_s}", nil, :style => "margin-left: 1em; margin-right: 1em;")
-      input_html << button_tag("Add new ontology", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 1em;margin-top: 1em;",
+      input_html << tag(:br)
+      input_html << text_field_tag("add_#{attr["attribute"].to_s}", nil, :style => "margin-left: 1em; margin-right: 1em;vertical-align: super;")
+      input_html << button_tag("Add new ontology", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 2em;margin-top: 1em;",
                                :type => "button", :class => "btn btn-info", :onclick => "addValueToSelect('#{attr["attribute"]}')")
 
       return input_html;
