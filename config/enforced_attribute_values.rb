@@ -33,7 +33,8 @@ $ONTOLOGY_SYNTAXES = {
   "http://www.w3.org/ns/formats/RDF_XML" => "RDF/XML",
   "http://www.w3.org/ns/formats/RIF_XML" => "RIF XML Syntax",
   "http://www.w3.org/ns/formats/Turtle" => "Turtle",
-  "http://www.w3.org/ns/formats/TriG" => "TriG"
+  "http://www.w3.org/ns/formats/TriG" => "TriG",
+  "http://purl.obolibrary.org/obo/oboformat/spec.html" => "OBO"
 }
 
 $LICENSES = {
