@@ -636,9 +636,9 @@ table.align-right th:nth-child(2) {
 
 /* Ontology submission details */
 
-#editMetadataDiv input[type="text"], input[type="url"], textarea {
+#editMetadataDiv input[type=text], input[type="url"], textarea {
   width: 90%;
-  max-width: 500px;
+  max-width: 100%;
   margin-bottom: 5px;
 }
 
@@ -656,6 +656,9 @@ table.align-right th:nth-child(2) {
   width: 50% !important;
 }
 
+#editMetadataDiv input.datepicker {
+  width: initial;
+}
 
 /* Resources Tab*/
 
@@ -787,8 +790,15 @@ tr.mainresource td {
 }
 
 .asterik{
-    color:red;
-    font-weight:bold;
+  color:red;
+  font-weight:bold;
+  margin-right: 0.5em;
+}
+
+.extractedAsterix{
+  color:green;
+  font-weight:bold;
+  margin-right: 0.5em;
 }
 
 #tag_clouds a{

@@ -102,10 +102,17 @@
         %li
           = error
 
-%div
-  %div#editMetadataDiv{:style => "width: 50%;margin: 3em auto;"}
-    %span.asterik{:style => "float:right;"} * fields are required
+%div#editMetadataDiv
+  %div{:style => "width: 50%;margin: 3em auto;"}
     %h1{:style => "text-align: center;"} #{title_text}
+    %p{:style => "text-align: center;"}
+      To understand the ontologies metadata:
+      %a{:href => "https://github.com/agroportal/documentation/wiki/Ontology-metadata", :target => "_blank"} see the Wiki
+    %div{:style => "text-align: center;"}
+      %span.asterik * fields are required
+      %br
+      %span.extractedAsterix * metadata that can be extracted from the ontology
+
     = hidden_field :submission, :ontology, value: @ontology.id
     %table#new_ontology.form{style: "min-width: 800px;"}
 
@@ -237,13 +244,17 @@
           = select :submission, :status, status_options, { :selected => selected_status, :required => true}, {:class => "form-control"}
 
         %div
+          = generate_attribute_label("deprecated")
+          = raw generate_attribute_input("deprecated")
+
+        %div
           = generate_attribute_label("version")
           = raw generate_attribute_input("version")
 
         %div
-          %div{:style => "width:50%; margin-bottom: 1em;"}
+          %div{:style => "width:50%; margin-bottom: 1em;display: inline;"}
             = generate_attribute_label("hasOntologySyntax")
-            = select("submission", "hasOntologySyntax", [["None", "none"]].concat($ONTOLOGY_SYNTAXES.collect{ |k, v| [v,k] }), { :selected => @submission.hasOntologySyntax}, {:class => "form-control"})
+            = generate_attribute_input("hasOntologySyntax", $ONTOLOGY_SYNTAXES)
           %div{:style => "float:right;width:50%;text-align:right;"}
             Properties taken from
             = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
@@ -275,7 +286,7 @@
           = select_tag "naturalLanguageSelect[]", options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] }, @submission.naturalLanguage),
           :multiple => 'true', "data-placeholder".to_sym => "Click here to select languages",:style => "margin-bottom: 15px;", :id => 'naturalLanguageSelect'
           %br
-          %button#naturalLanguageBtn{:style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info", :onclick => 'addInput("naturalLanguage", "text")'} Add new language
+          %button#naturalLanguageBtn{:style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info btn-sm", :onclick => 'addInput("naturalLanguage", "text")'} Add new language
           %div#naturalLanguageDiv
 
 
@@ -290,7 +301,7 @@
           = text_area :submission, :description, rows: 5, value: @submission.description, :required => true
 
         %div{:style => "text-align: center;"}
-          %button#detailsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('details')"} Add details
+          %button#detailsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('details')"} More details
 
         %div#detailsDiv{:class => "panel panel-info", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
@@ -299,11 +310,11 @@
             %div
               = generate_attribute_label("abstract")
               %br
-              = text_area :submission, :abstract, rows: 3, value: @submission.abstract
+              = raw generate_attribute_input("abstract")
             %div
               = generate_attribute_label("notes")
               %br
-              = text_area :submission, :notes, rows: 3, value: @submission.abstract
+              = raw generate_attribute_input("notes")
             %div
               = generate_attribute_label("keywords")
               = raw generate_attribute_input("keywords")
@@ -335,17 +346,17 @@
             %button#usageBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('usage', 'description')"} Define usage
 
           %div{:class => "col-md-3"}
-            %button#methodologyBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('methodology', 'description')"} Methodology informations
+            %button#methodologyBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('methodology', 'description')"} More methodology information
 
           %div{:class => "col-md-3"}
-            %button#linksBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('links', 'description')"} Add links
+            %button#linksBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('links', 'description')"} More links
 
           %div{:class => "col-md-3"}
             %button#imagesBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success descriptionBtn", :onclick => "toggleDiv('images', 'description')"} Add images
 
         %div#linksDiv{:class => "panel panel-info descriptionPanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
-            %h3{:class => "panel-title"} Add links
+            %h3{:class => "panel-title"} More links
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql? "links"
@@ -355,7 +366,7 @@
 
         %div#methodologyDiv{:class => "panel panel-info descriptionPanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
-            %h3{:class => "panel-title"} Methodology informations
+            %h3{:class => "panel-title"} Methodology information
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql? "methodology"
@@ -387,19 +398,34 @@
       %div{:class => "panel-heading"}
         %h3{:class => "panel-title"} Dates
       %div{:class => "panel-body"}
-        %div
-          %label Release date
-          %span.asterik *
-          = text_field :submission, :released, :class => "datepicker", value: "#{@submission.released}", :required => true
+        %div.row
+          %div.col-md-3
+            = generate_attribute_label("released")
+            %span.asterik *
+          %div.col-md-9
+            = text_field :submission, :released, :class => "datepicker", value: "#{@submission.released}", :required => true
           %span{:style => "font-size: 90%; color: grey;"}
-        %div
-          %label Modification date
-          = raw generate_attribute_input("modificationDate")
-        - for attr in @metadata
-          - if attr["display"].eql? "dates"
-            = generate_attribute_label(attr["attribute"])
-            = raw generate_attribute_input(attr["attribute"])
-            %br
+        %div.row
+          %div.col-md-3
+            = generate_attribute_label("modificationDate")
+          %div.col-md-9
+            = raw generate_attribute_input("modificationDate")
+
+        %div{:style => "text-align: center;"}
+          %button#datesBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('dates')"} More dates
+
+        %div#datesDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 2em;display: none;"}
+          %div{:class => "panel-heading"}
+            %h3{:class => "panel-title"} More dates
+          %div{:class => "panel-body"}
+            - for attr in @metadata
+              - if attr["display"].eql? "dates"
+                %div.row
+                  %div.col-md-3
+                    = generate_attribute_label(attr["attribute"])
+                  %div.col-md-9
+                    = raw generate_attribute_input(attr["attribute"])
+                %br
 
     %div{:class => "panel panel-primary"}
       %div{:class => "panel-heading"}
@@ -425,12 +451,18 @@
             = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => "other", style: "margin-bottom: 1em;"}, {:class => "form-control"})
             = text_field :submission, :licenseText, value: @submission.hasLicense
 
-        %div
-          = generate_attribute_label("copyrightHolder")
-          = raw generate_attribute_input("copyrightHolder")
-        %div
-          = generate_attribute_label("morePermissions")
-          = raw generate_attribute_input("morePermissions")
+        %div{:style => "text-align: center;"}
+          %button#licenseBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('license')"} More licensing information
+
+        %div#licenseDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
+          %div{:class => "panel-heading"}
+            %h3{:class => "panel-title"} Licensing information
+          %div{:class => "panel-body"}
+            - for attr in @metadata
+              - if attr["display"].eql? "license"
+                = generate_attribute_label(attr["attribute"])
+                = raw generate_attribute_input(attr["attribute"])
+                %br
 
     %div{:class => "panel panel-primary"}
       %div{:class => "panel-heading"}
@@ -458,20 +490,17 @@
               = text_field :submission, :"contact[0][email]", :required => true
 
         %div
-          = generate_attribute_label("publisher")
-          = raw generate_attribute_input("publisher")
-        %div
           = generate_attribute_label("hasContributor")
           = raw generate_attribute_input("hasContributor")
         %div
           = generate_attribute_label("hasCreator")
           = raw generate_attribute_input("hasCreator")
         %div{:style => "text-align: center;"}
-          %button#communityBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('community')"} More community metadata
+          %button#communityBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('community')"} More community informations
 
         %div#communityDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
-            %h3{:class => "panel-title"} More community metadata
+            %h3{:class => "panel-title"} More community informations
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql? "community"
@@ -486,15 +515,36 @@
         %div
           = generate_attribute_label("useImports")
           = raw generate_attribute_input("useImports")
+
+        %div{:class => "row"}
+          %div{:class => "col-md-3"}
+            = generate_attribute_label("hasPriorVersion")
+          %div{:class => "col-md-9"}
+            = raw generate_attribute_input("hasPriorVersion")
+          %br
+
+        %div
+          = generate_attribute_label("isAlignedTo")
+          = raw generate_attribute_input("isAlignedTo")
+          %br
+
+        %div{:class => "row"}
+          %div{:class => "col-md-3"}
+            = generate_attribute_label("translationOfWork")
+          %div{:class => "col-md-9"}
+            = raw generate_attribute_input("translationOfWork")
+          %br
+
+
         %div{:style => "text-align: center;"}
-          %button#relationsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('relations')"} Add relations
+          %button#relationsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('relations')"} More relations
 
         %div#relationsDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 2em;display: none;"}
           %div{:class => "panel-heading"}
-            %h3{:class => "panel-title"} Add more relations
+            %h3{:class => "panel-title"} More relations
           %div{:class => "panel-body"}
             - for attr in @metadata
-              - if attr["display"].eql?("relations") || attr["display"].eql?("isOntology")
+              - if attr["display"].eql?("relations")
                 %div{:class => "row"}
                   %div{:class => "col-md-3"}
                     = generate_attribute_label(attr["attribute"])
@@ -514,11 +564,11 @@
           = raw generate_attribute_input("preferredNamespaceUri")
 
         %div{:style => "text-align: center;"}
-          %button#contentBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('content')"} Add content metadata
+          %button#contentBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('content')"} More content informations
 
         %div#contentDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
-            %h3{:class => "panel-title"} Add more content informations
+            %h3{:class => "panel-title"} More content informations
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql? "content"
@@ -577,20 +627,46 @@
    */
   function addValueToSelect(attr)
   {
-    var newOption = jQuery('#add_' + attr).val();
-    var selectedOptions = jQuery('#select_' + attr).val();
-    jQuery('#select_' + attr).append(jQuery('<option>', {
-      value: newOption,
-      text: newOption
-    }));
-    if (selectedOptions.constructor === Array) {
-      selectedOptions.push(newOption);
-    } else {
-      selectedOptions = newOption;
+    if(jQuery('#add_' + attr).val()) {
+      var newOption = jQuery('#add_' + attr).val();
+      var selectedOptions = jQuery('#select_' + attr).val();
+      jQuery('#select_' + attr).append(jQuery('<option>', {
+        value: newOption,
+        text: newOption
+      }));
+      if (selectedOptions.constructor === Array) {
+        selectedOptions.push(newOption);
+      } else {
+        selectedOptions = newOption;
+      }
+      jQuery('#select_' + attr).val(selectedOptions)
+      jQuery('#add_' + attr).val("");
+      jQuery('#btnAdd' + attr).hide();
+      jQuery('#add_' + attr).hide();
     }
-    jQuery('#select_' + attr).val(selectedOptions)
-    jQuery('#select_' + attr).trigger("liszt:updated");
-    jQuery('#add_' + attr).val("");
+  }
+
+  /**
+   * To add a new value to selectDropdown when btn clicked
+   */
+  function addOntoToSelect(attr)
+  {
+    if(jQuery('#add_' + attr).val()) {
+      var newOption = jQuery('#add_' + attr).val();
+      var selectedOptions = jQuery('#select_' + attr).val();
+      jQuery('#select_' + attr).append(jQuery('<option>', {
+        value: newOption,
+        text: newOption
+      }));
+      if (selectedOptions.constructor === Array) {
+        selectedOptions.push(newOption);
+      } else {
+        selectedOptions = newOption;
+      }
+      jQuery('#select_' + attr).val(selectedOptions)
+      jQuery('#select_' + attr).trigger("liszt:updated");
+      jQuery('#add_' + attr).val("");
+    }
   }
 
   /**
@@ -634,13 +710,4 @@
       theme: 'tooltipster-light',
       trigger: 'hover'
     });
-  });
-
-  /**
-   * To link text field with button (allowing enter in text field to submit button)
-   */
-  $("#id_of_textbox").keyup(function(event){
-    if(event.keyCode == 13){
-        $("#id_of_button").click();
-    }
   });
