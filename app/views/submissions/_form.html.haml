@@ -495,15 +495,14 @@
           = raw generate_attribute_input("useImports")
 
         %div{:class => "row"}
-          %div{:class => "col-md-3"}
-            = generate_attribute_label("hasPriorVersion")
-          %div{:class => "col-md-9"}
-            = raw generate_attribute_input("hasPriorVersion")
-          %br
+          = generate_attribute_label("hasPriorVersion")
+          = raw generate_attribute_input("hasPriorVersion")
 
-        %div
-          = generate_attribute_label("isAlignedTo")
-          = raw generate_attribute_input("isAlignedTo")
+        %div{:class => "row"}
+          %div{:class => "col-md-3"}
+            = generate_attribute_label("isAlignedTo")
+          %div{:class => "col-md-9"}
+            = raw generate_attribute_input("isAlignedTo")
           %br
 
         %div{:class => "row"}
