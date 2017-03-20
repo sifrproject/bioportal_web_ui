@@ -24,24 +24,6 @@ class SubmissionsController < ApplicationController
   def create
     # Make the contacts an array
     params[:submission][:contact] = params[:submission][:contact].values
-    # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
-    params[:submission][:hasOntologySyntax] = "" if params[:submission][:hasOntologySyntax].eql?("none")
-    params[:submission][:hasFormalityLevel] = "" if params[:submission][:hasFormalityLevel].eql?("none")
-    params[:submission][:isOfType] = "" if params[:submission][:isOfType].eql?("none")
-    params[:submission][:hasLicense] = "" if params[:submission][:hasLicense].eql?("none")
-    if params[:submission][:hasLicense].eql?("other")
-      params[:submission][:hasLicense] = params[:submission][:licenseText]
-    end
-    params[:submission][:usedOntologyEngineeringTool] = "" if params[:submission][:usedOntologyEngineeringTool].eql?("none")
-    if params[:submission][:usedOntologyEngineeringTool].eql?("other")
-      params[:submission][:usedOntologyEngineeringTool] = params[:submission][:ontologyToolText]
-    end
-
-    # Add new language to naturalLanguage list
-    natural_languages = params[:naturalLanguageSelect]
-    natural_languages = [] if natural_languages.nil?
-    natural_languages.concat(params[:addednaturalLanguage]) if !params[:addednaturalLanguage].nil? && params[:addednaturalLanguage] != []
-    params[:submission][:naturalLanguage] = natural_languages
 
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
@@ -108,27 +90,9 @@ class SubmissionsController < ApplicationController
     # Make the contacts an array
     params[:submission][:contact] = params[:submission][:contact].values if !params[:submission][:contact].nil?
 
-    # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
-    params[:submission][:hasOntologySyntax] = "" if params[:submission][:hasOntologySyntax].eql?("none")
-    params[:submission][:hasFormalityLevel] = "" if params[:submission][:hasFormalityLevel].eql?("none")
-    params[:submission][:hasLicense] = "" if params[:submission][:hasLicense].eql?("none")
-    params[:submission][:isOfType] = "" if params[:submission][:isOfType].eql?("none")
-    if params[:submission][:hasLicense].eql?("other")
-      params[:submission][:hasLicense] = params[:submission][:licenseText]
-    end
-    params[:submission][:usedOntologyEngineeringTool] = "" if params[:submission][:usedOntologyEngineeringTool].eql?("none")
-    if params[:submission][:usedOntologyEngineeringTool].eql?("other")
-      params[:submission][:usedOntologyEngineeringTool] = params[:submission][:ontologyToolText]
-    end
-
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     submissions = @ontology.explore.submissions
     @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
-
-    natural_languages = params[:naturalLanguageSelect]
-    natural_languages = [] if natural_languages.nil?
-    natural_languages.concat(params[:addednaturalLanguage]) if !params[:addednaturalLanguage].nil? && params[:addednaturalLanguage] != []
-    params[:submission][:naturalLanguage] = natural_languages
 
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))

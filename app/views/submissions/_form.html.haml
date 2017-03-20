@@ -262,7 +262,7 @@
         %div
           %div{:style => "width:50%; margin-bottom: 1em;"}
             = generate_attribute_label("hasFormalityLevel")
-            = select("submission", "hasFormalityLevel", [["None", "none"]].concat($FORMALITY_LEVELS.collect{ |k, v| [v,k] }), { :selected => @submission.hasFormalityLevel}, {:class => "form-control"})
+            = generate_attribute_input("hasFormalityLevel", $FORMALITY_LEVELS)
           %div{:style => "float:right;width:50%;text-align:right;"}
             Properties taken from
             = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
@@ -270,11 +270,12 @@
         %div
           %div{:style => "width:50%; margin-bottom: 1em;"}
             = generate_attribute_label("isOfType")
-            = select("submission", "isOfType", [["None", "none"]].concat($IS_OF_TYPE.collect{ |k, v| [v,k] }), { :selected => @submission.isOfType}, {:class => "form-control"})
+            = generate_attribute_input("isOfType", $IS_OF_TYPE)
 
         %div
           %div{:style => "width:50%;"}
             = generate_attribute_label("naturalLanguage")
+            = generate_attribute_input("naturalLanguage", $NATURAL_LANGUAGES)
           %div{:style => "float:right;width:50%;text-align:right;"}
             Add a natural language to the list
             %br
@@ -283,11 +284,6 @@
             with ISO639-3 code
             %br
             e.g.: http://lexvo.org/id/iso639-3/eng
-          = select_tag "naturalLanguageSelect[]", options_for_select($NATURAL_LANGUAGES.collect{ |k, v| [v,k] }, @submission.naturalLanguage),
-          :multiple => 'true', "data-placeholder".to_sym => "Click here to select languages",:style => "margin-bottom: 15px;", :id => 'naturalLanguageSelect'
-          %br
-          %button#naturalLanguageBtn{:style => "margin-bottom: 0.5em;margin-top: 0.5em;", :type => "button", :class => "btn btn-info btn-sm", :onclick => 'addInput("naturalLanguage", "text")'} Add new language
-          %div#naturalLanguageDiv
 
 
     %div{:class => "panel panel-primary"}
@@ -330,16 +326,7 @@
           = raw generate_attribute_input("publication")
         %div
           = generate_attribute_label("usedOntologyEngineeringTool")
-          %div
-            - if @submission.usedOntologyEngineeringTool.nil? || @submission.usedOntologyEngineeringTool.eql?("")
-              = select("submission", "usedOntologyEngineeringTool", [["None", "none"]].concat($ONTOLOGY_TOOLS.collect{ |k, v| [v,k] }), { :selected => "none"}, {:class => "form-control"})
-              = text_field :submission, :ontologyToolText, :style => 'display:none;margin-top:7px;'
-            - elsif $ONTOLOGY_TOOLS.include?(@submission.usedOntologyEngineeringTool)
-              = select("submission", "usedOntologyEngineeringTool", [["None", "none"]].concat($ONTOLOGY_TOOLS.collect{ |k, v| [v,k] }), { :selected => @submission.usedOntologyEngineeringTool}, {:class => "form-control"})
-              = text_field :submission, :ontologyToolText, :style => 'display:none;margin-top:7px;'
-            - else
-              = select("submission", "usedOntologyEngineeringTool", [["None", "none"]].concat($ONTOLOGY_TOOLS.collect{ |k, v| [v,k] }), { :selected => "other"}, {:class => "form-control"})
-              = text_field :submission, :ontologyToolText, :style => 'margin-top:7px;', value: @submission.usedOntologyEngineeringTool
+          = raw generate_attribute_input("usedOntologyEngineeringTool", $ONTOLOGY_TOOLS)
 
         %div{:class => "row", :style => "text-align: center;"}
           %div{:class => "col-md-3"}
@@ -433,6 +420,7 @@
       %div{:class => "panel-body"}
         %div
           = generate_attribute_label("hasLicense")
+          = raw generate_attribute_input("hasLicense", $LICENSES)
         %div{:style => "float:right;width:50%;text-align:right;"}
           Consider using a
           = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
@@ -440,16 +428,6 @@
           Consider using
           = link_to "INRIA licentia", "http://licentia.inria.fr/", target: "_blank"
           to choose your license
-        %div
-          - if @submission.hasLicense.nil? || @submission.hasLicense.eql?("")
-            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => "none", style: "margin-bottom: 1em;"}, {:class => "form-control"})
-            = text_field :submission, :licenseText, :style => 'display:none;'
-          - elsif $LICENSES.include?(@submission.hasLicense)
-            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => @submission.hasLicense, style: "margin-bottom: 1em;"}, {:class => "form-control"})
-            = text_field :submission, :licenseText, :style => 'display:none;'
-          - else
-            = select("submission", "hasLicense", [["None", "none"]].concat($LICENSES.collect{ |k, v| [v,k] }), { :selected => "other", style: "margin-bottom: 1em;"}, {:class => "form-control"})
-            = text_field :submission, :licenseText, value: @submission.hasLicense
 
         %div{:style => "text-align: center;"}
           %button#licenseBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('license')"} More licensing information
@@ -658,7 +636,10 @@
         value: newOption,
         text: newOption
       }));
-      if (selectedOptions.constructor === Array) {
+      if (selectedOptions === null) {
+        selectedOptions = [];
+        selectedOptions.push(newOption);
+      } else if (selectedOptions.constructor === Array) {
         selectedOptions.push(newOption);
       } else {
         selectedOptions = newOption;
