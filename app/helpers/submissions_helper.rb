@@ -27,8 +27,12 @@ module SubmissionsHelper
       help_text << " (#{attr["metadataMappings"].join(", ")})"
     end
 
+    if (!attr["enforce"].nil? && attr["enforce"].include?("uri"))
+      help_text << "&lt;br&gt;This metadata should be an &lt;strong&gt;URI&lt;/strong&gt;"
+    end
+
     if (attr["helpText"] != nil)
-      help_text << "&lt;br&gt;#{attr["helpText"]}"
+      help_text << "&lt;br&gt;&lt;br&gt;#{attr["helpText"]}"
     end
 
     label_html << help_tooltip(help_text, {:id => "tooltip#{attr["attribute"]}", :style => "opacity: inherit; display: inline;position: initial;margin-right: 0.5em;"}).html_safe
@@ -56,9 +60,8 @@ module SubmissionsHelper
     elsif attr["enforce"].include?("textarea")
       text_area(:submission, attr["attribute"].to_s.to_sym, rows: 3, value: @submission.send(attr["attribute"]))
 
-    # Create select dropdown when asked
-    # TODO: elsif attr["enforce"].include?("selectOther")
-    elsif attr["attribute"].eql?("hasOntologySyntax")
+    # Create select dropdown when asked. But let the user enter its own value if Other selected
+    elsif attr["enforce"].include?("selectOther")
       metadata_values = @submission.send(attr["attribute"])
       select_values = select_options.collect{ |k, v| [v,k]}
       # Add in the select ontologies that are not in the portal but are in the values
@@ -69,49 +72,55 @@ module SubmissionsHelper
           end
         end
       else
-        if !select_values.flatten.include?(metadata_values)
+        if (!select_values.flatten.include?(metadata_values) && !metadata_values.to_s.empty?)
           select_values << metadata_values
         end
       end
-      select_values << ["None", "none"]
-      select_values << ["Other", "other"]
 
       if attr["enforce"].include?("list")
         input_html << select_tag("submission[#{attr_label}][]", options_for_select(select_values, metadata_values), :multiple => 'true',
                                  "data-placeholder".to_sym => "Select ontologies", :style => "margin-bottom: 15px; width: 100%;", :id => "select_#{attr["attribute"]}", :class => "selectOntology")
 
+        input_html << text_field_tag("add_#{attr["attribute"].to_s}", nil, :style => "margin-left: 1em; margin-right: 1em;width: 16em;", :placeholder => "Or provide the value",
+                                     :onkeydown => "if (event.keyCode == 13) { addOntoToSelect('#{attr["attribute"]}'); return false;}")
+
+        input_html << button_tag("Add new value", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 2em;vertical-align: baseline;",
+                                 :type => "button", :class => "btn btn-info btn-sm", :onclick => "addOntoToSelect('#{attr["attribute"]}')")
+
       else
-        #input_html << select_tag("submission[#{attr_label}]", options_for_select(select_values, metadata_values), "data-placeholder".to_sym => "Select ontology", :style => "margin-bottom: 15px; width: 100%;", :id => "select_#{attr["attribute"]}", :class => "selectOntology", :include_blank => true)
+
+        select_values << ["None", ""]
+        select_values << ["Other", "other"]
+
+        if metadata_values.nil?
+          metadata_values = ""
+        end
 
         input_html << select("submission", attr["attribute"], select_values, { :selected => metadata_values}, {:class => "form-control", :id => "select_#{attr["attribute"]}", :style=> "margin-bottom: 1em;"})
+
+        # Button and field to add new value (that are not in the select). Show when other is selected
+        input_html << text_field_tag("add_#{attr["attribute"].to_s}", nil, :style => "margin-left: 1em; margin-right: 1em;width: 16em;display: none;", :placeholder => "Or provide the value",
+                                     :onkeydown => "if (event.keyCode == 13) { addValueToSelect('#{attr["attribute"]}'); return false;}")
+
+        input_html << button_tag("Add new value", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 2em;display: none;vertical-align: baseline;",
+                                 :type => "button", :class => "btn btn-info btn-sm", :onclick => "addValueToSelect('#{attr["attribute"]}')")
+
+        # To show/hide textbox when other option is selected or not
+        input_html << javascript_tag("$(function() {
+            $('#select_#{attr["attribute"]}').change(function() {
+              if ($('#select_#{attr["attribute"]}').val() == 'other') {
+                $('#add_#{attr["attribute"].to_s}').val("");
+                $('#btnAdd#{attr["attribute"]}').show();
+                $('#add_#{attr["attribute"].to_s}').show();
+              } else {
+                $('#btnAdd#{attr["attribute"]}').hide();
+                $('#add_#{attr["attribute"].to_s}').hide();
+              }
+            });
+          })")
+
       end
-      # Button and field to add new value (not in the select)
-      # TODO: hide this. On affiche si other est sélectionné
 
-      input_html << text_field_tag("add_#{attr["attribute"].to_s}", nil, :style => "margin-left: 1em; margin-right: 1em;width: 16em;display: none;", :placeholder => "Or provide the value")
-      input_html << button_tag("Add new value", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 2em;margin-top: 1em;display: none;vertical-align: baseline;",
-                               :type => "button", :class => "btn btn-info btn-sm", :onclick => "addValueToSelect('#{attr["attribute"]}')")
-
-      # To show/hide textbox when other option is selected or not
-      input_html << javascript_tag("$(function() {
-        $('#select_#{attr["attribute"]}').change(function() {
-          if ($('#select_#{attr["attribute"]}').val() == 'other') {
-            $('#add_#{attr["attribute"].to_s}').val("");
-            $('#btnAdd#{attr["attribute"]}').show();
-            $('#add_#{attr["attribute"].to_s}').show();
-          } else {
-            $('#btnAdd#{attr["attribute"]}').hide();
-            $('#add_#{attr["attribute"].to_s}').hide();
-          }
-        });
-      })")
-
-      # To link text field with button (allowing enter in text field to submit button)
-      input_html << javascript_tag("$('#add_#{attr["attribute"]}').keyup(function(event){
-        if(event.keyCode == 13){
-            addValueToSelect('#{attr["attribute"]}')
-        }
-        });")
 
       return input_html
 
@@ -143,15 +152,12 @@ module SubmissionsHelper
       end
       # Button and field to add new value (not in the select)
       input_html << tag(:br)
-      input_html << text_field_tag("add_#{attr["attribute"]}", nil, :style => "margin-left: 1em; margin-right: 1em;vertical-align: super;width: 16em;", :placeholder => "Ontology outside of the Portal")
+
+      input_html << text_field_tag("add_#{attr["attribute"]}", nil, :style => "margin-left: 1em; margin-right: 1em;vertical-align: super;width: 16em;",
+                                   :placeholder => "Ontology outside of the Portal", :onkeydown => "if (event.keyCode == 13) { addOntoToSelect('#{attr["attribute"]}'); return false;}")
+
       input_html << button_tag("Add new ontology", :id => "btnAdd#{attr["attribute"]}", :style => "margin-bottom: 2em;margin-top: 1em;",
                                :type => "button", :class => "btn btn-info btn-sm", :onclick => "addOntoToSelect('#{attr["attribute"]}')")
-
-      input_html << javascript_tag("$('#add_#{attr["attribute"]}').keyup(function(event){
-        if(event.keyCode == 13){
-            addOntoToSelect('#{attr["attribute"]}')
-        }
-        });")
 
       return input_html
 
