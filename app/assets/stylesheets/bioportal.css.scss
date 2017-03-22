@@ -5,6 +5,14 @@ html {
   color:#000;
   background:#76A7CC;
 }
+
+
+
+form .form-control {
+  display: inline;
+  width: auto;
+}
+
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, input, textarea, p, blockquote, th, td {
   margin:0;
   padding:0;
@@ -628,9 +636,14 @@ table.align-right th:nth-child(2) {
 
 /* Ontology submission details */
 
-#editMetadataDiv input[type="text"], input[type="url"], textarea {
+#editMetadataDiv input[type=text], input[type="url"], textarea {
   width: 90%;
-  max-width: 500px;
+  max-width: 100%;
+}
+
+.metadataInput {
+  width: 100%;
+  margin-bottom: 1em;
 }
 
 .contact {
@@ -642,6 +655,9 @@ table.align-right th:nth-child(2) {
   width: 50% !important;
 }
 
+#editMetadataDiv input.datepicker {
+  width: initial;
+}
 
 /* Resources Tab*/
 
@@ -773,8 +789,15 @@ tr.mainresource td {
 }
 
 .asterik{
-    color:red;
-    font-weight:bold;
+  color:red;
+  font-weight:bold;
+  margin-right: 0.5em;
+}
+
+.extractedAsterix{
+  color:green;
+  font-weight:bold;
+  margin-right: 0.5em;
 }
 
 #tag_clouds a{

@@ -10,6 +10,11 @@ class SubmissionsController < ApplicationController
     @submission = @ontology.explore.latest_submission
     @submission ||= LinkedData::Client::Models::OntologySubmission.new
 
+    @ontologies_for_select = []
+    LinkedData::Client::Models::Ontology.all.each do |onto|
+      @ontologies_for_select << ["#{onto.name} (#{onto.acronym})", onto.id]
+    end
+
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
     @metadata = json_metadata
@@ -19,20 +24,6 @@ class SubmissionsController < ApplicationController
   def create
     # Make the contacts an array
     params[:submission][:contact] = params[:submission][:contact].values
-    # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
-    params[:submission][:hasOntologySyntax] = "" if params[:submission][:hasOntologySyntax].eql?("none")
-    params[:submission][:hasFormalityLevel] = "" if params[:submission][:hasFormalityLevel].eql?("none")
-    params[:submission][:isOfType] = "" if params[:submission][:isOfType].eql?("none")
-    params[:submission][:hasLicense] = "" if params[:submission][:hasLicense].eql?("none")
-    if params[:submission][:hasLicense].eql?("other")
-      params[:submission][:hasLicense] = params[:submission][:licenseText]
-    end
-
-    # Add new language to naturalLanguage list
-    natural_languages = params[:naturalLanguageSelect]
-    natural_languages = [] if natural_languages.nil?
-    natural_languages.concat(params[:addednaturalLanguage]) if !params[:addednaturalLanguage].nil? && params[:addednaturalLanguage] != []
-    params[:submission][:naturalLanguage] = natural_languages
 
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
@@ -52,17 +43,6 @@ class SubmissionsController < ApplicationController
         else
           params[:submission][hash["attribute"].to_s.to_sym] = nil
         end
-      end
-      if hash["enforce"].include?("list") && !hash["display"].include?("no")
-        metadata_value_array = []
-        if !params[:submission][hash["attribute"]].nil? && !params[:submission][hash["attribute"]].eql?("")
-          metadata_value_array.push(params[:submission][hash["attribute"]])
-        end
-        if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
-          # Get added values for list
-          metadata_value_array = metadata_value_array.concat(params["added#{hash["attribute"]}".to_sym])
-        end
-        params[:submission][hash["attribute"]] = metadata_value_array
       end
     end
 
@@ -95,6 +75,11 @@ class SubmissionsController < ApplicationController
     submissions = @ontology.explore.submissions
     @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
 
+    @ontologies_for_select = []
+    LinkedData::Client::Models::Ontology.all.each do |onto|
+      @ontologies_for_select << ["#{onto.name} (#{onto.acronym})", onto.id]
+    end
+
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
     @metadata = json_metadata
@@ -103,24 +88,11 @@ class SubmissionsController < ApplicationController
   # When editing a submission (called when submit "Edit submission information" form)
   def update
     # Make the contacts an array
-    params[:submission][:contact] = params[:submission][:contact].values
+    params[:submission][:contact] = params[:submission][:contact].values if !params[:submission][:contact].nil?
 
-    # Update also hasOntologySyntax and hasFormalityLevel that are in select tag and cant be in params[:submission]
-    params[:submission][:hasOntologySyntax] = "" if params[:submission][:hasOntologySyntax].eql?("none")
-    params[:submission][:hasFormalityLevel] = "" if params[:submission][:hasFormalityLevel].eql?("none")
-    params[:submission][:hasLicense] = "" if params[:submission][:hasLicense].eql?("none")
-    params[:submission][:isOfType] = "" if params[:submission][:isOfType].eql?("none")
-    if params[:submission][:hasLicense].eql?("other")
-      params[:submission][:hasLicense] = params[:submission][:licenseText]
-    end
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     submissions = @ontology.explore.submissions
     @submission = submissions.select {|o| o.submissionId == params["id"].to_i}.first
-
-    natural_languages = params[:naturalLanguageSelect]
-    natural_languages = [] if natural_languages.nil?
-    natural_languages.concat(params[:addednaturalLanguage]) if !params[:addednaturalLanguage].nil? && params[:addednaturalLanguage] != []
-    params[:submission][:naturalLanguage] = natural_languages
 
     # Get the submission metadata from the REST API
     json_metadata = JSON.parse(Net::HTTP.get(URI.parse("#{REST_URI}/submission_metadata?apikey=#{API_KEY}")))
@@ -140,17 +112,6 @@ class SubmissionsController < ApplicationController
         else
           params[:submission][hash["attribute"].to_s.to_sym] = nil
         end
-      end
-      if hash["enforce"].include?("list") && !hash["display"].include?("no")
-        metadata_value_array = []
-        if !params[:submission][hash["attribute"]].nil? && !params[:submission][hash["attribute"]].eql?("")
-          metadata_value_array.push(params[:submission][hash["attribute"]])
-        end
-        if !params["added#{hash["attribute"]}".to_sym].nil? && params["added#{hash["attribute"]}".to_sym] != []
-          # Get added values for list
-          metadata_value_array = metadata_value_array.concat(params["added#{hash["attribute"]}".to_sym])
-        end
-        params[:submission][hash["attribute"]] = metadata_value_array
       end
     end
 

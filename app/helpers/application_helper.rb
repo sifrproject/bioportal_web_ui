@@ -216,6 +216,18 @@ module ApplicationHelper
     BLOCK
   end
 
+  # Create a popup button with a ? inside to display help when hovered
+  def help_tooltip(content, html_attribs = {})
+    html_attribs["title"] = content
+    attribs = []
+    html_attribs.each {|k,v| attribs << "#{k.to_s}='#{v}'"}
+    return <<-BLOCK
+          <button type="button" class='pop_window help_link tooltip' #{attribs.join(" ")}>
+            <span class="pop_window ui-icon ui-icon-help"></span>
+          </button>
+    BLOCK
+  end
+
   def anonymous_user
     #
     # TODO: Fix and failures from removing 'DataAccess' call here.
