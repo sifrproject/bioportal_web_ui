@@ -233,57 +233,67 @@
       %div{:class => "panel-body"}
 
         %div
-          = generate_attribute_label("URI")
-          = raw generate_attribute_input("URI")
+          %div.col-md-3
+            = generate_attribute_label("URI")
+          %div.col-md-9
+            = raw generate_attribute_input("URI")
 
         %div
-          = generate_attribute_label("status")
-          %span.asterik *
-          - selected_status = @submission.status ? @submission.status : "alpha"
-          - status_options = ["alpha", "beta", "production", "retired"]
-          = select :submission, :status, status_options, { :selected => selected_status, :required => true}, {:class => "form-control"}
+          %div.col-md-3
+            = generate_attribute_label("status")
+            %span.asterik *
+          %div.col-md-9
+            - selected_status = @submission.status ? @submission.status : "alpha"
+            - status_options = ["alpha", "beta", "production", "retired"]
+            = select :submission, :status, status_options, { :selected => selected_status, :required => true}, {:class => "form-control"}
 
         %div
-          = generate_attribute_label("deprecated")
-          = raw generate_attribute_input("deprecated")
+          %div.col-md-3
+            = generate_attribute_label("deprecated")
+          %div.col-md-9
+            = raw generate_attribute_input("deprecated")
 
         %div
-          = generate_attribute_label("version")
-          = raw generate_attribute_input("version")
+          %div.col-md-3
+            = generate_attribute_label("version")
+          %div.col-md-9
+            = raw generate_attribute_input("version")
 
         %div
-          %div{:style => "width:50%; margin-bottom: 1em;display: inline;"}
+          %div.col-md-3
             = generate_attribute_label("hasOntologySyntax")
+          %div.col-md-9
             = generate_attribute_input("hasOntologySyntax", $ONTOLOGY_SYNTAXES)
-          %div{:style => "float:right;width:50%;text-align:right;"}
-            Properties taken from
-            = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
+            %p
+              Properties taken from
+              = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
 
         %div
-          %div{:style => "width:50%; margin-bottom: 1em;"}
+          %div.col-md-3
             = generate_attribute_label("hasFormalityLevel")
+          %div.col-md-9
             = generate_attribute_input("hasFormalityLevel", $FORMALITY_LEVELS)
-          %div{:style => "float:right;width:50%;text-align:right;"}
-            Properties taken from
-            = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
+            %p
+              Properties taken from
+              = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
 
         %div
-          %div{:style => "width:50%; margin-bottom: 1em;"}
+          %div.col-md-3
             = generate_attribute_label("isOfType")
+          %div.col-md-9
             = generate_attribute_input("isOfType", $IS_OF_TYPE)
 
         %div
-          %div{:style => "width:50%;"}
+          %div.col-md-3
             = generate_attribute_label("naturalLanguage")
+          %div.col-md-9
             = generate_attribute_input("naturalLanguage", $NATURAL_LANGUAGES)
-          %div{:style => "float:right;width:50%;text-align:right;"}
-            Add a natural language to the list
-            %br
-            Consider using a
-            = link_to "Lexvo URI", "http://www.lexvo.org", target: "_blank"
-            with ISO639-3 code
-            %br
-            e.g.: http://lexvo.org/id/iso639-3/eng
+            %p
+              Consider using a
+              = link_to "Lexvo URI", "http://www.lexvo.org", target: "_blank"
+              with ISO639-3 code
+              %br
+              e.g.: http://lexvo.org/id/iso639-3/eng
 
 
     %div{:class => "panel panel-primary"}
@@ -314,6 +324,12 @@
             %div
               = generate_attribute_label("keywords")
               = raw generate_attribute_input("keywords")
+            %div
+              = generate_attribute_label("alternative")
+              = raw generate_attribute_input("alternative")
+            %div
+              = generate_attribute_label("identifier")
+              = raw generate_attribute_input("identifier")
 
         %div
           = generate_attribute_label("homepage")
@@ -401,7 +417,7 @@
         %div{:style => "text-align: center;"}
           %button#datesBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('dates')"} More dates
 
-        %div#datesDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 2em;display: none;"}
+        %div#datesDiv{:class => "panel panel-info", :style => "margin-top: 2em;display: none;"}
           %div{:class => "panel-heading"}
             %h3{:class => "panel-title"} More dates
           %div{:class => "panel-body"}
@@ -421,18 +437,18 @@
         %div
           = generate_attribute_label("hasLicense")
           = raw generate_attribute_input("hasLicense", $LICENSES)
-        %div{:style => "float:right;width:50%;text-align:right;"}
-          Consider using a
-          = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
-          %br
-          Consider using
-          = link_to "INRIA licentia", "http://licentia.inria.fr/", target: "_blank"
-          to choose your license
+          %p
+            Consider using a
+            = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
+            %br
+            Consider using
+            = link_to "INRIA licentia", "http://licentia.inria.fr/", target: "_blank"
+            to choose your license
 
         %div{:style => "text-align: center;"}
           %button#licenseBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('license')"} More licensing information
 
-        %div#licenseDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
+        %div#licenseDiv{:class => "panel panel-info", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
             %h3{:class => "panel-title"} Licensing information
           %div{:class => "panel-body"}
@@ -473,15 +489,30 @@
         %div
           = generate_attribute_label("hasCreator")
           = raw generate_attribute_input("hasCreator")
-        %div{:style => "text-align: center;"}
-          %button#communityBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('community')"} More community informations
 
-        %div#communityDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
+        %div{:class => "row", :style => "text-align: center;"}
+          %div{:class => "col-md-6"}
+            %button#communityBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success commupleBtn", :onclick => "toggleDiv('community', 'commuple')"} More community informations
+
+          %div{:class => "col-md-6"}
+            %button#peopleBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success commupleBtn", :onclick => "toggleDiv('people', 'commuple')"} More people informations
+
+        %div#communityDiv{:class => "panel panel-info commuplePanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
             %h3{:class => "panel-title"} More community informations
           %div{:class => "panel-body"}
             - for attr in @metadata
               - if attr["display"].eql? "community"
+                = generate_attribute_label(attr["attribute"])
+                = raw generate_attribute_input(attr["attribute"])
+                %br
+
+        %div#peopleDiv{:class => "panel panel-info commuplePanels", :style => "margin-top: 1em;display: none;"}
+          %div{:class => "panel-heading"}
+            %h3{:class => "panel-title"} More people informations
+          %div{:class => "panel-body"}
+            - for attr in @metadata
+              - if attr["display"].eql? "people"
                 = generate_attribute_label(attr["attribute"])
                 = raw generate_attribute_input(attr["attribute"])
                 %br
@@ -494,7 +525,7 @@
           = generate_attribute_label("useImports")
           = raw generate_attribute_input("useImports")
 
-        %div{:class => "row"}
+        %div
           = generate_attribute_label("hasPriorVersion")
           = raw generate_attribute_input("hasPriorVersion")
 
@@ -507,16 +538,16 @@
 
         %div{:class => "row"}
           %div{:class => "col-md-3"}
-            = generate_attribute_label("translationOfWork")
+            = generate_attribute_label("ontologyRelatedTo")
           %div{:class => "col-md-9"}
-            = raw generate_attribute_input("translationOfWork")
+            = raw generate_attribute_input("ontologyRelatedTo")
           %br
 
 
         %div{:style => "text-align: center;"}
           %button#relationsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('relations')"} More relations
 
-        %div#relationsDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 2em;display: none;"}
+        %div#relationsDiv{:class => "panel panel-info", :style => "margin-top: 2em;display: none;"}
           %div{:class => "panel-heading"}
             %h3{:class => "panel-title"} More relations
           %div{:class => "panel-body"}
@@ -540,10 +571,14 @@
           = generate_attribute_label("preferredNamespaceUri")
           = raw generate_attribute_input("preferredNamespaceUri")
 
-        %div{:style => "text-align: center;"}
-          %button#contentBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success", :onclick => "toggleDiv('content')"} More content informations
+        %div{:class => "row", :style => "text-align: center;"}
+          %div{:class => "col-md-6"}
+            %button#contentBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success ontocontentBtn", :onclick => "toggleDiv('content', 'ontocontent')"} More content informations
 
-        %div#contentDiv{:class => "panel panel-info metadataPanels", :style => "margin-top: 1em;display: none;"}
+          %div{:class => "col-md-6"}
+            %button#metricsBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-success ontocontentBtn", :onclick => "toggleDiv('metrics', 'ontocontent')"} More metrics informations
+
+        %div#contentDiv{:class => "panel panel-info ontocontentPanels", :style => "margin-top: 1em;display: none;"}
           %div{:class => "panel-heading"}
             %h3{:class => "panel-title"} More content informations
           %div{:class => "panel-body"}
@@ -552,6 +587,21 @@
                 = generate_attribute_label(attr["attribute"])
                 = raw generate_attribute_input(attr["attribute"])
                 %br
+
+        %div#metricsDiv{:class => "panel panel-info ontocontentPanels", :style => "margin-top: 1em;display: none;"}
+          %div{:class => "panel-heading"}
+            %h3{:class => "panel-title"} More metrics informations
+          %div{:class => "panel-body"}
+            %p
+              Metrics are automatically computed by the Portal using the OWLAPI (except the number of entities and number of axioms)
+            - for attr in @metadata
+              - if attr["display"].eql? "metrics"
+                %div{:class => "row", :style => "margin-bottom: 0.5em;"}
+                  %div{:class => "col-md-3"}
+                    = generate_attribute_label(attr["attribute"])
+                  %div{:class => "col-md-9"}
+                    = raw generate_attribute_input(attr["attribute"])
+                  %br
 
 
   %div{:style => "text-align: center;"}
@@ -663,7 +713,14 @@
         // if panel chosen isPart of description, close the others
         jQuery(".descriptionPanels").css("display", "none");
         jQuery(".descriptionBtn").removeClass("active");
+      } else if (panelGroup === "commuple") {
+        jQuery(".commuplePanels").css("display", "none");
+        jQuery(".commupleBtn").removeClass("active");
+      } else if (panelGroup === "ontocontent") {
+        jQuery(".ontocontentPanels").css("display", "none");
+        jQuery(".ontocontentBtn").removeClass("active");
       }
+
       e.style.display = 'block';
       document.getElementById(divId + "Btn").classList.add("active");
     }
