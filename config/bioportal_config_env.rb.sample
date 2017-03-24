@@ -69,6 +69,9 @@ $INTERPORTAL_HASH = {}
 # Don't load and don't display recent mappings if false, in case of too many mappings (take longer to load homepage)
 $DISPLAY_RECENT = false
 
+# If true then the UI will get available recognize at API_URL/annotators/recognizers
+$MULTIPLE_RECOGNIZERS = false
+
 # Remove download for these ontologies. Default:
 # ["CPT","ICD10","ICNP","ICPC2P","MDDB","MEDDRA","MSHFRE","MSHSPA_1","NDDF","NDFRT","NIC","RCD","SCTSPA","SNOMEDCT","WHO-ART"]
 $RESTRICTED_DOWNLOADS = ["MDRFRE", "WHO-ARTFRE", "MSHFRE", "CIM-10"]
