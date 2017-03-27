@@ -39,7 +39,7 @@ function insertSampleText() {
   if (annotator_url === "ncbo_annotatorplus") {
   	var text = "Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye.";
   } else {
-  	var text = "Un Mélanome est une tumeur maligne de mélanocytes, qui se trouvent principalement sur la peau, mais aussi dans les intestins et les yeux.";
+  	var text = "Le patient n'a aucun signe de mélanome, malgré que son père ait un cancer de la peau.";
   }
   
   
