@@ -28,7 +28,7 @@ class AnnotatorController < ApplicationController
       # Get recognizers from ontologies_api only if asked
       @recognizers = parse_json(REST_URI + "/annotator/recognizers")
     else
-      @recognizers = [:mgrep]
+      @recognizers = []
     end
     @annotator_ontologies = LinkedData::Client::Models::Ontology.all
   end
@@ -63,7 +63,7 @@ class AnnotatorController < ApplicationController
     start = Time.now
     query = ANNOTATOR_URI
     query += "?text=" + CGI.escape(text_to_annotate)
-    query += "&apikey=" + API_KEY
+    #query += "&apikey=" + annotator_apikey
     #query += "&include=prefLabel"
     # Include= prefLabel causes an internal error when retrieving mappings
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
