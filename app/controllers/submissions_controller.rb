@@ -50,7 +50,7 @@ class SubmissionsController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     # Update summaryOnly on ontology object
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
-    @ontology.update
+    @ontology.save
     @submission_saved = @submission.save
     if !@submission_saved || @submission_saved.errors
       @errors = response_errors(@submission_saved) # see application_controller::response_errors
@@ -120,7 +120,7 @@ class SubmissionsController < ApplicationController
 
     # Update summaryOnly on ontology object
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
-    @ontology.update
+    @ontology.save
     # TODO: really slow!
     # Seems like we also have a "DalliError: Response error 3: Value too large" which means it is too big to be cached
     error_response = @submission.update
