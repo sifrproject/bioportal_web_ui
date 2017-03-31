@@ -121,6 +121,8 @@ function nodeClicked(node_id) {
     jQuery('#mappings_content').html(tabData[3]);
     jQuery('#note_count').html(tabData[5]);
     jQuery('#mapping_count').html(tabData[6]);
+    jQuery('#restlink_top').html("<a href='" + jQuery(document).data().bp.config.rest_url + "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id
+        + "/classes/" + node_id + "' style='margin-bottom: 1em; margin-left: 1em;' target='_blank'>Access Class JSON</a>");
 
     // Insert notes table
     insertNotesTable(tabData["notes_table_data"]);
@@ -140,6 +142,8 @@ function nodeClicked(node_id) {
         jQuery('#mappings_content').html(tabData[3]);
         jQuery('#note_count').html(tabData[5]);
         jQuery('#mapping_count').html(tabData[6]);
+        jQuery('#restlink_top').html("<a href='" + jQuery(document).data().bp.config.rest_url + "/ontologies/" + jQuery(document).data().bp.ont_viewer.ontology_id
+            + "/classes/" + node_id + "' style='margin-bottom: 1em; margin-left: 1em;' target='_blank'>Access Class JSON</a>");
 
         // Load the resource index
         if (selectedTab == "resource_index") {
