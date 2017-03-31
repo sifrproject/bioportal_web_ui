@@ -94,6 +94,8 @@
                 Class Mappings (
                 %span#mapping_count=  #TODO_REV: Support mapping counts for concepts @concept.mapping_count
                 )
+            %li#restlink_top.tab
+              %a{:href => "#{@ontology.id}/classes/", :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"} Access Class JSON
             /- unless !$RESOURCE_INDEX_DISABLED.nil? && $RESOURCE_INDEX_DISABLED
             /  - if !@ontology.isView.eql?('true')
             /    %li#resource_index_top.tab{:onclick => "callTab('resource_index','/resource_index/resources_table?conceptids=#{@ontology.ontologyId}/#{CGI.escape(@concept.id)}');"}
