@@ -455,7 +455,9 @@ jQuery.fn.dataTableExt.oApi.fnSortNeutral = function(oSettings) {
   oSettings.oApi._fnReDraw(oSettings);
 };
 
-
+/**
+ * Generate Links to annotator REST API
+ */
 function annotatorFormatLink(param_string, format) {
   "use strict";
   // TODO: Check whether 'text' and 'tabDelimited' could work.
@@ -478,7 +480,7 @@ function annotatorFormatLink(param_string, format) {
   if (format !== 'json') {
     query += "&format=" + format;
   }
-  var link = "<a href=\"" + encodeURI(query) + "\" target=\"_blank\">" + format_map[format] + "</a>";
+  var link = "<a href=\"" + encodeURI(query) + "\" class=\"btn btn-default btn-sm\" target=\"_blank\">" + format_map[format] + "</a>";
   jQuery("#download_links_" + format.toLowerCase()).html(link);
 }
 
