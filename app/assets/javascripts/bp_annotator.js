@@ -465,7 +465,8 @@ function annotatorFormatLink(param_string, format) {
     "rdf": "RDF",
     "xml": "XML",
     "text": "Text",
-    "tabDelimited": "CSV"
+    "tabDelimited": "CSV",
+    "quaero": "QUAERO"
   };
   //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   var query = undefined;
@@ -892,6 +893,7 @@ function display_annotations(data, params) {
   jQuery("#download_links_rdf").html("");
   if (params.score === "") {
     annotatorFormatLink(param_string, "rdf");
+    annotatorFormatLink(param_string, "quaero");
   }
 
   if (params.raw !== undefined && params.raw === true) {
