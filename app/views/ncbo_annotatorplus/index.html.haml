@@ -27,7 +27,7 @@
           - if @sem_type_ont
             %br/
             %b Select UMLS Semantic Types
-            = help_icon("http://bioportal.bioontology.org/ontologies/STY", {:title => "See the Semantic network ontology"}).html_safe
+            = help_icon("http://bioportal.bioontology.org/ontologies/STY", {:title => "Browse the UMLS Semantic Network in the NCBO BioPortal"}).html_safe
             %br/
             = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
             %br/
