@@ -455,7 +455,9 @@ jQuery.fn.dataTableExt.oApi.fnSortNeutral = function(oSettings) {
   oSettings.oApi._fnReDraw(oSettings);
 };
 
-
+/**
+ * Generate Links to annotator REST API
+ */
 function annotatorFormatLink(param_string, format) {
   "use strict";
   // TODO: Check whether 'text' and 'tabDelimited' could work.
@@ -465,7 +467,8 @@ function annotatorFormatLink(param_string, format) {
     "rdf": "RDF",
     "xml": "XML",
     "text": "Text",
-    "tabDelimited": "CSV"
+    "tabDelimited": "CSV",
+    "quaero": "QUAERO"
   };
   //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   var query = undefined;
@@ -477,7 +480,7 @@ function annotatorFormatLink(param_string, format) {
   if (format !== 'json') {
     query += "&format=" + format;
   }
-  var link = "<a href='" + encodeURI(query) + "' target='_blank'>" + format_map[format] + "</a>";
+  var link = "<a href=\"" + encodeURI(query) + "\" class=\"btn btn-default btn-sm\" target=\"_blank\">" + format_map[format] + "</a>";
   jQuery("#download_links_" + format.toLowerCase()).html(link);
 }
 
@@ -883,16 +886,16 @@ function display_annotations(data, params) {
     }
     var query_encoded = BP_CONFIG.annotator_url + "?" + encodeURIComponent(param_string);
   }
-  jQuery("#annotator_parameters").html("<a href='" + query + "' class='btn btn-info' target='_blank'>Corresponding REST web service call</a>");
+  jQuery("#annotator_parameters").html("<a href=\"" + encodeURI(query) + "\" class=\"btn btn-info\" target=\"_blank\">Corresponding REST web service call</a>");
   jQuery("#annotator_parameters_encoded").html(query_encoded);
   // Add links for downloading results
-  //annotatorFormatLink("tabDelimited");
   annotatorFormatLink(param_string, "json");
   //annotatorFormatLink(param_string, "xml");
   //TODO: make RDF format works with score
   jQuery("#download_links_rdf").html("");
   if (params.score === "") {
     annotatorFormatLink(param_string, "rdf");
+    annotatorFormatLink(param_string, "quaero");
   }
 
   if (params.raw !== undefined && params.raw === true) {
