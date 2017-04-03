@@ -107,6 +107,16 @@
         "ontology[acronym]": "Please enter an acronym",
       },
     });
+
+    $('.tooltip').tooltipster({
+      interactive: true,
+      position: "right",
+      contentAsHTML: true,
+      animation: 'fade',
+      delay: 200,
+      theme: 'tooltipster-light',
+      trigger: 'hover'
+    });
   });
 
 :css
@@ -166,6 +176,8 @@
   %tr
     %th
       Viewing Restrictions
+      - viewing_help = "&lt;strong&gt;Public ontologies&lt;/strong&gt; will be accessible to everyone via UI and API. Download can be desactivated on demand.&lt;br&gt; &lt;strong&gt;Private ontologies&lt;/strong&gt; are only accessible via UI and API to logged users listed explicitly."
+      = help_tooltip(viewing_help, {:id => "viewing_tooltip", :style => "opacity: inherit; display: inline;position: initial;margin-right: 0.5em;"}).html_safe
     %td
       - view_restiction_options = [["Public", "public"], ["Private", "private"]]
       - selected = @ontology.private? ? "private" : ""
