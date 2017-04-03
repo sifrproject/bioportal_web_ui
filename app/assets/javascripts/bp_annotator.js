@@ -468,7 +468,8 @@ function annotatorFormatLink(param_string, format) {
     "xml": "XML",
     "text": "Text",
     "tabDelimited": "CSV",
-    "quaero": "QUAERO"
+    "quaero": "QUAERO",
+    "brat": "BRAT"
   };
   //var query = BP_CONFIG.rest_url + "/annotator?apikey=" + BP_CONFIG.apikey + "&" + param_string;
   var query = undefined;
@@ -895,6 +896,7 @@ function display_annotations(data, params) {
   jQuery("#download_links_rdf").html("");
   if (params.score === "") {
     annotatorFormatLink(param_string, "rdf");
+    annotatorFormatLink(param_string, "brat");
     annotatorFormatLink(param_string, "quaero");
   }
 
