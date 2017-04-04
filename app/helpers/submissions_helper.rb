@@ -40,7 +40,7 @@ module SubmissionsHelper
   end
 
   # Generate the HTML input for every attributes.
-  def generate_attribute_input(attr_label, select_options = nil)
+  def generate_attribute_input(attr_label)
     input_html = ''.html_safe
 
     # Get the attribute hash corresponding to the given attribute
@@ -60,10 +60,10 @@ module SubmissionsHelper
     elsif attr["enforce"].include?("textarea")
       text_area(:submission, attr["attribute"].to_s.to_sym, rows: 3, value: @submission.send(attr["attribute"]))
 
-    # Create select dropdown when asked. But let the user enter its own value if Other selected
-    elsif attr["enforce"].include?("selectOther")
+    # Create select dropdown when there are enforcedValues for the attr. But also let the user enter its own value if Other selected
+    elsif !attr["enforcedValues"].nil?
       metadata_values = @submission.send(attr["attribute"])
-      select_values = select_options.collect{ |k, v| [v,k]}
+      select_values = attr["enforcedValues"].collect{ |k, v| [v,k]}
       # Add in the select ontologies that are not in the portal but are in the values
       if metadata_values.kind_of?(Array)
         metadata_values.map do |metadata|

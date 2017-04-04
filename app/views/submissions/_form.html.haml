@@ -263,7 +263,7 @@
           %div.col-md-3
             = generate_attribute_label("hasOntologySyntax")
           %div.col-md-9
-            = generate_attribute_input("hasOntologySyntax", $ONTOLOGY_SYNTAXES)
+            = generate_attribute_input("hasOntologySyntax")
             %p
               Properties taken from
               = link_to "W3C URIs for file format", "https://www.w3.org/ns/formats/", target: "_blank"
@@ -272,7 +272,7 @@
           %div.col-md-3
             = generate_attribute_label("hasFormalityLevel")
           %div.col-md-9
-            = generate_attribute_input("hasFormalityLevel", $FORMALITY_LEVELS)
+            = generate_attribute_input("hasFormalityLevel")
             %p
               Properties taken from
               = link_to "DCMI KOS type vocabularies", "http://wiki.dublincore.org/index.php/NKOS_Vocabularies#KOS_Types_Vocabulary", target: "_blank"
@@ -281,13 +281,13 @@
           %div.col-md-3
             = generate_attribute_label("isOfType")
           %div.col-md-9
-            = generate_attribute_input("isOfType", $IS_OF_TYPE)
+            = generate_attribute_input("isOfType")
 
         %div
           %div.col-md-3
             = generate_attribute_label("naturalLanguage")
           %div.col-md-9
-            = generate_attribute_input("naturalLanguage", $NATURAL_LANGUAGES)
+            = generate_attribute_input("naturalLanguage")
             %p
               Consider using a
               = link_to "Lexvo URI", "http://www.lexvo.org", target: "_blank"
@@ -342,7 +342,7 @@
           = raw generate_attribute_input("publication")
         %div
           = generate_attribute_label("usedOntologyEngineeringTool")
-          = raw generate_attribute_input("usedOntologyEngineeringTool", $ONTOLOGY_TOOLS)
+          = raw generate_attribute_input("usedOntologyEngineeringTool")
 
         %div{:class => "row", :style => "text-align: center;"}
           %div{:class => "col-md-3"}
@@ -436,7 +436,7 @@
       %div{:class => "panel-body"}
         %div
           = generate_attribute_label("hasLicense")
-          = raw generate_attribute_input("hasLicense", $LICENSES)
+          = raw generate_attribute_input("hasLicense")
           %p
             Consider using a
             = link_to "URI to describe your License", "http://rdflicense.appspot.com", target: "_blank"
