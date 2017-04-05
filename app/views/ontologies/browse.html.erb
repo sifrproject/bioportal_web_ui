@@ -246,11 +246,20 @@
         </div>
 
         <div class="badges grid-25 grid-parent" ng-if="ontology.submission !== null && ontology.class_count > 0">
-          <a href="/ontologies/{{ontology.acronym}}?p=classes">
+          <a href="/ontologies/{{ontology.acronym}}?p=classes" ng-if="ontology.format !== 'SKOS'">
             <div class="grid-33 badge_grid">
               <div class="badge">
                 <div class="badge_title">classes</div>
                 <div class="badge_count">{{ontology.class_count_formatted}}</div>
+              </div>
+            </div>
+          </a>
+
+          <a href="/ontologies/{{ontology.acronym}}?p=classes" ng-if="ontology.individual_count > 0 && ontology.format === 'SKOS'">
+            <div class="grid-33 badge_grid">
+              <div class="badge">
+                <div class="badge_title">concepts</div>
+                <div class="badge_count">{{ontology.individual_count_formatted}}</div>
               </div>
             </div>
           </a>
