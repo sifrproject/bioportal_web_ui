@@ -41,6 +41,7 @@ class HomeController < ApplicationController
     # calculate bioportal summary statistics
     @ont_count = @ontologies.length
     @cls_count = LinkedData::Client::Models::Metrics.all.map {|m| m.classes.to_i}.sum
+    @individuals_count = LinkedData::Client::Models::Metrics.all.map {|m| m.individuals.to_i}.sum
     if $RESOURCE_INDEX_DISABLED == false
       begin
         @resources = LinkedData::Client::ResourceIndex.resources # application_controller
