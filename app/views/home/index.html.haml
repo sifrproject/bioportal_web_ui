@@ -147,6 +147,7 @@
           %fieldset
             %legend
               Statistics #{"in full #{$SITE}" if at_slice?}
+              = help_icon("#", {:title => "Metrics are computed by the OWL API. The number of classes and individuals roughly represent the number of concepts in the portal respectively for OWL ontologies and SKOS vocabularies"}).html_safe
             %table.minimal.align-right{:width => "100%"}
               %tbody
                 %tr
@@ -155,6 +156,9 @@
                 %tr
                   %td Classes
                   %td= number_with_delimiter(@cls_count, :delimiter => ",")
+                %tr
+                  %td Individuals
+                  %td= number_with_delimiter(@individuals_count, :delimiter => ",")
                 %tr
                   %td Projects
                   %td= LinkedData::Client::Models::Project.all.length
