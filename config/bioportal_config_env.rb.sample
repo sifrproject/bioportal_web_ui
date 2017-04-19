@@ -184,3 +184,34 @@ $FRONT_NOTICE = ''
 # EX: $SITE_NOTICE = { :unique_key => 'Put your message here (can include <a href="/link">html</a> if you use single quotes).' }
 $SITE_NOTICE = { }
 
+# Used in browse for facetted search to avoid having to call the API (for performance)
+$FORMALITY_LEVELS = {
+    "http://w3id.org/nkos/nkostype#classification_schema" => "Classification scheme",
+    "http://w3id.org/nkos/nkostype#dictionary" => "Dictionary",
+    "http://w3id.org/nkos/nkostype#gazetteer" => "Gazetteer",
+    "http://w3id.org/nkos/nkostype#glossary" => "Glossary",
+    "http://w3id.org/nkos/nkostype#list" => "List",
+    "http://w3id.org/nkos/nkostype#name_authority_list" => "Name authority list",
+    "http://w3id.org/nkos/nkostype#ontology" => "Ontology",
+    "http://w3id.org/nkos/nkostype#semantic_network" => "Semantic network",
+    "http://w3id.org/nkos/nkostype#subject_heading_scheme" => "Subject heading scheme",
+    "http://w3id.org/nkos/nkostype#synonym_ring" => "Synonym ring",
+    "http://w3id.org/nkos/nkostype#taxonomy" => "Taxonomy",
+    "http://w3id.org/nkos/nkostype#terminology" => "Terminology",
+    "http://w3id.org/nkos/nkostype#thesaurus" => "Thesaurus"
+}
+$IS_OF_TYPE = {
+    "http://omv.ontoware.org/2005/05/ontology#ApplicationOntology" => "Application Ontology",
+    "http://omv.ontoware.org/2005/05/ontology#CoreOntology" => "Core Ontology",
+    "http://omv.ontoware.org/2005/05/ontology#DomainOntology" => "Domain Ontology",
+    "http://omv.ontoware.org/2005/05/ontology#TaskOntology" => "Task Ontology",
+    "http://omv.ontoware.org/2005/05/ontology#UpperLevelOntology" => "Upper Level Ontology"
+}
+$NATURAL_LANGUAGES = {
+    "http://lexvo.org/id/iso639-3/eng" => "English",
+    "http://lexvo.org/id/iso639-3/fra" => "French",
+    "http://lexvo.org/id/iso639-3/spa" => "Spanish",
+    "http://lexvo.org/id/iso639-3/por" => "Portuguese",
+    "http://lexvo.org/id/iso639-3/ita" => "Italian",
+    "http://lexvo.org/id/iso639-3/deu" => "German"
+}
