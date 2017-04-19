@@ -8,4 +8,4 @@ Rails.application.config.assets.version = '1.0'
 
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in app/assets folder are already added.
-Rails.application.config.assets.precompile += %w( *.png *.jpg *.jpeg *.gif vendor.js d3pie.min.js d3.layout.cloud.js bp_landscape.js)
+Rails.application.config.assets.precompile += %w( *.png *.jpg *.jpeg *.gif vendor.js d3pie.min.js bp_landscape.js jqcloud-1.0.4.min.js vis.min.js)

@@ -1,31 +1,84 @@
 =javascript_include_tag "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.4/d3.min.js"
+=javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"
 =javascript_include_tag "d3pie.min"
-=javascript_include_tag "d3.layout.cloud"
+=javascript_include_tag "jqcloud-1.0.4.min"
+=javascript_include_tag "vis.min"
+- # Load bootstrap for this page from public/stylesheets
+%link{:type => "text/css", :rel => "stylesheet", :href => "/stylesheets/bootstrap.css"}
+%link{:type => "text/css", :rel => "stylesheet", :href => "/stylesheets/bootstrap-theme.css"}
 
 - @title = "Landscape"
-%div{:style => "padding: 1em;", :align => "center"}
-  %h1 Landscape
+%div{:class => "container theme-showcase", :role => "main", :style => "width: 80%; display: block;", :align => "center"}
+  %h1{:style => "font-size: 45px;"} BioPortal Landscape
+  %p Visualize data retrieved from the ontologies stored in the portal
 
-  %div#naturalLanguagePieChartDiv
+  %div{:class => "row"}
+    %div{:class => "col-md-4"}
+      %h2 Format used
+      %canvas#formatCanvas
 
-  %hr
-  %h1 Properties used in AgroPortal
+    %div{:class => "col-md-4"}
+      %h2 Ontologies by group
+      %canvas#groupsCanvas
 
+    %div{:class => "col-md-4"}
+      %h2 Ontologies by size
+      %canvas#sizeSlicesCanvas
+
+  %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
+  %h1 Properties used
+  %div#pieChartDiv
+    %div{:class => "row"}
+      %div#naturalLanguagePieChartDiv{:class => "col-md-4"}
+      %div#licensePieChartDiv{:class => "col-md-4"}
+      %div#formalityPieChartDiv{:class => "col-md-4"}
+      %div#chartTooltip{:style => "width: auto; display: none;"}
+        %span#chartTooltipValue none
+
+    %button#propertiesBtn{:style => "margin-top: 1em;", :type => "button", :class => "btn btn-primary", :onclick => "toggleDiv('properties')"} More properties charts
+
+    %div#propertiesDiv{:class => "panel panel-primary", :style => "margin-top: 2em;"}
+      %div{:class => "panel-heading"}
+        %h3{:class => "panel-title"} Pie charts for properties used for the ontologies
+      %div{:class => "panel-body"}
+        %div{:class => "row"}
+          %div{:class => "col-md-3"}
+            %div#prefLabelPropertyPieChartDiv
+          %div{:class => "col-md-3"}
+            %div#synonymPropertyPieChartDiv
+          %div{:class => "col-md-3"}
+            %div#definitionPropertyPieChartDiv
+          %div{:class => "col-md-3"}
+            %div#authorPropertyPieChartDiv
+
+  %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
+
+  %div{:class => "row"}
+    %div{:class => "col-md-6"}
+      %h1 Most active people
+      %p Most mentionned people as contact, creator, contributor, curator.
+      %div#peopleCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em; border-right: 1px solid #ccc;"}
+    %div{:class => "col-md-6"}
+      %div#orgCloudDiv{:style => "display: none;"}
+        %h1 Most active organizations
+        %p Organizations that fund and endorse the greatest number of ontologies.
+        %div#orgCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em;"}
+
+  %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
+
+  %h1 Ontology relations network
+  %p{:style => "margin-bottom: 1em;"} Relations between ontologies stored in the portal
   %div
-    %div#prefLabelPropertyPieChartDiv{:style => "float: left; width: 50%;"}
-    %div#synonymPropertyPieChartDiv{:style => "float: right; width: 50%;"}
+    = select_tag :selected_relations, options_for_select(@relations_array), :multiple => 'true', "data-placeholder".to_sym => "Filter relations", :class => "help_text"
+    %button{:type => "button", :class => "btn btn-primary", :onclick => "buildNetwork(ontologyRelationsArray)", :style => "margin-bottom: 1em;"} Refresh Network
+  %div#networkContainer{:style => "height: 500px; width: 100%; border:1px solid #cecece;"}
+    %div#ontologyNetwork
 
-  %div
-    %div#definitionPropertyPieChartDiv{:style => "float: left; width: 50%;"}
-    %div#authorPropertyPieChartDiv{:style => "float: right; width: 50%;"}
-
-  //%div#cloudChart
-
-  %hr
+  %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
   %div
     %h1 Average metrics
 
-    %table.minimal.align-right{width: "30%"}
+    %table.minimal.align-right{width: "30%", style: "margin-bottom: 3em;"}
       %tbody
         - for metric in @metrics_average
           %tr
@@ -38,12 +91,21 @@
   // Get the data to generate the pie chart for naturalLanguages
   var naturalLanguagePieJson = #{@natural_language_json_pie}
   // Get the data to generate the cloud chart for naturalLanguages
-  var cloudJson = #{@natural_language_json_cloud}
+  var peopleCountJsonCloud = #{@people_count_json_cloud}
+  var orgCountJsonCloud = #{@org_count_json_cloud}
   // Get the data for the used properties pie charts
+  var licensePieJson = #{@licenseProperty_json_pie}
+  var formalityPieJson = #{@formalityProperty_json_pie}
+
+  var ontologyRelationsArray = #{@ontology_relations_array}
+
   var prefLabelPieJson = #{@prefLabelProperty_json_pie}
   var synonymPieJson = #{@synonymProperty_json_pie}
   var definitionPieJson = #{@definitionProperty_json_pie}
   var authorPieJson = #{@authorProperty_json_pie}
+  var ontologyFormatsChartJson = #{@ontologyFormatsChartJson}
+  var groupCountChartJson = #{@groupCountChartJson}
+  var sizeSlicesChartJson = #{@sizeSlicesChartJson}
 
 
 / This javascript needs to be called after pieJson and cloudJson have been set
