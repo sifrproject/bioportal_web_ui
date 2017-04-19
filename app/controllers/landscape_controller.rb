@@ -268,19 +268,19 @@ class LandscapeController < ApplicationController
 
     # Format the ontologyFormatsCount hash as the JSON needed to generate the chart
     @ontologyFormatsChartJson = { :labels => ontologyFormatsCount.keys,
-        :datasets => [{ :label => "Ontology count", :data => ontologyFormatsCount.values,
+        :datasets => [{ :label => "Number of ontologies using each format", :data => ontologyFormatsCount.values,
                        :backgroundColor => ["#669911", "#119966", "#66A2EB", "#FCCE56"],
                        :hoverBackgroundColor => ["#66A2EB", "#FCCE56", "#669911", "#119966"]}] }
 
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
     @groupCountChartJson = { :labels => groups_hash.keys,
-                                  :datasets => [{ :label => "Number of ontologies in a group", :data => groups_hash.values,
+                                  :datasets => [{ :label => "Number of ontologies in each group", :data => groups_hash.values,
                                                   :backgroundColor => pie_colors_array,
                                                   :hoverBackgroundColor => pie_colors_array.reverse}] }
 
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
     @sizeSlicesChartJson = { :labels => size_slices_hash.keys,
-                             :datasets => [{ :label => "Number of ontologies with a class count in the range", :data => size_slices_hash.values,
+                             :datasets => [{ :label => "Number of ontologies with a class count in the given range", :data => size_slices_hash.values,
                                              :backgroundColor => pie_colors_array,
                                              :hoverBackgroundColor => pie_colors_array.reverse}] }
 
@@ -339,7 +339,7 @@ class LandscapeController < ApplicationController
     end
 
     # If attribute value property already in hash then we increment the count of the property in the hash
-    if property_hash.has_key?(attr_value)
+    if property_hash.has_key?(prefixed_attr_value)
       property_hash[prefixed_attr_value]["count"] += 1
     else
       property_hash[prefixed_attr_value] = {}

@@ -26,7 +26,8 @@
       %canvas#sizeSlicesCanvas
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
-  %h1 Properties used
+  %h1 Properties use
+  %p The proportion of properties usage among stored ontologies.
   %div#pieChartDiv
     %div{:class => "row"}
       %div#naturalLanguagePieChartDiv{:class => "col-md-4"}
@@ -70,7 +71,7 @@
   %p{:style => "margin-bottom: 1em;"} Relations between ontologies stored in the portal
   %div
     = select_tag :selected_relations, options_for_select(@relations_array), :multiple => 'true', "data-placeholder".to_sym => "Filter relations", :class => "help_text"
-    %button{:type => "button", :class => "btn btn-primary", :onclick => "buildNetwork(ontologyRelationsArray)", :style => "margin-bottom: 1em;"} Refresh Network
+    %button{:type => "button", :class => "btn btn-primary", :onclick => "buildNetwork(ontologyRelationsArray)", :style => "margin-bottom: 1em;"} Filter Network
   %div#networkContainer{:style => "height: 500px; width: 100%; border:1px solid #cecece;"}
     %div#ontologyNetwork
 
