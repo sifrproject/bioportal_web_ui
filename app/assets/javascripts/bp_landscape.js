@@ -18,23 +18,9 @@ var chartTooltipLocked = false;
 
 // Creating a pie chart using d3pie.js
 // function to generate a pie chart given 4 simple params: the div class name (the html div where the pie chart will go)
-// the JSON containing the chart data. 2 strings for chart title and subtitle
-var createPie = function(divName, json, title, subtitle) {
+// the JSON containing the chart data. groupSmall is a boolean to define if we want to group small values
+var createPie = function(divName, json, groupSmall) {
     new d3pie(divName, {
-        "header": {
-            "title": {
-                "text": title,
-                "fontSize": 22,
-                "font": "open sans"
-            },
-            "subtitle": {
-                "text": subtitle,
-                "color": "#999999",
-                "fontSize": 12,
-                "font": "open sans"
-            },
-            "titleSubtitlePadding": 9
-        },
         "footer": {
             "color": "#999999",
             "fontSize": 10,
@@ -43,10 +29,15 @@ var createPie = function(divName, json, title, subtitle) {
         },
         "size": {
             "canvasWidth": document.getElementById(divName).offsetWidth,
+            //"canvasHeight": 300,
             "pieOuterRadius": "50%"
         },
         "data": {
             "sortOrder": "value-desc",
+            "smallSegmentGrouping": {
+              "enabled": groupSmall,
+              "value": 5
+            },
             "content": json
         },
         callbacks: {
@@ -96,7 +87,7 @@ var createPie = function(divName, json, title, subtitle) {
                 "pieDistance": 15
             },
             "inner": {
-                "hideWhenLessThanPercentage": 3
+                "hideWhenLessThanPercentage": 5
             },
             "mainLabel": {
                 "fontSize": 11
@@ -130,33 +121,40 @@ var createPie = function(divName, json, title, subtitle) {
 }
 
 // To create a new pie chart: add "%div#prefLabelPieChartDiv" to html and use the createPie function
-var naturalLanguagePie = createPie("naturalLanguagePieChartDiv", naturalLanguagePieJson, "Ontologies natural languages", "Languages of the ontologies");
+var naturalLanguagePie = createPie("naturalLanguagePieChartDiv", landscapeData["natural_language_json_pie"], true);
 
-var licensePie = createPie("licensePieChartDiv", licensePieJson, "Ontologies licenses", "Licenses used by the ontologies");
+var licensePie = createPie("licensePieChartDiv", landscapeData["licenseProperty_json_pie"], true);
 
-var formalityPie = createPie("formalityPieChartDiv", formalityPieJson, "Ontologies formality levels", "Formality level of the ontologies");
+var formalityPie = createPie("formalityPieChartDiv", landscapeData["formalityProperty_json_pie"], true);
 
-var prefLabelPie = createPie("prefLabelPropertyPieChartDiv", prefLabelPieJson, "Ontologies prefLabel properties", "prefLabel property URIs used for OWL ontologies");
+var prefLabelPie = createPie("prefLabelPropertyPieChartDiv", landscapeData["prefLabelProperty_json_pie"], false);
 
-var synonymPie = createPie("synonymPropertyPieChartDiv", synonymPieJson, "Ontologies synonym properties", "synonym property URIs used for OWL ontologies");
+var synonymPie = createPie("synonymPropertyPieChartDiv", landscapeData["synonymProperty_json_pie"], false);
 
-var definitionPie = createPie("definitionPropertyPieChartDiv", definitionPieJson, "Ontologies definition properties", "definition property URIs used for OWL ontologies");
+var definitionPie = createPie("definitionPropertyPieChartDiv", landscapeData["definitionProperty_json_pie"], false);
 
-var authorPie = createPie("authorPropertyPieChartDiv", authorPieJson, "Ontologies author properties", "author property URIs used for OWL ontologies");
+var authorPie = createPie("authorPropertyPieChartDiv", landscapeData["authorProperty_json_pie"], false);
 
 // Generate the people tag cloud (from all contributors attributes)
 $(function() {
   // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
-  $("#peopleCloudChart").jQCloud(peopleCountJsonCloud);
+  $("#peopleCloudChart").jQCloud(landscapeData["people_count_json_cloud"]);
 });
 
 // Generate the organization tag cloud (from fundedBy, endorsedBy...), don't show if less than 5 words
 $(function() {
   // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
-  if (Object.keys(orgCountJsonCloud).length > 1) {
-    $("#orgCloudDiv").show();
-    $("#orgCloudChart").jQCloud(orgCountJsonCloud);
-  }
+    $("#orgCloudChart").jQCloud(landscapeData["org_count_json_cloud"]);
+});
+
+$(function() {
+  // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
+  $("#notesPeopleCloudChart").jQCloud(landscapeData["notes_people_json_cloud"]);
+});
+
+$(function() {
+  // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
+  $("#notesOntologiesCloudChart").jQCloud(landscapeData["notes_ontologies_json_cloud"]);
 });
 
 
@@ -164,7 +162,7 @@ $(function() {
 var ontologyFormatsContext = document.getElementById("formatCanvas").getContext("2d");
 var ontologyFormatsChart = new Chart(ontologyFormatsContext, {
   type: 'horizontalBar',
-  data: ontologyFormatsChartJson,
+  data: landscapeData["ontologyFormatsChartJson"],
   options: {
     scales: {
       yAxes: [{
@@ -177,7 +175,20 @@ var ontologyFormatsChart = new Chart(ontologyFormatsContext, {
 var groupCountContext = document.getElementById("groupsCanvas").getContext("2d");
 var groupCountChart = new Chart(groupCountContext, {
   type: 'bar',
-  data: groupCountChartJson,
+  data: landscapeData["groupCountChartJson"],
+  options: {
+    scales: {
+      yAxes: [{
+        stacked: true
+      }]
+    }
+  }
+});
+
+var domainCountContext = document.getElementById("domainCanvas").getContext("2d");
+var domainCountChart = new Chart(domainCountContext, {
+  type: 'bar',
+  data: landscapeData["domainCountChartJson"],
   options: {
     scales: {
       yAxes: [{
@@ -190,7 +201,7 @@ var groupCountChart = new Chart(groupCountContext, {
 var sizeSlicesContext = document.getElementById("sizeSlicesCanvas").getContext("2d");
 var sizeSlicesChart = new Chart(sizeSlicesContext, {
   type: 'bar',
-  data: sizeSlicesChartJson,
+  data: landscapeData["sizeSlicesChartJson"],
   options: {
     scales: {
       yAxes: [{
@@ -200,7 +211,7 @@ var sizeSlicesChart = new Chart(sizeSlicesContext, {
   }
 });
 
-buildNetwork(ontologyRelationsArray);
+buildNetwork(landscapeData["ontology_relations_array"]);
 
 function buildNetwork(ontologyRelationsArray) {
   var nodes = new vis.DataSet([]);
