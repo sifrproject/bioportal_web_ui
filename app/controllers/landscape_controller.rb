@@ -12,6 +12,7 @@ class LandscapeController < ApplicationController
     pie_colors_array = ["#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b", "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b", "#b0ec44", "#a4a0c9", "#322849", "#86f71a", "#d1c87f", "#7d9058", "#44b9b0", "#7c37c0", "#cc9fb1", "#e65414", "#8b6834", "#248838"];
 
     groups_hash = {}
+    domains_hash = {}
     # A hash for counting ontologies in size ranges
     size_slices_hash = {}
     size_slices_hash["< 100"] = 0
@@ -31,10 +32,12 @@ class LandscapeController < ApplicationController
 
     people_count_hash = {}
     people_count_emails = {}
+    notes_people_count_hash = {}
+    notes_ontologies_count_hash = {}
 
     org_count_hash = {}
 
-    @ontology_relations_array = []
+    ontology_relations_array = []
 
     @metrics_average = [{:attr => "numberOfClasses", :label => "Number of classes", :array => []},
                         {:attr => "numberOfIndividuals", :label => "Number of individuals", :array => []},
@@ -120,7 +123,15 @@ class LandscapeController < ApplicationController
           else
             groups_hash[group.acronym.to_s] = 1
           end
+        end
 
+        # Count number of ontologies for each domain (bar chart)
+        ont.explore.categories.each do |domain|
+          if domains_hash.has_key?(domain.acronym.to_s)
+            domains_hash[domain.acronym.to_s] += 1
+          else
+            domains_hash[domain.acronym.to_s] = 1
+          end
         end
 
         # Get people that are mentioned as ontology actors (contact, contributors, creators, curator) to create a tag cloud
@@ -172,19 +183,52 @@ class LandscapeController < ApplicationController
           end
         end
 
-        # Get ontology relations
-        @relations_array = ["omv:useImports", "omv:hasPriorVersion", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
-         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
+        notes_count = 0
+        # Get people that are mentioned as ontology actors (contact, contributors, creators, curator) to create a tag cloud
+        # hasContributor hasCreator contact(explore,name) curatedBy
+        notes_attr_list = [:notes, :reviews, :projects]
+        notes_attr_list.each do |note_attr|
+          notes_obj = ont.explore.send(note_attr.to_s)
+          if !notes_obj.nil?
+            notes_obj.each do |note|
+              notes_count += 1
+              users = note.creator
+              if !users.kind_of?(Array)
+                users = [users]
+              end
+              users.each do |user_id|
+                #user = LinkedData::Client::Models::User.find(user_id)
+                username = user_id.split('/').last
+                if notes_people_count_hash.has_key?(username)
+                  notes_people_count_hash[username] += 1
+                else
+                  notes_people_count_hash[username] = 1
+                end
+                #people_count_emails[user.username] = user.email if !user.email.nil?
+              end
+            end
+          end
+        end
 
+        notes_ontologies_count_hash[ont.acronym] = notes_count
+
+
+        # Get ontology relations between each other (ex: STY isAlignedTo GO)
+        @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
+         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
         @relations_array.each do |relation_attr|
           relation_values = sub.send(relation_attr.to_s.split(":")[1])
           if !relation_values.nil? && !relation_values.empty?
-            if relation_values.kind_of?(Array)
-              sub.ontologyRelatedTo.each do |rel_value|
-                @ontology_relations_array.push({:source => ont.id, :target=> rel_value, :relation=> relation_attr.to_s})
+            if !relation_values.kind_of?(Array)
+              relation_values = [relation_values]
+            end
+            relation_values.each do |rel_value|
+              # Use acronym if ontology in the portal
+              target_ont = LinkedData::Client::Models::Ontology.find(rel_value)
+              if target_ont
+                rel_value = target_ont.acronym
               end
-            else
-              @ontology_relations_array.push({:source => ont.id, :target=> relation_values, :relation=> relation_attr.to_s})
+              ontology_relations_array.push({:source => ont.acronym, :target=> rel_value, :relation=> relation_attr.to_s})
             end
           end
         end
@@ -197,109 +241,131 @@ class LandscapeController < ApplicationController
     end
 
     # Get the different people and organizations to generate a tag cloud
-    @people_count_json_cloud = []
-    @org_count_json_cloud = []
+    people_count_json_cloud = []
+    org_count_json_cloud = []
+    notes_ontologies_json_cloud = []
+    notes_people_json_cloud = []
 
     # Generate the JSON to put natural languages in the pie chart
-    @natural_language_json_pie = []
-    @licenseProperty_json_pie = []
-    @formalityProperty_json_pie = []
+    natural_language_json_pie = []
+    licenseProperty_json_pie = []
+    formalityProperty_json_pie = []
 
-    @prefLabelProperty_json_pie = []
-    @synonymProperty_json_pie = []
-    @definitionProperty_json_pie = []
-    @authorProperty_json_pie = []
+    prefLabelProperty_json_pie = []
+    synonymProperty_json_pie = []
+    definitionProperty_json_pie = []
+    authorProperty_json_pie = []
 
     people_count_hash.each do |people,no|
       # Random color for each word in the cloud
       colour = "%06x" % (rand * 0xffffff)
       if people_count_emails[people.to_s].nil?
-        @people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}})
+        people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}})
       else
-        @people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}, "link" => "mailto:#{people_count_emails[people.to_s]}"})
+        people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}, "link" => "mailto:#{people_count_emails[people.to_s]}"})
       end
+    end
+
+    notes_people_count_hash.each do |people,no|
+      # Random color for each word in the cloud
+      colour = "%06x" % (rand * 0xffffff)
+      notes_people_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} notes, reviews or projects."}})
+    end
+
+    notes_ontologies_count_hash.each do |onto,no|
+      # Random color for each word in the cloud
+      colour = "%06x" % (rand * 0xffffff)
+      notes_ontologies_json_cloud.push({"text"=>onto.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} notes, reviews or projects."}})
     end
 
     org_count_hash.each do |org,no|
       # Random color for each word in the cloud
       colour = "%06x" % (rand * 0xffffff)
-      @org_count_json_cloud.push({"text"=>org.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} ontologies endorsed or funded."}})
+      org_count_json_cloud.push({"text"=>org.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} ontologies endorsed or funded."}})
     end
 
     # Push the results in hash formatted for the Javascript lib that will be displaying it
     color_index = 0
     natural_language_hash.each do |lang,count_hash|
-      @natural_language_json_pie.push({"label"=>lang.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      natural_language_json_pie.push({"label"=>lang.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 1
     end
 
     color_index = 0
     licenseProperty_hash.each do |license,count_hash|
-      @licenseProperty_json_pie.push({"label"=>license.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      licenseProperty_json_pie.push({"label"=>license.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 1
     end
 
     color_index = 0
     formalityProperty_hash.each do |formality_level,count_hash|
-      @formalityProperty_json_pie.push({"label"=>formality_level.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      formalityProperty_json_pie.push({"label"=>formality_level.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 1
     end
 
     color_index = 0
     prefLabelProperty_hash.each do |pref_label,count_hash|
-      @prefLabelProperty_json_pie.push({"label"=>pref_label.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      prefLabelProperty_json_pie.push({"label"=>pref_label.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 2
     end
     color_index = 1
     synonymProperty_hash.each do |synonym,count_hash|
-      @synonymProperty_json_pie.push({"label"=>synonym.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      synonymProperty_json_pie.push({"label"=>synonym.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 2
     end
     color_index = 0
     definitionProperty_hash.each do |definition,count_hash|
-      @definitionProperty_json_pie.push({"label"=>definition.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      definitionProperty_json_pie.push({"label"=>definition.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 2
     end
     color_index = 1
     authorProperty_hash.each do |author,count_hash|
-      @authorProperty_json_pie.push({"label"=>author.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
+      authorProperty_json_pie.push({"label"=>author.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
       color_index += 2
     end
 
     # Format the ontologyFormatsCount hash as the JSON needed to generate the chart
-    @ontologyFormatsChartJson = { :labels => ontologyFormatsCount.keys,
+    ontologyFormatsChartJson = { :labels => ontologyFormatsCount.keys,
         :datasets => [{ :label => "Number of ontologies using each format", :data => ontologyFormatsCount.values,
                        :backgroundColor => ["#669911", "#119966", "#66A2EB", "#FCCE56"],
                        :hoverBackgroundColor => ["#66A2EB", "#FCCE56", "#669911", "#119966"]}] }
 
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
-    @groupCountChartJson = { :labels => groups_hash.keys,
+    groupCountChartJson = { :labels => groups_hash.keys,
                                   :datasets => [{ :label => "Number of ontologies in each group", :data => groups_hash.values,
                                                   :backgroundColor => pie_colors_array,
                                                   :hoverBackgroundColor => pie_colors_array.reverse}] }
 
+    domainCountChartJson = { :labels => domains_hash.keys,
+                             :datasets => [{ :label => "Number of ontologies in each domain", :data => domains_hash.values,
+                                             :backgroundColor => pie_colors_array,
+                                             :hoverBackgroundColor => pie_colors_array.reverse}] }
+
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
-    @sizeSlicesChartJson = { :labels => size_slices_hash.keys,
+    sizeSlicesChartJson = { :labels => size_slices_hash.keys,
                              :datasets => [{ :label => "Number of ontologies with a class count in the given range", :data => size_slices_hash.values,
                                              :backgroundColor => pie_colors_array,
                                              :hoverBackgroundColor => pie_colors_array.reverse}] }
 
-    @people_count_json_cloud = @people_count_json_cloud.to_json.html_safe
-    @org_count_json_cloud = @org_count_json_cloud.to_json.html_safe
-    @natural_language_json_pie = @natural_language_json_pie.to_json.html_safe
-    @licenseProperty_json_pie = @licenseProperty_json_pie.to_json.html_safe
-    @formalityProperty_json_pie = @formalityProperty_json_pie.to_json.html_safe
+    @landscape_data = {
+        :people_count_json_cloud => people_count_json_cloud,
+        :org_count_json_cloud => org_count_json_cloud,
+        :notes_ontologies_json_cloud => notes_ontologies_json_cloud,
+        :notes_people_json_cloud => notes_people_json_cloud,
+        :natural_language_json_pie => natural_language_json_pie,
+        :licenseProperty_json_pie => licenseProperty_json_pie,
+        :formalityProperty_json_pie => formalityProperty_json_pie,
+        :ontology_relations_array => ontology_relations_array,
+        :prefLabelProperty_json_pie => prefLabelProperty_json_pie,
+        :synonymProperty_json_pie => synonymProperty_json_pie,
+        :definitionProperty_json_pie => definitionProperty_json_pie,
+        :authorProperty_json_pie => authorProperty_json_pie,
+        :ontologyFormatsChartJson => ontologyFormatsChartJson,
+        :groupCountChartJson => groupCountChartJson,
+        :domainCountChartJson => domainCountChartJson,
+        :sizeSlicesChartJson => sizeSlicesChartJson
+    }.to_json.html_safe
 
-    @ontology_relations_array = @ontology_relations_array.to_json.html_safe
-
-    # used properties pie charts html safe formatting
-    @prefLabelProperty_json_pie = @prefLabelProperty_json_pie.to_json.html_safe
-    @synonymProperty_json_pie = @synonymProperty_json_pie.to_json.html_safe
-    @definitionProperty_json_pie = @definitionProperty_json_pie.to_json.html_safe
-    @authorProperty_json_pie = @authorProperty_json_pie.to_json.html_safe
-    @ontologyFormatsChartJson = @ontologyFormatsChartJson.to_json.html_safe
-    @groupCountChartJson = @groupCountChartJson.to_json.html_safe
-    @sizeSlicesChartJson = @sizeSlicesChartJson.to_json.html_safe
   end
 
 

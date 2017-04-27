@@ -14,25 +14,35 @@
 
   %div{:class => "row"}
     %div{:class => "col-md-4"}
-      %h2 Format used
-      %canvas#formatCanvas
-
-    %div{:class => "col-md-4"}
       %h2 Ontologies by group
       %canvas#groupsCanvas
 
     %div{:class => "col-md-4"}
+      %h2 Ontologies by domain
+      %canvas#domainCanvas
+
+    %div{:class => "col-md-4"}
       %h2 Ontologies by size
       %canvas#sizeSlicesCanvas
+
+    %div{:class => "col-md-4"}
+      %h2 Format used
+      %canvas#formatCanvas
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
   %h1 Properties use
   %p The proportion of properties usage among stored ontologies.
   %div#pieChartDiv
     %div{:class => "row"}
-      %div#naturalLanguagePieChartDiv{:class => "col-md-4"}
-      %div#licensePieChartDiv{:class => "col-md-4"}
-      %div#formalityPieChartDiv{:class => "col-md-4"}
+      %div{:class => "col-md-4"}
+        %h2 Ontologies natural languages
+        %div#naturalLanguagePieChartDiv
+      %div{:class => "col-md-4"}
+        %h2 Licenses used by the ontologies
+        %div#licensePieChartDiv
+      %div{:class => "col-md-4"}
+        %h2 Formality level of the ontologies
+        %div#formalityPieChartDiv
       %div#chartTooltip{:style => "width: auto; display: none;"}
         %span#chartTooltipValue none
 
@@ -44,12 +54,16 @@
       %div{:class => "panel-body"}
         %div{:class => "row"}
           %div{:class => "col-md-3"}
+            %h2 prefLabel property URIs used for OWL ontologies
             %div#prefLabelPropertyPieChartDiv
           %div{:class => "col-md-3"}
+            %h2 synonym property URIs used for OWL ontologies
             %div#synonymPropertyPieChartDiv
           %div{:class => "col-md-3"}
+            %h2 definition property URIs used for OWL ontologies
             %div#definitionPropertyPieChartDiv
           %div{:class => "col-md-3"}
+            %h2 author property URIs used for OWL ontologies
             %div#authorPropertyPieChartDiv
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
@@ -60,10 +74,20 @@
       %p Most mentionned people as contact, creator, contributor, curator.
       %div#peopleCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em; border-right: 1px solid #ccc;"}
     %div{:class => "col-md-6"}
-      %div#orgCloudDiv{:style => "display: none;"}
-        %h1 Most active organizations
-        %p Organizations that fund and endorse the greatest number of ontologies.
-        %div#orgCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em;"}
+      %h1 Most active organizations
+      %p Organizations that fund and endorse the greatest number of ontologies.
+      %div#orgCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em;"}
+
+  %hr{:style => "margin-top: 4em;"}
+  %div{:class => "row"}
+    %div{:class => "col-md-6"}
+      %h1 Most active people as reviewer
+      %p People that posted notes, review and projects
+      %div#notesPeopleCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em; border-right: 1px solid #ccc;"}
+    %div{:class => "col-md-6"}
+      %h1 Most active ontologies
+      %p Ontologies that have notes, review and projects
+      %div#notesOntologiesCloudChart{:style => "width: 100%; height: 350px; margin-top: 2em;"}
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
 
@@ -89,25 +113,8 @@
               = metric[:average]
 
 :javascript
-  // Get the data to generate the pie chart for naturalLanguages
-  var naturalLanguagePieJson = #{@natural_language_json_pie}
-  // Get the data to generate the cloud chart for naturalLanguages
-  var peopleCountJsonCloud = #{@people_count_json_cloud}
-  var orgCountJsonCloud = #{@org_count_json_cloud}
-  // Get the data for the used properties pie charts
-  var licensePieJson = #{@licenseProperty_json_pie}
-  var formalityPieJson = #{@formalityProperty_json_pie}
-
-  var ontologyRelationsArray = #{@ontology_relations_array}
-
-  var prefLabelPieJson = #{@prefLabelProperty_json_pie}
-  var synonymPieJson = #{@synonymProperty_json_pie}
-  var definitionPieJson = #{@definitionProperty_json_pie}
-  var authorPieJson = #{@authorProperty_json_pie}
-  var ontologyFormatsChartJson = #{@ontologyFormatsChartJson}
-  var groupCountChartJson = #{@groupCountChartJson}
-  var sizeSlicesChartJson = #{@sizeSlicesChartJson}
-
+  // Get the data to generate the charts
+  var landscapeData = #{@landscape_data}
 
 / This javascript needs to be called after pieJson and cloudJson have been set
 =javascript_include_tag "bp_landscape"
