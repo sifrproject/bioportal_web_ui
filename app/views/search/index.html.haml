@@ -5,7 +5,7 @@
     %p
       Search for a class in multiple ontologies  #{help_icon("/help#Search_Tab").html_safe}
     = text_field :search, :keywords, :style => "width: 426px; height: 20px; float: left; margin-right: 1em;"
-    = button_to "Search", {}, :style => "font-size: 10pt !important; margin: -1.5px 0 0;", :id => "search_button"
+    = button_to "Search", {}, :style => "font-size: 10pt !important; margin: -1.5px 0 0;", :id => "search_button", :class => "link_button ui-button ui-widget ui-state-default ui-corner-all"
     %span
       %span#search_spinner{:style => "position: relative; left: 85px; display: none; padding: 4px;"}
         \&nbsp;

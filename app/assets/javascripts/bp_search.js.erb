@@ -129,9 +129,10 @@ jQuery(document).ready(function() {
     jQuery("#search_categories").chosen({
         search_contains: true
     });
+    /* Comment it because it is changing the button value to nothing (and it is a param for chosen, don't seems useful for button)
     jQuery("#search_button").button({
         search_contains: true
-    });
+    });*/
     jQuery("#search_button").click(function(event) {
         ajax_process_halt();
     });
