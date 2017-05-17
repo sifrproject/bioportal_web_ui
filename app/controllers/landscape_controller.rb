@@ -81,7 +81,6 @@ class LandscapeController < ApplicationController
     # Iterate ontologies to get the submissions with all metadata
     @submissions.each do |sub|
       ont = sub.ontology
-      puts ont.acronym
 
       if !sub.nil?
 
