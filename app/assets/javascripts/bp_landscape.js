@@ -37,6 +37,7 @@ var createPie = function(divName, json, groupSmall) {
             "smallSegmentGrouping": {
               "enabled": groupSmall,
               "value": 5
+              // To group small pie value as Other
             },
             "content": json
         },
@@ -50,7 +51,13 @@ var createPie = function(divName, json, groupSmall) {
                 .style("z-index", 1)
               d3.select("#chartTooltipValue")
                 .text(d.data.uri);
-              $("#chartTooltip").show();
+              // Don't show tooltip when text is empty (for Others)
+              if (d.data.uri) {
+                $("#chartTooltip").show();
+              }
+            }
+            if (!d.data.uri) {
+              $("#chartTooltip").hide();
             }
           },
           onClickSegment: function(d) {
@@ -71,7 +78,9 @@ var createPie = function(divName, json, groupSmall) {
                 .style("opacity", 1)
               d3.select("#chartTooltipValue")
                 .text(d.data.uri);
-              $("#chartTooltip").show();
+              if (d.data.uri) {
+                $("#chartTooltip").show();
+              }
             }
           },
           onMouseoutSegment: function(info) {
@@ -125,8 +134,6 @@ var naturalLanguagePie = createPie("naturalLanguagePieChartDiv", landscapeData["
 
 var licensePie = createPie("licensePieChartDiv", landscapeData["licenseProperty_json_pie"], true);
 
-var formalityPie = createPie("formalityPieChartDiv", landscapeData["formalityProperty_json_pie"], true);
-
 var prefLabelPie = createPie("prefLabelPropertyPieChartDiv", landscapeData["prefLabelProperty_json_pie"], false);
 
 var synonymPie = createPie("synonymPropertyPieChartDiv", landscapeData["synonymProperty_json_pie"], false);
@@ -157,12 +164,41 @@ $(function() {
   $("#notesOntologiesCloudChart").jQCloud(landscapeData["notes_ontologies_json_cloud"]);
 });
 
+//console.log(landscapeData);
 
 // Horizontal bar charts for format (OWL, SKOS, UMLS)
 var ontologyFormatsContext = document.getElementById("formatCanvas").getContext("2d");
 var ontologyFormatsChart = new Chart(ontologyFormatsContext, {
   type: 'horizontalBar',
   data: landscapeData["ontologyFormatsChartJson"],
+  options: {
+    scales: {
+      yAxes: [{
+        stacked: true
+      }]
+    }
+  }
+});
+
+// Horizontal bar charts for ontologies types
+var isOfTypeContext = document.getElementById("isOfTypeCanvas").getContext("2d");
+var isOfTypeChart = new Chart(isOfTypeContext, {
+  type: 'horizontalBar',
+  data: landscapeData["isOfTypeChartJson"],
+  options: {
+    scales: {
+      yAxes: [{
+        stacked: true
+      }]
+    }
+  }
+});
+
+// Vertical bar charts for ontologies formality levels
+var formalityLevelContext = document.getElementById("formalityLevelCanvas").getContext("2d");
+var formalityLevelChart = new Chart(formalityLevelContext, {
+  type: 'bar',
+  data: landscapeData["formalityLevelChartJson"],
   options: {
     scales: {
       yAxes: [{

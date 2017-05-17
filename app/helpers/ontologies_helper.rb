@@ -99,7 +99,7 @@ module OntologiesHelper
   # Creates a link based on the status of an ontology submission
   def download_link(submission, ontology = nil)
     ontology ||= @ontology
-    if submission.ontology.summaryOnly
+    if ontology.summaryOnly
       if submission.homepage.nil?
         link = 'N/A'
       else
@@ -135,13 +135,16 @@ module OntologiesHelper
   end
 
   # Creates a link based on the status of an ontology submission
-  def status_link(submission, latest=false, target="")
+  def status_link(submission, sub_ontology=nil, latest=false, target="")
     version_text = submission.version.nil? || submission.version.length == 0 ? "unknown" : submission.version
     status_text = " <span class='ontology_submission_status'>" + submission_status2string(submission) + "</span>"
-    if submission.ontology.summaryOnly || latest==false
+    if sub_ontology.nil?
+      sub_ontology = submission.explore.ontology
+    end
+    if sub_ontology.summaryOnly || latest==false
       version_link = version_text
     else
-      version_link = "<a href='/ontologies/#{submission.ontology.acronym}?p=classes' #{target.empty? ? "" : "target='#{target}'"}>#{version_text}</a>"
+      version_link = "<a href='/ontologies/#{sub_ontology.acronym}?p=classes' #{target.empty? ? "" : "target='#{target}'"}>#{version_text}</a>"
     end
     return version_link + status_text
   end
