@@ -9,7 +9,9 @@
 
 - @title = "Landscape"
 %div{:class => "container theme-showcase", :role => "main", :style => "width: 80%; display: block;", :align => "center"}
-  %h1{:style => "font-size: 45px;"} BioPortal Landscape
+  %h1{:style => "font-size: 45px;"}
+    = $SITE
+    Landscape
   %p Visualize data retrieved from the ontologies stored in the portal
 
   %div{:class => "row"}
@@ -18,7 +20,7 @@
       %canvas#groupsCanvas
 
     %div{:class => "col-md-4"}
-      %h2 Ontologies by domain
+      %h2 Ontologies by category
       %canvas#domainCanvas
 
     %div{:class => "col-md-4"}
@@ -29,20 +31,25 @@
       %h2 Format used
       %canvas#formatCanvas
 
+    %div{:class => "col-md-4"}
+      %h2 Ontology types
+      %canvas#isOfTypeCanvas
+
+    %div{:class => "col-md-4"}
+      %h2 Ontology formality levels
+      %canvas#formalityLevelCanvas
+
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
   %h1 Properties use
   %p The proportion of properties usage among stored ontologies.
   %div#pieChartDiv
     %div{:class => "row"}
-      %div{:class => "col-md-4"}
+      %div{:class => "col-md-6"}
         %h2 Ontologies natural languages
         %div#naturalLanguagePieChartDiv
-      %div{:class => "col-md-4"}
+      %div{:class => "col-md-6"}
         %h2 Licenses used by the ontologies
         %div#licensePieChartDiv
-      %div{:class => "col-md-4"}
-        %h2 Formality level of the ontologies
-        %div#formalityPieChartDiv
       %div#chartTooltip{:style => "width: auto; display: none;"}
         %span#chartTooltipValue none
 

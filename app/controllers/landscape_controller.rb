@@ -5,7 +5,7 @@ class LandscapeController < ApplicationController
   layout 'ontology'
 
   def index
-    @ontologies = LinkedData::Client::Models::Ontology.all(include_views: false)
+    #@ontologies = LinkedData::Client::Models::Ontology.all(include_views: false)
     #@submissions = LinkedData::Client::Models::OntologySubmission.all(values: params[:submission])
 
     # Array with color codes for the pie charts. iterate color_index to change color
@@ -24,6 +24,7 @@ class LandscapeController < ApplicationController
     natural_language_hash = {}
     licenseProperty_hash = {}
     formalityProperty_hash = {}
+    isOfTypeProperty_hash = {}
 
     prefLabelProperty_hash = {}
     synonymProperty_hash = {}
@@ -32,12 +33,14 @@ class LandscapeController < ApplicationController
 
     people_count_hash = {}
     people_count_emails = {}
-    notes_people_count_hash = {}
-    notes_ontologies_count_hash = {}
 
     org_count_hash = {}
 
     ontology_relations_array = []
+
+    ontologyFormatsCount = {"OWL" => 0, "SKOS" => 0, "UMLS" => 0, "OBO" => 0}
+    formalityLevelCount = {}
+    isOfTypeCount = {}
 
     @metrics_average = [{:attr => "numberOfClasses", :label => "Number of classes", :array => []},
                         {:attr => "numberOfIndividuals", :label => "Number of individuals", :array => []},
@@ -50,11 +53,35 @@ class LandscapeController < ApplicationController
                         {:attr => "classesWithNoDefinition", :label => "Classes with no definition	", :array => []},
                         {:attr => "numberOfAxioms", :label => "Number of axioms (triples)", :array => []}]
 
-    ontologyFormatsCount = {"OWL" => 0, "SKOS" => 0, "UMLS" => 0, "OBO" => 0}
+    # Attributes to include. To avoid to get everything and make it faster
+    # They are also used to get the value of each property later in the controller
+    # TODO: define here the attributes you want to retrieve to create visualization
+
+    # Attributes that we need to retrieve to perform landscape
+    sub_attributes = [:submissionId, :ontology, :group, :hasDomain, :hasOntologyLanguage, :naturalLanguage, :hasLicense, :hasFormalityLevel, :isOfType, :contact, :name, :email]
+
+    pref_properties_attributes = [:prefLabelProperty, :synonymProperty, :definitionProperty, :authorProperty]
+
+    contributors_attr_list = [:hasContributor, :hasCreator, :curatedBy]
+    org_attr_list = [:fundedBy, :endorsedBy]
+
+    @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
+                        "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
+    # We need prefixes to display them, we remove them to call them in the include
+    relations_attributes = @relations_array.map {|r| r.to_s.split(":")[1]}
+    metrics_attributes = @metrics_average.map {|m| m[:attr]}
+
+    # Concat all attributes array and generate a string separated with comma for include param
+    all_attributes = sub_attributes.concat(contributors_attr_list).concat(org_attr_list)
+                         .concat(relations_attributes).concat(metrics_attributes).concat(pref_properties_attributes).join(",")
+
+
+    @submissions = LinkedData::Client::Models::OntologySubmission.all(include_status: "any", include_views: true, display_links: false, display_context: false, include: all_attributes)
 
     # Iterate ontologies to get the submissions with all metadata
-    @ontologies.each do |ont|
-      sub = ont.explore.latest_submission
+    @submissions.each do |sub|
+      ont = sub.ontology
+      puts ont.acronym
 
       if !sub.nil?
 
@@ -80,6 +107,8 @@ class LandscapeController < ApplicationController
         licenseProperty_hash = get_used_properties(sub.hasLicense, nil, licenseProperty_hash)
 
         formalityProperty_hash = get_used_properties(sub.hasFormalityLevel, nil, formalityProperty_hash)
+
+        isOfTypeProperty_hash = get_used_properties(sub.isOfType, nil, isOfTypeProperty_hash)
 
         # Get the prefLabelProperty used for OWL properties in a hash
         if sub.hasOntologyLanguage.eql?("OWL")
@@ -117,26 +146,25 @@ class LandscapeController < ApplicationController
         ontologyFormatsCount[sub.hasOntologyLanguage] += 1
 
         # Count number of ontologies for each group (bar chart)
-        ont.explore.groups.each do |group|
-          if groups_hash.has_key?(group.acronym.to_s)
-            groups_hash[group.acronym.to_s] += 1
+        ont.group.each do |group|
+          if groups_hash.has_key?(group.to_s.split("/")[-1])
+            groups_hash[group.to_s.split("/")[-1]] += 1
           else
-            groups_hash[group.acronym.to_s] = 1
+            groups_hash[group.to_s.split("/")[-1]] = 1
           end
         end
 
         # Count number of ontologies for each domain (bar chart)
-        ont.explore.categories.each do |domain|
-          if domains_hash.has_key?(domain.acronym.to_s)
-            domains_hash[domain.acronym.to_s] += 1
+        ont.hasDomain.each do |domain|
+          if domains_hash.has_key?(domain.to_s.split("/")[-1])
+            domains_hash[domain.to_s.split("/")[-1]] += 1
           else
-            domains_hash[domain.acronym.to_s] = 1
+            domains_hash[domain.to_s.split("/")[-1]] = 1
           end
         end
 
         # Get people that are mentioned as ontology actors (contact, contributors, creators, curator) to create a tag cloud
         # hasContributor hasCreator contact(explore,name) curatedBy
-        contributors_attr_list = [:hasContributor, :hasCreator, :curatedBy]
         contributors_attr_list.each do |contributor|
           contributor_label = sub.send(contributor.to_s).to_s
           if !contributor_label.nil?
@@ -162,7 +190,6 @@ class LandscapeController < ApplicationController
           end
         end
 
-        org_attr_list = [:fundedBy, :endorsedBy]
         org_attr_list.each do |attr|
           contributors_list = sub.send(attr.to_s)
           if !contributors_list.kind_of?(Array)
@@ -183,39 +210,7 @@ class LandscapeController < ApplicationController
           end
         end
 
-        notes_count = 0
-        # Get people that are mentioned as ontology actors (contact, contributors, creators, curator) to create a tag cloud
-        # hasContributor hasCreator contact(explore,name) curatedBy
-        notes_attr_list = [:notes, :reviews, :projects]
-        notes_attr_list.each do |note_attr|
-          notes_obj = ont.explore.send(note_attr.to_s)
-          if !notes_obj.nil?
-            notes_obj.each do |note|
-              notes_count += 1
-              users = note.creator
-              if !users.kind_of?(Array)
-                users = [users]
-              end
-              users.each do |user_id|
-                #user = LinkedData::Client::Models::User.find(user_id)
-                username = user_id.split('/').last
-                if notes_people_count_hash.has_key?(username)
-                  notes_people_count_hash[username] += 1
-                else
-                  notes_people_count_hash[username] = 1
-                end
-                #people_count_emails[user.username] = user.email if !user.email.nil?
-              end
-            end
-          end
-        end
-
-        notes_ontologies_count_hash[ont.acronym] = notes_count
-
-
         # Get ontology relations between each other (ex: STY isAlignedTo GO)
-        @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
-         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
         @relations_array.each do |relation_attr|
           relation_values = sub.send(relation_attr.to_s.split(":")[1])
           if !relation_values.nil? && !relation_values.empty?
@@ -240,11 +235,88 @@ class LandscapeController < ApplicationController
       metrics[:average] = (metrics[:array].sum / metrics[:array].size.to_f).round(2)
     end
 
+
+    notes_people_count_hash = {}
+    notes_ontologies_count_hash = {}
+
+    # Retrieve user and ontologies from Reviews, Projects and Notes
+    reviews = LinkedData::Client::Models::Review.all
+    reviews.each do |review|
+      notes_people_count_hash = notes_create_hash_entry(review.creator, :reviews, notes_people_count_hash)
+      notes_ontologies_count_hash = notes_create_hash_entry(review.ontologyReviewed, :reviews, notes_ontologies_count_hash)
+    end
+
+    projects = LinkedData::Client::Models::Project.all
+    projects.each do |project|
+      project.creator.each do |creator|
+        notes_people_count_hash = notes_create_hash_entry(creator, :projects, notes_people_count_hash)
+      end
+      project.ontologyUsed.each do |onto_used|
+        notes_ontologies_count_hash = notes_create_hash_entry(onto_used, :projects, notes_ontologies_count_hash)
+      end
+    end
+
+    notes = LinkedData::Client::Models::Note.all
+    notes.each do |note|
+      notes_people_count_hash = notes_create_hash_entry(note.creator, :notes, notes_people_count_hash)
+      note.relatedOntology.each do |related_onto|
+        notes_ontologies_count_hash = notes_create_hash_entry(related_onto, :notes, notes_ontologies_count_hash)
+      end
+    end
+
+    # Build the array of hashes used to create the Tag cloud
+    notes_ontologies_json_cloud = []
+    notes_people_json_cloud = []
+
+    notes_people_count_hash.each do |people,hash_counts|
+      # Random color for each word in the cloud
+      colour = "%06x" % (rand * 0xffffff)
+      title_array = []
+      total_count = 0
+      if hash_counts.has_key?(:projects)
+        title_array.push("#{hash_counts[:projects]} projects")
+        total_count += hash_counts[:projects]
+      end
+      if hash_counts.has_key?(:notes)
+        title_array.push("#{hash_counts[:notes]} notes")
+        total_count += hash_counts[:notes]
+      end
+      if hash_counts.has_key?(:reviews)
+        title_array.push("#{hash_counts[:reviews]} reviews")
+        total_count += hash_counts[:reviews]
+      end
+      if total_count > 0
+        notes_people_json_cloud.push({"text"=>people.to_s,"weight"=>hash_counts, "html" => {style: "color: ##{colour};", title: title_array.join(", ")}, "link" => hash_counts[:uri]})
+      end
+    end
+
+    notes_ontologies_count_hash.each do |onto,hash_counts|
+      # Random color for each word in the cloud
+      colour = "%06x" % (rand * 0xffffff)
+      title_array = []
+      total_count = 0
+      if hash_counts.has_key?(:projects)
+        title_array.push("#{hash_counts[:projects]} projects")
+        total_count += hash_counts[:projects]
+      end
+      if hash_counts.has_key?(:notes)
+        title_array.push("#{hash_counts[:notes]} notes")
+        total_count += hash_counts[:notes]
+      end
+      if hash_counts.has_key?(:reviews)
+        title_array.push("#{hash_counts[:reviews]} reviews")
+        total_count += hash_counts[:reviews]
+      end
+      if total_count > 0
+        notes_ontologies_json_cloud.push({"text"=>onto.to_s,"weight"=>total_count, "html" => {style: "color: ##{colour};", title: title_array.join(", ")}, "link" => hash_counts[:uri]})
+      end
+    end
+
+
+
     # Get the different people and organizations to generate a tag cloud
     people_count_json_cloud = []
     org_count_json_cloud = []
-    notes_ontologies_json_cloud = []
-    notes_people_json_cloud = []
 
     # Generate the JSON to put natural languages in the pie chart
     natural_language_json_pie = []
@@ -266,18 +338,6 @@ class LandscapeController < ApplicationController
       end
     end
 
-    notes_people_count_hash.each do |people,no|
-      # Random color for each word in the cloud
-      colour = "%06x" % (rand * 0xffffff)
-      notes_people_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} notes, reviews or projects."}})
-    end
-
-    notes_ontologies_count_hash.each do |onto,no|
-      # Random color for each word in the cloud
-      colour = "%06x" % (rand * 0xffffff)
-      notes_ontologies_json_cloud.push({"text"=>onto.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} notes, reviews or projects."}})
-    end
-
     org_count_hash.each do |org,no|
       # Random color for each word in the cloud
       colour = "%06x" % (rand * 0xffffff)
@@ -297,10 +357,13 @@ class LandscapeController < ApplicationController
       color_index += 1
     end
 
-    color_index = 0
     formalityProperty_hash.each do |formality_level,count_hash|
-      formalityProperty_json_pie.push({"label"=>formality_level.to_s,"value"=>count_hash["count"], "color"=>pie_colors_array[color_index], "uri"=>count_hash["uri"]})
-      color_index += 1
+      # Generate formalityLevel JSON used to get the bar charts
+      formalityLevelCount[formality_level.to_s] = count_hash["count"]
+    end
+
+    isOfTypeProperty_hash.each do |isOfType,count_hash|
+      isOfTypeCount[isOfType.to_s] = count_hash["count"]
     end
 
     color_index = 0
@@ -330,6 +393,16 @@ class LandscapeController < ApplicationController
                        :backgroundColor => ["#669911", "#119966", "#66A2EB", "#FCCE56"],
                        :hoverBackgroundColor => ["#66A2EB", "#FCCE56", "#669911", "#119966"]}] }
 
+    isOfTypeChartJson = { :labels => isOfTypeCount.keys,
+                                 :datasets => [{ :label => "Number of ontologies of this type", :data => isOfTypeCount.values,
+                                                 :backgroundColor => pie_colors_array,
+                                                 :hoverBackgroundColor => pie_colors_array.reverse}] }
+
+    formalityLevelChartJson = { :labels => formalityLevelCount.keys,
+                          :datasets => [{ :label => "Number of ontologies of this formality level", :data => formalityLevelCount.values,
+                                          :backgroundColor => pie_colors_array,
+                                          :hoverBackgroundColor => pie_colors_array.reverse}] }
+
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
     groupCountChartJson = { :labels => groups_hash.keys,
                                   :datasets => [{ :label => "Number of ontologies in each group", :data => groups_hash.values,
@@ -354,18 +427,34 @@ class LandscapeController < ApplicationController
         :notes_people_json_cloud => notes_people_json_cloud,
         :natural_language_json_pie => natural_language_json_pie,
         :licenseProperty_json_pie => licenseProperty_json_pie,
-        :formalityProperty_json_pie => formalityProperty_json_pie,
         :ontology_relations_array => ontology_relations_array,
         :prefLabelProperty_json_pie => prefLabelProperty_json_pie,
         :synonymProperty_json_pie => synonymProperty_json_pie,
         :definitionProperty_json_pie => definitionProperty_json_pie,
         :authorProperty_json_pie => authorProperty_json_pie,
         :ontologyFormatsChartJson => ontologyFormatsChartJson,
+        :isOfTypeChartJson => isOfTypeChartJson,
+        :formalityLevelChartJson => formalityLevelChartJson,
         :groupCountChartJson => groupCountChartJson,
         :domainCountChartJson => domainCountChartJson,
         :sizeSlicesChartJson => sizeSlicesChartJson
     }.to_json.html_safe
 
+  end
+
+  # For notes takes the hash and create the entry if not already existing
+  # To create hash like this: {"user1": {"reviews": 3, "notes": 4, "projects": 4}}
+  def notes_create_hash_entry(uri_id, notes_type, hash)
+    id = uri_id.split('/').last
+    if !hash.has_key?(id)
+      hash[id] = {:uri => uri_id}
+    end
+    if !hash[id].has_key?(notes_type)
+      hash[id][notes_type] = 1
+    else
+      hash[id][notes_type] += 1
+    end
+    return hash
   end
 
 

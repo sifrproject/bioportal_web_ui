@@ -319,7 +319,7 @@ class OntologiesController < ApplicationController
     end
   end
 
-  # GET /ontologies/1
+  # GET /ontologies/ACRONYM
   # GET /ontologies/1.xml
   def show
     # Hack to make ontologyid and conceptid work in addition to id and ontology params
@@ -386,6 +386,7 @@ class OntologiesController < ApplicationController
     render :partial => "submit_success", :layout => "ontology"
   end
 
+  # Main ontology description page (with metadata): /ontologies/ACRONYM
   def summary
     # Note: find_by_acronym includes ontology views
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
@@ -402,7 +403,8 @@ class OntologiesController < ApplicationController
     @projects = @ontology.explore.projects.sort {|a,b| a.name.downcase <=> b.name.downcase } || []
     @analytics = LinkedData::Client::HTTP.get(@ontology.links["analytics"])
     # retrieve submissions in descending submissionId order, should be reverse chronological order.
-    @submissions = @ontology.explore.submissions.sort {|a,b| b.submissionId.to_i <=> a.submissionId.to_i } || []
+    # Only include metadata that we need for all other ontologies (faster)
+    @submissions = @ontology.explore.submissions({include: "submissionId,creationDate,released,submissionStatus,hasOntologyLanguage,version"}).sort {|a,b| b.submissionId.to_i <=> a.submissionId.to_i } || []
     LOG.add :error, "No submissions for ontology: #{@ontology.id}" if @submissions.empty?
     # Get the latest submission, not necessarily the latest 'ready' submission
     @submission_latest = @ontology.explore.latest_submission rescue @ontology.explore.latest_submission(include: "")
