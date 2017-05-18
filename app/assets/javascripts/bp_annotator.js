@@ -476,7 +476,12 @@ function annotatorFormatLink(param_string, format) {
   if (annotator_url === "ncbo_annotatorplus") {
     query = BP_CONFIG.ncbo_annotator_url + "?apikey=" + BP_CONFIG.ncbo_apikey + "&" + param_string;
   } else {
-    query = BP_CONFIG.annotator_url + "?apikey=" + BP_CONFIG.apikey + "&" + param_string;
+    query = BP_CONFIG.annotator_url + "?" + param_string;
+    if (jQuery(document).data().bp.user.apikey !== undefined) {
+      query += "&apikey=" + jQuery(document).data().bp.user.apikey;
+    } else {
+      query += "&apikey=" + BP_CONFIG.apikey;
+    }
   }
   if (format !== 'json') {
     query += "&format=" + format;
@@ -878,12 +883,14 @@ function display_annotations(data, params) {
   // Generate parameters for list at bottom of page
   var param_string = generateParameters(); // uses bp_last_param
   if (annotator_url === "ncbo_annotatorplus") {
-    var query = BP_CONFIG.ncbo_annotator_url + "?" + param_string + "&display_links=false&display_context=false";;
+    var query = BP_CONFIG.ncbo_annotator_url + "?" + param_string + "&display_links=false&display_context=false" + "&apikey=" + BP_CONFIG.ncbo_apikey;;
     var query_encoded = BP_CONFIG.ncbo_annotator_url + "?" + encodeURIComponent(param_string);
   } else {
     var query = BP_CONFIG.annotator_url + "?" + param_string + "&display_links=false&display_context=false";;
     if (jQuery(document).data().bp.user.apikey !== undefined) {
       query += "&apikey=" + jQuery(document).data().bp.user.apikey;
+    } else {
+      query += "&apikey=" + BP_CONFIG.apikey;
     }
     var query_encoded = BP_CONFIG.annotator_url + "?" + encodeURIComponent(param_string);
   }
