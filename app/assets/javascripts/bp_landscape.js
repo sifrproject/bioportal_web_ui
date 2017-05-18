@@ -364,6 +364,7 @@ function buildNetwork(ontologyRelationsArray) {
       shape: "box"
     },
     physics: {
+      // http://visjs.org/docs/network/physics.html
       enabled: true,
       stabilization: {
         onlyDynamicEdges: false,
@@ -371,7 +372,7 @@ function buildNetwork(ontologyRelationsArray) {
       },
       barnesHut: {
         gravitationalConstant: -1500,
-        centralGravity: 0.1,
+        centralGravity: 0,
         springLength: 300,
         springConstant: 0.01,
         damping: 0.2,
