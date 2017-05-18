@@ -14,30 +14,27 @@
     Landscape
   %p Visualize data retrieved from the ontologies stored in the portal
 
-  %div{:class => "row"}
-    %div{:class => "col-md-4"}
-      %h2 Ontologies by group
-      %canvas#groupsCanvas
+  %div{:class => "panel panel-primary", :style => "margin-top: 2em;"}
+    %div{:class => "panel-heading"}
+      %h3{:class => "panel-title"} Groups and categories
+    %div{:class => "panel-body"}
+      %div{:class => "row"}
+        %div{:class => "col-md-6"}
+          %h2 Ontologies by group
+          %canvas#groupsCanvas
 
-    %div{:class => "col-md-4"}
-      %h2 Ontologies by category
-      %canvas#domainCanvas
+        %div{:class => "col-md-6"}
+          %h2 Ontologies by category
+          %canvas#domainCanvas
 
-    %div{:class => "col-md-4"}
-      %h2 Ontologies by size
-      %canvas#sizeSlicesCanvas
+      %div{:class => "row", :style => "margin-top: 3em;"}
+        %div{:class => "col-md-7"}
+          %h2 Ontologies count in each data catalog
+          %canvas#dataCatalogCanvas
 
-    %div{:class => "col-md-4"}
-      %h2 Format used
-      %canvas#formatCanvas
-
-    %div{:class => "col-md-4"}
-      %h2 Ontology types
-      %canvas#isOfTypeCanvas
-
-    %div{:class => "col-md-4"}
-      %h2 Ontology formality levels
-      %canvas#formalityLevelCanvas
+        %div{:class => "col-md-5"}
+          %h2 Ontologies by size
+          %canvas#sizeSlicesCanvas
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
   %h1 Properties use
@@ -72,6 +69,26 @@
           %div{:class => "col-md-3"}
             %h2 author property URIs used for OWL ontologies
             %div#authorPropertyPieChartDiv
+
+  %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
+
+  %div{:class => "panel panel-success", :style => "margin-top: 2em;"}
+    %div{:class => "panel-heading"}
+      %h3{:class => "panel-title"} Ontologies types
+    %div{:class => "panel-body"}
+      %div{:class => "row"}
+        %div{:class => "col-md-4"}
+          %h2 Format used
+          %canvas#formatCanvas
+
+        %div{:class => "col-md-4"}
+          %h2 Ontology types
+          %canvas#isOfTypeCanvas
+
+        %div{:class => "col-md-4"}
+          %h2 Ontology formality levels
+          %canvas#formalityLevelCanvas
+
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}
 
