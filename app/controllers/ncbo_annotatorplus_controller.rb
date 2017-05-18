@@ -38,6 +38,7 @@ class NcboAnnotatorplusController < ApplicationController
                 :class_hierarchy_max_level => params[:class_hierarchy_max_level].to_i,
                 :expand_class_hierarchy => params[:class_hierarchy_max_level].to_i > 0,
                 :semantic_types => params[:semantic_types],
+                :semantic_groups => params[:semantic_groups],
                 :mappings => params[:mappings],
                 :longest_only => params[:longest_only],
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
@@ -47,7 +48,6 @@ class NcboAnnotatorplusController < ApplicationController
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
-                :lemmatize => params[:lemmatize] ||= "false",
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 

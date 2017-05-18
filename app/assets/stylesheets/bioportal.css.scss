@@ -2145,22 +2145,11 @@ a.link_button > span.ui-button-text {
 
 div#semanticTypes_chzn.chzn-container input.default {
   font-style: oblique !important;
-  height:100%;
 }
 
 div#semanticTypes_chzn.chzn-container-active input.default {
   font-style: normal !important;
 }
-
-div#ontology_ontologyId_chzn #search-field {
-    width: 100%;
-    height:100%;
-}
-
-div#ontology_ontologyId_chzny {
-    height:2em;
-}
- 
 
 div#annotations_filter, div#annotations_info {
   display: none;

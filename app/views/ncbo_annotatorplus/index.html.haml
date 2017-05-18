@@ -25,15 +25,17 @@
           %br/
           = select_tag :ncbo_ontologies, options_for_select(@ontologies_for_select), :multiple => 'true', "data-placeholder".to_sym => "Click here to select ontologies", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
           - if @sem_type_ont
+            %br/
             %b Select UMLS Semantic Types
+            = help_icon("http://bioportal.bioontology.org/ontologies/STY", {:title => "Browse the UMLS Semantic Network in the NCBO BioPortal"}).html_safe
             %br/
             = select_tag :semantic_types, options_for_select(@semantic_types_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic types", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
             %br/
             %br/
             %b Select UMLS Semantic Groups
+            = help_icon("https://semanticnetwork.nlm.nih.gov/", {:title => "See the Semantic network website"}).html_safe
             %br/
             = select_tag :semantic_groups, options_for_select(@semantic_groups_for_select), :multiple => 'true', "data-placeholder".to_sym => "Type here to select UMLS semantic groups", :style => "margin-bottom: 15px; width: 433px;", :class => "help_text"
-            %br/
             %br/
 
       %div{:class => "panel panel-info", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
@@ -57,7 +59,7 @@
 
       %div{:class => "panel panel-primary", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
         %div{:class => "panel-heading"}
-          %h3{:class => "panel-title"} ConText
+          %h3{:class => "panel-title"} NegEx / ConText
         %div{:class => "panel-body"}
           %p{title: "Detect if a concept has been negated (affirmed, negated, possible)", style: "margin-top: 40px;"}
             = check_box_tag :negation, :all, false, :id => "negation"
@@ -73,8 +75,7 @@
       %b Include Ancestors Up To Level:
       - options = [["None", 0], *(1..10).map {|i| [i, i]}, ["All", 999]]
       = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
-    %div{style: "margin-top: 1em;"}
-      %b Include Score:
+      %b{style: "margin-left: 3em;"} Include Score:
       - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
       = select_tag :score, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
     - if @recognizers.length > 1
