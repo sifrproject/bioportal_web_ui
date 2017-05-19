@@ -83,6 +83,7 @@ class LandscapeController < ApplicationController
 
     @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
                         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
+    # "omv:hasPriorVersion" has been removed from this list to generate
 
     # We need prefixes to display them, we remove them to call them in the include
     relations_attributes = @relations_array.map {|r| r.to_s.split(":")[1]}

@@ -278,8 +278,7 @@ var sizeSlicesChart = new Chart(sizeSlicesContext, {
 });
 
 
-var ontologyRelationsArray = landscapeData["ontology_relations_array"]
-
+var ontologyRelationsArray = landscapeData["ontology_relations_array"];
 buildNetwork(ontologyRelationsArray);
 
 /**
@@ -295,9 +294,16 @@ function buildNetwork(ontologyRelationsArray) {
   // Hash with nodes id for each ontology URI
   var nodeIds = {};
 
+  /* Get the relations that have been selected
   if (jQuery("#selected_relations").val() !== null) {
     selected_relations = jQuery("#selected_relations").val()
-  }
+  }*/
+
+  var selected_relations = [];
+  $("input[name='selectedRelations[]']:checked").each(function ()
+  {
+    selected_relations.push($(this).val());
+  });
 
   // Iterate through all the ontology relations and add them to the network
   for (var i = 0; i < ontologyRelationsArray.length; i++) {
@@ -379,7 +385,10 @@ function buildNetwork(ontologyRelationsArray) {
     physics: {
       // http://visjs.org/docs/network/physics.html
       enabled: true,
+      // To stabilize faster, increase the minVelocity value
+      minVelocity: 1,
       stabilization: {
+        enabled: true,
         onlyDynamicEdges: false,
         fit: true
       },
@@ -391,7 +400,7 @@ function buildNetwork(ontologyRelationsArray) {
         damping: 0.2,
         avoidOverlap: 0.2
       },
-      hierarchicalRepulsion: { // not used atm
+      hierarchicalRepulsion: { // not used at the moment
         centralGravity: 0.0,
         springLength: 500,
         springConstant: 0.2,
