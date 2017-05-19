@@ -135,7 +135,7 @@
   %div
     = select_tag :selected_relations, options_for_select(@relations_array), :multiple => 'true', "data-placeholder".to_sym => "Filter relations", :class => "help_text"
     %button{:type => "button", :class => "btn btn-primary", :onclick => "buildNetwork(ontologyRelationsArray)", :style => "margin-bottom: 1em;"} Filter Network
-  %div#networkContainer{:style => "height: 500px; width: 100%; border:1px solid #cecece;"}
+  %div#networkContainer{:style => "height: 80vh; width: 100%; border:1px solid #cecece;"}
     %div#ontologyNetwork
 
   %hr{:style => "margin-top: 5em; margin-bottom: 5em;"}

@@ -75,8 +75,12 @@ class LandscapeController < ApplicationController
                       :hasFormalityLevel, :isOfType, :contact, :name, :email, :usedOntologyEngineeringTool]
 
     pref_properties_attributes = [:prefLabelProperty, :synonymProperty, :definitionProperty, :authorProperty]
+
+    # Be careful, if you add attributes to those lists you will need to add them when generating the JSON for the tag clouds
+    # org_count_json_cloud and people_count_json_cloud
     contributors_attr_list = [:hasContributor, :hasCreator, :curatedBy]
     org_attr_list = [:fundedBy, :endorsedBy]
+
     @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
                         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
 
@@ -199,15 +203,21 @@ class LandscapeController < ApplicationController
 
         # Get people that are mentioned as ontology actors (contact, contributors, creators, curator) to create a tag cloud
         # hasContributor hasCreator contact(explore,name) curatedBy
-        contributors_attr_list.each do |contributor|
-          contributor_label = sub.send(contributor.to_s).to_s
+        contributors_attr_list.each do |contributor_attr|
+          contributor_label = sub.send(contributor_attr.to_s).to_s
           if !contributor_label.nil?
             contributors_split = contributor_label.split(",")
             contributors_split.each do |contrib|
               if people_count_hash.has_key?(contrib)
-                people_count_hash[contrib] += 1
+                people_count_hash[contrib][contributor_attr] += 1
               else
-                people_count_hash[contrib] = 1
+                # Create the contributor entry in the Hash and create the attr entries that will be incremented
+                people_count_hash[contrib] = {}
+                people_count_hash[contrib][:contact] = 0
+                contributors_attr_list.each do |create_contributor_attr|
+                  people_count_hash[contrib][create_contributor_attr] = 0
+                end
+                people_count_hash[contrib][contributor_attr] += 1
               end
             end
           end
@@ -216,28 +226,52 @@ class LandscapeController < ApplicationController
           contributor_label = contact.name
           if !contributor_label.nil?
             if people_count_hash.has_key?(contributor_label)
-              people_count_hash[contributor_label] += 1
+              people_count_hash[contributor_label][:contact] += 1
             else
-              people_count_hash[contributor_label] = 1
+              # Create the contrinutor entry in the Hash and create the attr entries that will be incremented
+              people_count_hash[contributor_label] = {}
+              people_count_hash[contributor_label][:contact] = 0
+              contributors_attr_list.each do |create_contributor_attr|
+                people_count_hash[contributor_label][create_contributor_attr] = 0
+              end
+              people_count_hash[contributor_label][:contact] += 1
             end
             people_count_emails[contributor_label] = contact.email if !contact.email.nil?
           end
         end
 
-        org_attr_list.each do |attr|
-          contributors_list = sub.send(attr.to_s)
-          if !contributors_list.kind_of?(Array)
-            contributors_list = [contributors_list]
+        org_attr_list.each do |org_attr|
+          # If the attribute object is not a list we make it a list of the single object we get
+          orgs_list = sub.send(org_attr.to_s)
+          if !orgs_list.kind_of?(Array)
+            orgs_list = [orgs_list]
           end
 
-          contributors_list.each do |contributor_label|
-            if !contributor_label.nil? &&
-              contributors_split = contributor_label.split(",")
-              contributors_split.each do |contrib|
-                if org_count_hash.has_key?(contrib)
-                  org_count_hash[contrib] += 1
+          orgs_list.each do |orgs_comma_list|
+            if !orgs_comma_list.nil? &&
+              orgs_comma_split = orgs_comma_list.split(",")
+              orgs_comma_split.each do |org_str|
+                # TODO: handle badly formatted strings and URI
+                org_uri = nil
+                # Check if the organization is actually an URL
+                if org_str =~ /\A#{URI::regexp}\z/
+                  org_uri = org_str
+                  # Remove http, www and last / from URI
+                  org_str = org_str.sub("http://", "").sub("https://", "").sub("www.", "")
+                  org_str = org_str[0..-2] if org_str.last.eql?("/")
+
+                end
+
+                if org_count_hash.has_key?(org_str)
+                  org_count_hash[org_str][org_attr] += 1
                 else
-                  org_count_hash[contrib] = 1
+                  # Create the contrinutor entry in the Hash and create the attr entries that will be incremented
+                  org_count_hash[org_str] = {}
+                  org_attr_list.each do |create_org_attr|
+                    org_count_hash[org_str][create_org_attr] = 0
+                  end
+                  org_count_hash[org_str][:uri] = org_uri if !org_uri.nil?
+                  org_count_hash[org_str][org_attr] += 1
                 end
               end
             end
@@ -251,13 +285,20 @@ class LandscapeController < ApplicationController
             if !relation_values.kind_of?(Array)
               relation_values = [relation_values]
             end
-            relation_values.each do |rel_value|
-              # Use acronym if ontology in the portal
-              target_ont = LinkedData::Client::Models::Ontology.find(rel_value)
-              if target_ont
-                rel_value = target_ont.acronym
+            relation_values.each do |relation_value|
+              target_id = relation_value
+              target_in_portal = false
+              # if we find our portal URL in the ontology URL, then we just keep the ACRONYM to try to get the ontology.
+              if relation_value.include?($SITE_URL)
+                relation_value = relation_value.split('/').last
               end
-              ontology_relations_array.push({:source => ont.acronym, :target=> rel_value, :relation=> relation_attr.to_s})
+              # Use acronym to get ontology from the portal
+              target_ont = LinkedData::Client::Models::Ontology.find_by_acronym(relation_value).first
+              if target_ont
+                target_id = target_ont.acronym
+                target_in_portal = true
+              end
+              ontology_relations_array.push({:source => ont.acronym, :target=> target_id, :relation=> relation_attr.to_s, :targetInPortal=> target_in_portal})
             end
           end
         end
@@ -357,21 +398,61 @@ class LandscapeController < ApplicationController
 
     # Get the different people and organizations to generate a tag cloud
     people_count_json_cloud = []
-    people_count_hash.each do |people,no|
+    people_count_hash.each do |people,hash_count|
       # Random color for each word in the cloud
       colour = "%06x" % (rand * 0xffffff)
-      if people_count_emails[people.to_s].nil?
-        people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}})
-      else
-        people_count_json_cloud.push({"text"=>people.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} mentions as a contributor."}, "link" => "mailto:#{people_count_emails[people.to_s]}"})
+      title_array = []
+      total_count = 0
+      if hash_count[:contact] > 0
+        title_array.push("#{hash_count[:contact]} as contact")
+        total_count += hash_count[:contact]
+      end
+      if hash_count[:hasContributor] > 0
+        title_array.push("#{hash_count[:hasContributor]} as contributor")
+        total_count += hash_count[:hasContributor]
+      end
+      if hash_count[:hasCreator] > 0
+        title_array.push("#{hash_count[:hasCreator]} as creator")
+        total_count += hash_count[:hasCreator]
+      end
+      if hash_count[:curatedBy] > 0
+        title_array.push("#{hash_count[:curatedBy]} as curator")
+        total_count += hash_count[:curatedBy]
+      end
+      title_str = "Contributions: #{title_array.join(", ")}"
+
+      if total_count > 1
+        if people_count_emails[people.to_s].nil?
+          people_count_json_cloud.push({"text"=>people.to_s,"weight"=>total_count, "html" => {style: "color: ##{colour};", title: title_str}})
+        else
+          people_count_json_cloud.push({"text"=>people.to_s,"weight"=>total_count, "html" => {style: "color: ##{colour};", title: title_str}, "link" => "mailto:#{people_count_emails[people.to_s]}"})
+        end
       end
     end
 
     org_count_json_cloud = []
-    org_count_hash.each do |org,no|
+    org_count_hash.each do |org,hash_count|
       # Random color for each word in the cloud
       colour = "%06x" % (rand * 0xffffff)
-      org_count_json_cloud.push({"text"=>org.to_s,"weight"=>no, "html" => {style: "color: ##{colour};", title: "#{no.to_s} ontologies endorsed or funded."}})
+      title_array = []
+      total_count = 0
+      if hash_count[:fundedBy] > 0
+        title_array.push("funded #{hash_count[:fundedBy]} ontologies")
+        total_count += hash_count[:fundedBy]
+      end
+      if hash_count[:endorsedBy] > 0
+        title_array.push("endorsed #{hash_count[:endorsedBy]} ontologies")
+        total_count += hash_count[:endorsedBy]
+      end
+      title_str = "Contributions: #{title_array.join(", ")}"
+
+      if total_count > 1
+        if hash_count.has_key?(:uri)
+          org_count_json_cloud.push({"text"=>org.to_s,"weight"=>total_count, "html" => {style: "color: ##{colour};", title: title_str}, "link" => "#{hash_count[:uri]}"})
+        else
+          org_count_json_cloud.push({"text"=>org.to_s,"weight"=>total_count, "html" => {style: "color: ##{colour};", title: title_str}})
+        end
+      end
     end
 
     engineering_tool_cloud_json = []

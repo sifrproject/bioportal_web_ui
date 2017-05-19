@@ -278,10 +278,14 @@ var sizeSlicesChart = new Chart(sizeSlicesContext, {
 });
 
 
+var ontologyRelationsArray = landscapeData["ontology_relations_array"]
 
-// Build the VIS network for ontologies relations: http://visjs.org/docs/network/
-buildNetwork(landscapeData["ontology_relations_array"]);
+buildNetwork(ontologyRelationsArray);
 
+/**
+ * Build the VIS network for ontologies relations: http://visjs.org/docs/network/
+ * @param ontologyRelationsArray
+ */
 function buildNetwork(ontologyRelationsArray) {
   var nodes = new vis.DataSet([]);
   // create an array with edges
@@ -308,20 +312,29 @@ function buildNetwork(ontologyRelationsArray) {
       var sourceNodeNumber = nodeIds[ontologyRelationsArray[i]["source"]];
     } else {
       var sourceNodeNumber = propertyCount;
+      // If the node is the source it means it is from the Portal, so we colorate it in green
       nodes.add([
-        {id: sourceNodeNumber, label: ontologyRelationsArray[i]["source"]}
+        {id: sourceNodeNumber, label: ontologyRelationsArray[i]["source"], color: "#5cb85c"}
       ]);
       nodeIds[ontologyRelationsArray[i]["source"]] = propertyCount;
       propertyCount++;
     }
 
+    // Create the target node if don't exist
     if (nodeIds[ontologyRelationsArray[i]["target"]] != null) {
       var targetNodeNumber = nodeIds[ontologyRelationsArray[i]["target"]];
     } else {
       var targetNodeNumber = propertyCount;
-      nodes.add([
-        {id: targetNodeNumber, label: ontologyRelationsArray[i]["target"]}
-      ]);
+      // If target node is an ontology from the portal then node in green
+      if (ontologyRelationsArray[i]["targetInPortal"] == true) {
+        nodes.add([
+          {id: targetNodeNumber, label: ontologyRelationsArray[i]["target"], color: "#5cb85c"}
+        ]);
+      } else {
+        nodes.add([
+          {id: targetNodeNumber, label: ontologyRelationsArray[i]["target"]}
+        ]);
+      }
       nodeIds[ontologyRelationsArray[i]["target"]] = propertyCount;
       propertyCount++;
     }
