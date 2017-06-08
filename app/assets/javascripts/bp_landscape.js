@@ -217,7 +217,7 @@ var isOfTypeChart = new Chart(isOfTypeContext, {
 // Replace the nkos prefix for nkos values (only that for formality, make it faster)
 var formalityTooltipCallbacks = {
   title: function (tooltipItem, data) {
-    return tooltipItem[0].xLabel.replace("nkos:", "http://w3id.org/nkos/nkostype#");
+    return tooltipItem[0].xLabel.replace("nkost:", "http://w3id.org/nkos/nkostype#");
   }
 };
 var formalityLevelContext = document.getElementById("formalityLevelCanvas").getContext("2d");

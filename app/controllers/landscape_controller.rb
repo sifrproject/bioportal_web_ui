@@ -45,13 +45,10 @@ class LandscapeController < ApplicationController
                            "http://aber-owl.net/ontology/" => "AberOWL",
                            "http://vest.agrisemantics.org/content/" => "VEST Registry",
                            "http://bioportal.bioontology.org/ontologies/" => "BioPortal",
+                           "https://bioportal.bioontology.org/ontologies/" => "BioPortal",
                            "http://www.ontobee.org/ontology/" => "Ontobee",
                            "http://www.obofoundry.org/ontology/" => "The OBO Foundry",
                            "http://www.ebi.ac.uk/ols/ontologies/" => "EBI Ontology Lookup"}
-
-    # Set all data_catalog count to 0
-    dataCatalog_count_hash = {}
-    data_catalog_values.map {|uri,name| dataCatalog_count_hash[name] = 0}
 
     @metrics_average = [{:attr => "numberOfClasses", :label => "Number of classes", :array => []},
                         {:attr => "numberOfIndividuals", :label => "Number of individuals", :array => []},
@@ -79,7 +76,7 @@ class LandscapeController < ApplicationController
     # Be careful, if you add attributes to those lists you will need to add them when generating the JSON for the tag clouds
     # org_count_json_cloud and people_count_json_cloud
     contributors_attr_list = [:hasContributor, :hasCreator, :curatedBy]
-    org_attr_list = [:fundedBy, :endorsedBy]
+    org_attr_list = [:fundedBy, :endorsedBy, :publisher]
 
     @relations_array = ["omv:useImports", "door:isAlignedTo", "door:ontologyRelatedTo", "omv:isBackwardCompatibleWith", "omv:isIncompatibleWith", "door:comesFromTheSameDomain", "door:similarTo",
                         "door:explanationEvolution", "voaf:generalizes", "door:hasDisparateModelling", "dct:hasPart", "voaf:usedBy", "schema:workTranslation", "schema:translationOfWork"]
@@ -97,6 +94,12 @@ class LandscapeController < ApplicationController
     # Special treatment for includedInDataCatalog: arrays with a lot of different values, so it trigger the SPARQL default
     # when we retrieve multiple attr with multiple values in the array, and make the request slower
     data_catalog_submissions = LinkedData::Client::Models::OntologySubmission.all(include_status: "any", include_views: true, display_links: false, display_context: false, include: "includedInDataCatalog")
+
+    dataCatalog_count_hash = {}
+    # Add our Portal to the dataCatalog list
+    dataCatalog_count_hash[$ORG_SITE] = data_catalog_submissions.length
+    # Set all data_catalog count to 0
+    data_catalog_values.map {|uri,name| dataCatalog_count_hash[name] = 0}
     data_catalog_submissions.each do |catalog_sub|
       catalog_sub.includedInDataCatalog.each do |data_catalog|
         data_catalog_values.each do |uri, name|
@@ -437,6 +440,10 @@ class LandscapeController < ApplicationController
       colour = "%06x" % (rand * 0xffffff)
       title_array = []
       total_count = 0
+      if hash_count[:publisher] > 0
+        title_array.push("published #{hash_count[:publisher]} ontologies")
+        total_count += hash_count[:publisher]
+      end
       if hash_count[:fundedBy] > 0
         title_array.push("funded #{hash_count[:fundedBy]} ontologies")
         total_count += hash_count[:fundedBy]
@@ -512,36 +519,36 @@ class LandscapeController < ApplicationController
     ontologyFormatsChartJson = { :labels => ontologyFormatsCount.keys,
                                  :datasets => [{ :label => "Number of ontologies using this format",
                                                  :data => ontologyFormatsCount.values,
-                                                 :backgroundColor => ["#669911", "#119966", "#66A2EB", "#FCCE56"]}] }
+                                                 :backgroundColor => pie_colors_array[3]}] }
 
     isOfTypeChartJson = { :labels => isOfTypeCount.keys,
                           :datasets => [{ :label => "Number of ontologies of this ontology type",
                                           :data => isOfTypeCount.values,
-                                          :backgroundColor => pie_colors_array}] }
+                                          :backgroundColor => pie_colors_array[0]}] }
 
     formalityLevelChartJson = { :labels => formalityLevelCount.keys,
                                 :datasets => [{ :label => "Number of ontologies of this formality level",
                                                 :data => formalityLevelCount.values,
-                                                :backgroundColor => pie_colors_array}] }
+                                                :backgroundColor => pie_colors_array[2]}] }
 
     dataCatalogChartJson = { :labels => dataCatalog_count_hash.keys,
                              :datasets => [{ :label => "Number of ontologies in this catalog", :data => dataCatalog_count_hash.values,
-                                                :backgroundColor => pie_colors_array}] }
+                                                :backgroundColor => pie_colors_array[5]}] }
 
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
     groupCountChartJson = { :labels => groups_count_hash.keys,
                             :datasets => [{ :label => "Number of ontologies", :data => groups_count_hash.values,
-                                                  :backgroundColor => pie_colors_array}] }
+                                                  :backgroundColor => pie_colors_array[3]}] }
 
     domainCountChartJson = { :labels => domains_count_hash.keys,
                              :datasets => [{ :label => "Number of ontologies", :data => domains_count_hash.values,
-                                             :backgroundColor => pie_colors_array}] }
+                                             :backgroundColor => pie_colors_array[4]}] }
 
     # Format the groupOntologiesCount hash as the JSON needed to generate the chart
     sizeSlicesChartJson = { :labels => size_slices_hash.keys,
                             :datasets => [{ :label => "Number of ontologies with a class count in this range",
                                             :data => size_slices_hash.values,
-                                            :backgroundColor => pie_colors_array}] }
+                                            :backgroundColor => pie_colors_array[2]}] }
 
     # Also pass groups and hasDomain name to resolve it and better label of bar charts
     groups = LinkedData::Client::Models::Group.all(include: "acronym,name,description")
