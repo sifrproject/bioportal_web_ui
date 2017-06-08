@@ -48,7 +48,7 @@ gem 'thin'
 # application monitoring
 gem 'newrelic_rpm'
 
-gem 'ontologies_api_client', :git => "https://github.com/ncbo/ontologies_api_ruby_client.git", branch: "master"
+gem 'ontologies_api_client', :git => "https://github.com/sifrproject/ontologies_api_ruby_client.git", branch: "lirmm"
 
 group :staging, :production do
   #logs in json format, useful for shipping logs to logstash

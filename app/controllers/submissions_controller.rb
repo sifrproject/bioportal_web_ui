@@ -50,8 +50,10 @@ class SubmissionsController < ApplicationController
     @ontology = LinkedData::Client::Models::Ontology.get(params[:submission][:ontology])
     # Update summaryOnly on ontology object
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
-    @ontology.save
-    @submission_saved = @submission.save
+    @ontology.save(cache_refresh_all: false)
+    @submission_saved = @submission.save(cache_refresh_all: false)
+    #@submission_saved = @submission.save(cache_refresh_all: false)
+
     if !@submission_saved || @submission_saved.errors
       @errors = response_errors(@submission_saved) # see application_controller::response_errors
       if @errors[:error].is_a?(Hash)
@@ -128,7 +130,7 @@ class SubmissionsController < ApplicationController
     @ontology.summaryOnly = @submission.isRemote.eql?("3")
     @ontology.save
     # TODO: really slow!:
-    error_response = @submission.update
+    error_response = @submission.update(cache_refresh_all: false)
 
     if error_response
       @errors = response_errors(error_response) # see application_controller::response_errors
