@@ -2,11 +2,19 @@
   %div{:style => "float: right; width: 40%"}
     %div{style: "padding-left: 1em;"}
       - if !@submission_latest.nil?
-        %a{:href => "#{@submission_latest.id}?display=all", :class => "new_ontology_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
+        %a{:href => "#{@submission_latest.id}?display=all", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
         :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"}
           %span{:class => "ui-button-text"} Go to the REST API JSON entry
+        %h2{:style => "margin-left: 1em;"} Get my metadata back:
+        %button{:id => "getMetadataBackNquadsBtn", :href => "#", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
+        :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"}
+          %span{:class => "ui-button-text"} Turtle
+        %button{:id => "getMetadataBackJsonldBtn", :href => "#", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
+        :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"}
+          %span{:class => "ui-button-text"} Json-LD
+          -# Listener in bp_ontology_viewer.js.erb
       - else
-        %a{:href => "#{@ontology.id}?display=all", :class => "new_ontology_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
+        %a{:href => "#{@ontology.id}?display=all", :class => "ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only",
         :style => "margin-bottom: 1em; margin-left: 1em;", :target => "_blank"}
           %span{:class => "ui-button-text"} Go to the REST API JSON entry
       = render :partial => 'metrics'
