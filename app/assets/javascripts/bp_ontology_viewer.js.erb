@@ -444,7 +444,9 @@ function downloadMetadata(format) {
       }
 
       // Add id and type
-      jsonldObject["@id"] = subJson["URI"];
+      if (subJson["URI"] !== undefined) {
+        jsonldObject["@id"] = subJson["URI"];
+      }
       jsonldObject["@type"] = "http://www.w3.org/2002/07/owl#Ontology";
 
       // Get only context from returned properties
