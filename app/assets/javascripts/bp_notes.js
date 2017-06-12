@@ -245,12 +245,17 @@ function commentButtons(id, type) {
     .attr("onclick","")
     .data("parent_id", id)
     .data("parent_type", type)
+    .attr("style", "margin-right: 1em;")
     .addClass("save")
+    .addClass("btn")
+    .addClass("btn-primary")
     .html("save");
   var button_cancel = jQuery("<button>")
     .attr("type","button")
     .attr("onclick","")
     .addClass("cancel")
+    .addClass("btn")
+    .addClass("btn-primary")
     .html("cancel");
   var span_status = jQuery("<span>")
     .addClass("reply_status")
@@ -348,9 +353,9 @@ function subscribeToNotes(button) {
       jQuery("a.subscribe_to_notes").attr("data-bp_is_subbed", subbedVal);
 
       // Change button text
-      var txt = jQuery("a.subscribe_to_notes span.ui-button-text").html();
+      var txt = jQuery("a.subscribe_to_notes").html();
       var newButtonText = txt.match("Unsubscribe") ? txt.replace("Unsubscribe", "Subscribe") : txt.replace("Subscribe", "Unsubscribe");
-      jQuery("a.subscribe_to_notes span.ui-button-text").html(newButtonText);
+      jQuery("a.subscribe_to_notes").html(newButtonText);
     },
     error: function(data) {
       jQuery(".notes_subscribe_spinner").hide();

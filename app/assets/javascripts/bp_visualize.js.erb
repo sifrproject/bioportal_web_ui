@@ -87,9 +87,9 @@
     jQuery("#bd_content").width(bd_content_width);
 
     // Size the content window
-    var iframeHeight = jQuery(window).height() - jQuery("#bd_content .container").offset().top - 110;
-    jQuery("#bd_content .container").css("width", "100%").css("height", iframeHeight);
-    jQuery("#bd .bd_content .container #contents").css("max-height", iframeHeight);
+    var iframeHeight = jQuery(window).height() - jQuery("#bd_content .clsContainer").offset().top - 110;
+    jQuery("#bd_content .clsContainer").css("width", "100%").css("height", iframeHeight);
+    jQuery("#bd .bd_content .clsContainer #contents").css("max-height", iframeHeight);
     jQuery("#bd .sd_max_height").css("max-height", iframeHeight);
 
     // Split bar

@@ -345,31 +345,31 @@ h1 a:hover, h2 a:hover {
 .sidebar #sd_ft p {
   padding:5px 0 0 25px;
 }
-#bd .bd_content .container {
+#bd .bd_content .clsContainer {
   position:relative;
   background: image-url('layout/subnav_bg.png') repeat-x;
   width: 75%;
   min-width: 400px;
   float: left;
 }
-#bd .bd_content .container .tabs {
+#bd .bd_content .clsContainer .tabs {
   height:24px;
   float:left;
 }
-#bd .bd_content .container .tabs ul {
+#bd .bd_content .clsContainer .tabs ul {
   margin:0;
   float:left;
 }
-#bd .bd_content .container .tabs li {
+#bd .bd_content .clsContainer .tabs li {
   margin:0;
 }
-#bd .bd_content .container .tabs li.first {
+#bd .bd_content .clsContainer .tabs li.first {
   padding-left:0;
 }
-#bd .bd_content .container .tabs a {
+#bd .bd_content .clsContainer .tabs a {
   padding:5px 15px 0 15px;
 }
-#bd .bd_content .container #contents {
+#bd .bd_content .clsContainer #contents {
   float:left;
   /* padding:10px; */
   width:100%;

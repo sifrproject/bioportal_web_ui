@@ -83,7 +83,8 @@
         %li#summary_link.summary_link.nav_link
           %a{"data-bp_ont_page" => "summary", :href => "/ontologies/#{@ontology.acronym}?p=summary"} Summary
         - unless @ontology.summaryOnly
-          %li#classes_link.classes_link.nav_link
+          -# %li#classes_link.classes_link.nav_link to not reload the page (but reloading avoid details position bug)
+          %li#classes_link.classes_link
             %a{"data-bp_ont_page" => "classes", :href => "/ontologies/#{@ontology.acronym}?p=classes"} Classes
           %li#properties_link.properties_link.nav_link
             %a{"data-bp_ont_page" => "properties", :href => "/ontologies/#{@ontology.acronym}?p=properties"} Properties

@@ -2,7 +2,7 @@
 %div{:style => "padding: 1%; width: 98%;"}
   %table.minimal.concept_details{:cellpadding => "0", :cellspacing => "0", :width => "100%"}
     %tr
-      %td.label{:nowrap => ""}
+      %td{:nowrap => ""}
         Preferred Name
         %span.slot_labels
           / TODO_REV: Support names for properties
@@ -12,7 +12,7 @@
         %p= @concept.prefLabel({:use_html => true}).html_safe
     - unless @concept.synonym.nil? || @concept.synonym.empty?
       %tr
-        %td.label{:nowrap => ""}
+        %td{:nowrap => ""}
           Synonyms
           %span.slot_labels
             / TODO_REV: Support names for properties
@@ -23,7 +23,7 @@
             %p= synonym
     - unless @concept.definition.nil? || @concept.definition.empty?
       %tr
-        %td.label{:nowrap => ""}
+        %td{:nowrap => ""}
           Definitions
           %span.slot_labels
             / TODO_REV: Support names for properties
@@ -32,12 +32,12 @@
         %td
           %p= @concept.definition.join(" ")
     %tr
-      %td.label{:nowrap => ""} ID
+      %td{:nowrap => ""} ID
       %td
         %p= @concept.id
     - if @concept.obsolete?
       %tr
-        %td.label{:nowrap => ""}
+        %td{:nowrap => ""}
           Obsolete
           %span.slot_labels
         %td
@@ -75,7 +75,7 @@
         - full_key = data[:key]
         - values = data[:values]
         %tr
-          %td.label{:nowrap => ""}
+          %td{:nowrap => ""}
             %span.concept_property{:title => property_title(full_key)}= "#{remove_owl_notation(key)}"
           %td.property_values
             -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.
@@ -91,7 +91,7 @@
         - full_key = data[:key].to_s # handle symbols
         - values = data[:values]
         %tr
-          %td.label{:nowrap => ""}
+          %td{:nowrap => ""}
             %span.concept_property{:title => property_title(full_key)}= "#{remove_owl_notation(key)}"
           %td.property_values
 
@@ -112,7 +112,7 @@
         - full_key = data[:key]
         - values = data[:values]
         %tr
-          %td.label{:nowrap => ""}
+          %td{:nowrap => ""}
             %span.concept_property{:title => property_title(full_key)}= "#{remove_owl_notation(key)}"
           %td.property_values
             -# Note: get_link_for_cls_ajax is in application_helper.rb, it calls auto_link when necessary.

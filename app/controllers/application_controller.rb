@@ -20,6 +20,15 @@ class ApplicationController < ActionController::Base
   REST_URI = $REST_URL
   API_KEY = $API_KEY
 
+  $DATA_CATALOG_VALUES = {"https://biosharing.org/" => "BioSharing",
+                         "http://aber-owl.net/ontology/" => "AberOWL",
+                         "http://vest.agrisemantics.org/content/" => "VEST Registry",
+                         "http://bioportal.bioontology.org/ontologies/" => "BioPortal",
+                         "https://bioportal.bioontology.org/ontologies/" => "BioPortal",
+                         "http://www.ontobee.org/ontology/" => "Ontobee",
+                         "http://www.obofoundry.org/ontology/" => "The OBO Foundry",
+                         "http://www.ebi.ac.uk/ols/ontologies/" => "EBI Ontology Lookup"}
+
   RESOLVE_NAMESPACE = {:omv => "http://omv.ontoware.org/2005/05/ontology#", :skos => "http://www.w3.org/2004/02/skos/core#", :owl => "http://www.w3.org/2002/07/owl#",
                        :rdf => "http://www.w3.org/1999/02/22-rdf-syntax-ns#", :rdfs => "http://www.w3.org/2000/01/rdf-schema#", :metadata => "http://data.bioontology.org/metadata/",
                        :metadata_def => "http://data.bioontology.org/metadata/def/", :dc => "http://purl.org/dc/elements/1.1/", :xsd => "http://www.w3.org/2001/XMLSchema#",

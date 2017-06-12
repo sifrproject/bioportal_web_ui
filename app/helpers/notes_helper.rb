@@ -134,7 +134,7 @@ module NotesHelper
     user = session[:user]
     if user.nil?
       # subscribe button must redirect to login
-      return sanitize("<a href='/login?redirect=#{request.url}' style='font-size: .9em;' class='link_button subscribe_to_notes'>Subscribe to notes emails</a>")
+      return sanitize("<a href='/login?redirect=#{request.url}' style='font-size: .9em;' class='btn btn-primary subscribe_to_notes'>Subscribe to notes emails</a>")
     end
     # Init subscribe button parameters.
     sub_text = "Subscribe"
@@ -154,7 +154,7 @@ module NotesHelper
     end
     spinner = '<span class="notes_subscribe_spinner" style="display: none;">' + image_tag("spinners/spinner_000000_16px.gif", style: "vertical-align: text-bottom;") + '</span>'
     error = "<span style='color: red;' class='notes_sub_error'></span>"
-    return "<a href='javascript:void(0);' class='subscribe_to_notes link_button' #{params}>#{sub_text} to notes emails</a> #{spinner} #{error}".html_safe
+    return "<a href='javascript:void(0);' class='subscribe_to_notes btn btn-primary' #{params}>#{sub_text} to notes emails</a> #{spinner} #{error}".html_safe
   end
 
   def delete_button

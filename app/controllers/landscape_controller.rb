@@ -41,15 +41,6 @@ class LandscapeController < ApplicationController
 
     ontologyFormatsCount = {"OWL" => 0, "SKOS" => 0, "UMLS" => 0, "OBO" => 0}
 
-    data_catalog_values = {"https://biosharing.org/" => "BioSharing",
-                           "http://aber-owl.net/ontology/" => "AberOWL",
-                           "http://vest.agrisemantics.org/content/" => "VEST Registry",
-                           "http://bioportal.bioontology.org/ontologies/" => "BioPortal",
-                           "https://bioportal.bioontology.org/ontologies/" => "BioPortal",
-                           "http://www.ontobee.org/ontology/" => "Ontobee",
-                           "http://www.obofoundry.org/ontology/" => "The OBO Foundry",
-                           "http://www.ebi.ac.uk/ols/ontologies/" => "EBI Ontology Lookup"}
-
     @metrics_average = [{:attr => "numberOfClasses", :label => "Number of classes", :array => []},
                         {:attr => "numberOfIndividuals", :label => "Number of individuals", :array => []},
                         {:attr => "numberOfProperties", :label => "Number of properties", :array => []},
@@ -99,10 +90,10 @@ class LandscapeController < ApplicationController
     # Add our Portal to the dataCatalog list
     dataCatalog_count_hash[$ORG_SITE] = data_catalog_submissions.length
     # Set all data_catalog count to 0
-    data_catalog_values.map {|uri,name| dataCatalog_count_hash[name] = 0}
+    $DATA_CATALOG_VALUES.map {|uri,name| dataCatalog_count_hash[name] = 0}
     data_catalog_submissions.each do |catalog_sub|
       catalog_sub.includedInDataCatalog.each do |data_catalog|
-        data_catalog_values.each do |uri, name|
+        $DATA_CATALOG_VALUES.each do |uri, name|
           if data_catalog.start_with?(uri)
             dataCatalog_count_hash[name] += 1
           end

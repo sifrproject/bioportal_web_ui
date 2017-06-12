@@ -9,7 +9,8 @@
     = link_to "Create New Mapping", "/login?redirect=/ontologies/#{@ontology.acronym}/?p=classes&t=mappings&conceptid=#{CGI.escape(@concept.id)}", :method => :get, :class => "link_button"
     = link_to "Create New External Mapping", "/login?redirect=/ontologies/#{@ontology.acronym}/?p=classes&t=mappings&conceptid=#{CGI.escape(@concept.id)}", :method => :get, :class => "link_button"
   - else
-    %a#create_new_mapping_href.link_button{:href => "/mappings/new?ontology_from=#{@ontology.id}&conceptid_from=#{escape(@concept.id)}", :rel => "facebox", :title => "New Mapping For #{remove_owl_notation(@concept.prefLabel)}"} Create New Mapping
+    %a{:href => "/mappings/new?ontology_from=#{@ontology.id}&conceptid_from=#{escape(@concept.id)}", :class => "btn btn-primary",
+    :rel => "facebox", :title => "New Mapping For #{remove_owl_notation(@concept.prefLabel)}"} Create New Mapping
     \&nbsp;&nbsp;&nbsp;
     %a#create_new_mapping_href.link_button{:href => "/mappings/new_external?ontology_from=#{@ontology.id}&conceptid_from=#{escape(@concept.id)}", :rel => "facebox", :title => "New External Mapping For #{remove_owl_notation(@concept.prefLabel)}"} Create New External Mapping
     \&nbsp;&nbsp;&nbsp;

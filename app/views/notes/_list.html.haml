@@ -4,16 +4,16 @@
 .notes_list_container
   .add_comment{style: "float: left; margin-right: 1em;"}
     - if session[:user].nil?
-      = link_to "Add comment", login_index_path, class: "link_button", style: "font-size: .9em;"
+      = link_to "Add comment", login_index_path, class: "btn btn-primary", style: "font-size: .9em;"
     - else
-      = link_to "Add comment", "javascript:void(0);", class: "add_comment link_button", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
+      = link_to "Add comment", "javascript:void(0);", class: "add_comment btn btn-primary", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
   .add_proposal{style: "float: left; margin-right: 1em;"}
     - if session[:user].nil?
-      = link_to "Add proposal", login_index_path, class: "link_button", style: "font-size: .9em"
+      = link_to "Add proposal", login_index_path, class: "btn btn-primary", style: "font-size: .9em"
     - else
-      = link_to "Add proposal", "javascript:void(0);", class: "add_proposal link_button", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
-  .subscribe_to_notes.link_button{:style => "float: left;"}
-    = subscribe_button(@ontology.acronym)
+      = link_to "Add proposal", "javascript:void(0);", class: "add_proposal btn btn-primary", style: "font-size: .9em;", data: { parent_id: "#{@concept.id}", parent_type: "class" }
+  .subscribe_to_notes{:style => "float: left;"}
+    = subscribe_button(@ontology.id)
   .notes_delete{:style => "float: left; margin-left: 1em;"}
     / TODO_REV: Enable notes deletion
     / delete_button

@@ -18,7 +18,7 @@
 
     - if @concept.id.eql?("bp_fake_root")
       / When we have an ontology with a flat hierarchy, we initially disable the tabs because we don't have a class to display
-      .container
+      .clsContainer
         #fake_tabs.tabs
           %ul
             %li#details_top.selected.first{:onclick => "return false;"}
@@ -75,7 +75,7 @@
           #mappings_content.tab_container.not_visible
           #resource_index_content.tab_container.not_visible.resource_index_embed
     - else
-      .container
+      .clsContainer
         .tabs
           %ul
             %li#details_top.selected.tab.first
