@@ -337,9 +337,7 @@ jQuery.bioportal.OntologyPage = function(id, location_path, error_string, page_n
       } else {
         var _this = this;
         var publishRetry = setInterval(function() {
-          //console.log("retrying " + _this.retrieved)
           if (_this.retrieved) {
-            //console.log("publishing")
             _this.publishAction();
             clearInterval(publishRetry);
           }
@@ -408,7 +406,6 @@ function downloadMetadata(format) {
 
       var jsonldObject = {}
       var subJson = jQuery.extend(true, {}, jQuery(document).data().bp.submission_latest);
-      console.log(jQuery(document).data().bp.submission_latest);
       var fullContext = jQuery(document).data().bp.submission_latest["context"];
 
       delete subJson["links"];
@@ -436,8 +433,6 @@ function downloadMetadata(format) {
           continue;
         }
 
-        console.log("fullContext");
-        console.log(fullContext);
         if (fullContext[attr] !== undefined) {
           jsonldObject[fullContext[attr]] = subJson[attr];
         }
@@ -453,26 +448,24 @@ function downloadMetadata(format) {
       var context = {};
       for (var prop in subJson) {
         context[prop] = fullContext[prop];
+        if (prop == "publication") {
+          // Special case for publication that don't have a namespace (so value generated to undefined)
+          context[prop] = "http://omv.ontoware.org/2005/05/ontology#reference";
+        }
+        if (context[prop] == undefined) {
+          // If property URI not defined then we create it with bioontology.org URI
+          context[prop] = "http://data.bioontology.org/metadata/" + prop;
+        }
       }
-
-      console.log("context");
-      console.log(context);
-
-      console.log("jsonldObject final");
-      console.log(jsonldObject);
 
       var responseString = "Error while generating the RDF"
       if (format === "nquads") {
         jsonld.toRDF(jsonldObject, {format: 'application/nquads'}, function (err, nquads) {
-          console.log("nquads");
-          console.log(nquads);
           generateDownloadFile(nquads, "nt")
         });
       } else if (format === "jsonld") {
         // Generate proper jsonld
         jsonld.compact(jsonldObject, context, function (err, compacted) {
-          console.log("compact jsonld");
-          console.log(JSON.stringify(compacted, null, 2));
           generateDownloadFile(JSON.stringify(compacted, null, 2), "json");
         });
       }

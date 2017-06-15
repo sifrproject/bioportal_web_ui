@@ -15,6 +15,9 @@
         :style => "margin-top: 1em; margin-left: 1em;"} Go to the REST API JSON entry
       = render :partial => 'metrics'
       = render :partial => 'visits'
+      = raw display_data_catalog(@submission_latest)
+      = raw display_logo(@submission_latest)
+
   %div{style: "width: 60%;"}
     = render :partial => 'details'
     = render :partial => 'reviews'

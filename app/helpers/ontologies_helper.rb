@@ -16,6 +16,58 @@ module OntologiesHelper
     html.join("")
   end
 
+  # Display data catalog metadata under visits (in _metadata.html.haml)
+  def display_data_catalog(sub)
+    if !sub.send("includedInDataCatalog").nil? && sub.send("includedInDataCatalog").any?
+      # Buttons for data catalogs
+      return content_tag(:div, {:class => "panel panel-primary", :style => "margin: 2em;"}) do
+        concat(content_tag(:div, {:class => "panel-heading"}) do
+          concat(content_tag(:h3, "includedInDataCatalog", {:class => "panel-title"}))
+        end)
+        concat(content_tag(:div, {:class => "panel-body"}) do
+          sub.send("includedInDataCatalog").each do |catalog|
+            catalog_btn_label = catalog
+            $DATA_CATALOG_VALUES.each do |cat_uri, cat_label|
+              if catalog.start_with?(cat_uri)
+                catalog_btn_label = cat_label
+                break;
+              end
+            end
+            concat(content_tag(:a, catalog_btn_label, {:class => "btn btn-primary",
+                                                       :style => "margin-bottom: 1em; margin-right: 1em;", :href => catalog, :target => "_blank"}))
+          end
+        end)
+      end
+    else
+      return ""
+    end
+  end
+
+  # Display data catalog metadata under visits (in _metadata.html.haml)
+  def display_logo(sub)
+    logo_attributes = ["logo", "depiction"]
+    logo_html = ""
+    logo_attributes.each do |metadata|
+      if !sub.send(metadata).nil?
+        puts sub.send(metadata)
+        logo_html.concat(content_tag(:div, {:class => "panel panel-primary", :style => "margin: 2em;"}) do
+          concat(content_tag(:div, {:class => "panel-heading"}) do
+            concat(content_tag(:h3, metadata, {:class => "panel-title"}))
+          end)
+          concat(content_tag(:div, {:class => "panel-body"}) do
+            concat(content_tag(:a, {:href => sub.send(metadata), :title => sub.send(metadata),
+                             :target => "_blank", :style=>"border-width:0;"}) do
+
+              concat(content_tag(:img, "",{:title => sub.send(metadata),
+                                           :style=>"border-width:0;max-width: 100%;", :src=>sub.send(metadata).to_s}))
+            end)
+          end)
+        end)
+      end
+    end
+    return logo_html
+  end
+
   # Add additional metadata as html for a submission
   def additional_metadata(sub)
     # Get the list of metadata attribute from the REST API
@@ -30,7 +82,7 @@ module OntologiesHelper
 
     html = []
 
-    metadata_not_displayed = ["status", "description", "documentation", "publication", "homepage", "openSearchDescription", "dataDump"]
+    metadata_not_displayed = ["status", "description", "documentation", "publication", "homepage", "openSearchDescription", "dataDump", "includedInDataCatalog", "logo", "depiction"]
 
     begin
 
@@ -46,53 +98,29 @@ module OntologiesHelper
                 # Special treatment for naturalLanguage: we want the flags in a bootstrap box
                 # UK is gb: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
                 lang_codes = []
+
                 sub.send(metadata).each do |lang|
                   if (lang.to_s.eql?("en") || lang.to_s.eql?("eng") || lang.to_s.eql?("http://lexvo.org/id/iso639-3/eng"))
                     # We consider en and eng as english
                     lang_codes << "gb"
-                  elsif lang.start_with?("http://lexvo.org")
+                  elsif lang.to_s.start_with?("http://lexvo.org")
                     lang_codes << $LEXVO_TO_FLAG[lang]
                   else
                     lang_codes << lang
                   end
                 end
-                html << content_tag(:div, {:class => "col-md-2"}) do
-                  concat(content_tag(:div, {:class => "panel panel-primary"}) do
-                    concat(content_tag(:div, {:class => "panel-heading"}) do
-                      concat(content_tag(:h3, "naturalLanguage", {:class => "panel-title"}))
-                    end)
-                    concat(content_tag(:div, {:class => "panel-body"}) do
-                      concat(content_tag(:ul, {:class => "f32"}) do
-                        lang_codes.each do |lang_code|
-                          if lang_code.length == 2
-                            concat(content_tag(:li, "", {:class => "flag #{lang_code}", :style => "margin-right: 0.5em;"}))
-                          else
-                            concat(content_tag(:li, lang_code))
-                          end
-                        end
-                      end)
-                    end)
-                  end)
-                end
 
-              elsif (metadata.eql?("includedInDataCatalog"))
-                # Buttons for data catalogs
-                html << content_tag(:div, {:class => "col-md-4"}) do
-                  concat(content_tag(:div, {:class => "panel panel-primary"}) do
-                    concat(content_tag(:div, {:class => "panel-heading"}) do
-                      concat(content_tag(:h3, "includedInDataCatalog", {:class => "panel-title"}))
-                    end)
-                    concat(content_tag(:div, {:class => "panel-body"}) do
-                      sub.send(metadata).each do |catalog|
-                        catalog_btn_label = catalog
-                        $DATA_CATALOG_VALUES.each do |cat_uri, cat_label|
-                          if catalog.start_with?(cat_uri)
-                            catalog_btn_label = cat_label
-                            break;
-                          end
+                html << content_tag(:tr) do
+                  concat(content_tag(:th, "Natural Language", " "))
+                  # Display naturalLanguage as flag
+                  concat(content_tag(:td) do
+                    concat(content_tag(:ul, {:class => "f32"}) do
+                      lang_codes.each do |lang_code|
+                        if lang_code.length == 2
+                          concat(content_tag(:li, "", {:class => "flag #{lang_code}", :style => "margin-right: 0.5em;"}))
+                        else
+                          concat(content_tag(:li, lang_code))
                         end
-                        concat(content_tag(:a, catalog_btn_label, {:class => "btn btn-primary",
-                                                                   :style => "margin-bottom: 1em; margin-right: 1em;", :href => catalog, :target => "_blank"}))
                       end
                     end)
                   end)
@@ -108,7 +136,6 @@ module OntologiesHelper
 
                   metadata_array = []
                   sub.send(metadata).each do |metadata_value|
-
                     if metadata_value.to_s.start_with?("#{$REST_URL}/ontologies/")
                       # For URI that links to our ontologies we display a button with only the acronym. And redirect to the UI
                       # Warning! Redirection is done by removing "data." from the REST_URL. So might not work perfectly everywhere
@@ -140,9 +167,8 @@ module OntologiesHelper
                 else
                   concat(content_tag(:th, label))
                 end
-
-                if (metadata.eql?("hasLicense"))
-                  if (sub.send(metadata).start_with?("http://creativecommons.org/licenses") || sub.send(metadata).start_with?("https://creativecommons.org/licenses"))
+                if (metadata.to_s.eql?("hasLicense"))
+                  if (sub.send(metadata).to_s.start_with?("http://creativecommons.org/licenses") || sub.send(metadata).start_with?("https://creativecommons.org/licenses"))
                     concat(content_tag(:td) do
                       concat(content_tag(:a, {:rel => "license", :alt=>"Creative Commons License",
                                               :href => sub.send(metadata), :target => "_blank", :style=>"border-width:0", :title => sub.send(metadata),
@@ -153,16 +179,16 @@ module OntologiesHelper
                       end)
                     end)
 
-                elsif (sub.send(metadata).start_with?("http://opensource.org/licenses") || sub.send(metadata).start_with?("https://opensource.org/licenses"))
-                  concat(content_tag(:td) do
-                    concat(content_tag(:a, {:rel => "license", :alt=>"Open Source License",
-                                            :href => sub.send(metadata), :title => sub.send(metadata),:target => "_blank", :style=>"border-width:0;",
-                                            :src=>"https://opensource.org/files/osi_logo_bold_100X133_90ppi.png"}) do
+                  elsif (sub.send(metadata).to_s.start_with?("http://opensource.org/licenses") || sub.send(metadata).start_with?("https://opensource.org/licenses"))
+                    concat(content_tag(:td) do
+                      concat(content_tag(:a, {:rel => "license", :alt=>"Open Source License",
+                                              :href => sub.send(metadata), :title => sub.send(metadata),:target => "_blank", :style=>"border-width:0;",
+                                              :src=>"https://opensource.org/files/osi_logo_bold_100X133_90ppi.png"}) do
 
-                      concat(content_tag(:img, "",{:rel => "license", :alt=>"Open Source License", :title => sub.send(metadata),
-                                                   :style=>"height: 80px; border-width:0;", :src=>"https://opensource.org/files/osi_logo_bold_100X133_90ppi.png"}))
+                        concat(content_tag(:img, "",{:rel => "license", :alt=>"Open Source License", :title => sub.send(metadata),
+                                                     :style=>"height: 80px; border-width:0;", :src=>"https://opensource.org/files/osi_logo_bold_100X133_90ppi.png"}))
+                      end)
                     end)
-                  end)
 
                   else
                     concat(content_tag(:td) do
@@ -170,7 +196,17 @@ module OntologiesHelper
                     end)
                   end
 
-                elsif sub.send(metadata).start_with?("#{$REST_URL}/ontologies/")
+                elsif (metadata.to_s.eql?("endpoint") && (sub.send(metadata).start_with?("http://sparql.") || sub.send(metadata).start_with?("https://sparql.")))
+                  concat(content_tag(:td) do
+                    concat(content_tag(:a, {:href => sub.send(metadata), :title => sub.send(metadata),
+                                            :target => "_blank", :style=>"border-width:0;"}) do
+
+                      concat(content_tag(:img, "",{:title => sub.send(metadata),
+                                                   :style=>"height: 40px; border-width:0;", :src=>"/images/sparql_logo.png"}))
+                    end)
+                  end)
+
+                elsif sub.send(metadata).to_s.start_with?("#{$REST_URL}/ontologies/")
                   # For URI that links to our ontologies we display a button with only the acronym. And redirect to the UI
                   # Warning! Redirection is done by removing "data." from the REST_URL. So might not work perfectly everywhere
                   if sub.send(metadata).to_s.split("/").length < 6
