@@ -397,7 +397,7 @@ class OntologiesController < ApplicationController
     # Note: find_by_acronym includes ontology views
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:id]).first
     not_found if @ontology.nil?
-    # Check to see if user is requesting RDF+XML, return the file from REST service if so
+    # Check to see if user is requesting json-ld, return the file from REST service if so
     if request.accept.to_s.eql?("application/ld+json") || request.accept.to_s.eql?("application/json")
       headers['Content-Type'] = request.accept.to_s
       render text: @ontology.to_jsonld
