@@ -54,6 +54,7 @@ class AnnotatorController < ApplicationController
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
+                :threshold => params[:threshold] ||=-1,
                 :lemmatize => params[:lemmatize] ||= "false",
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
@@ -67,6 +68,7 @@ class AnnotatorController < ApplicationController
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0
     query += "&score=" + options[:score] unless options[:score] == ""
+    query += "&threshold=" + options[:threshold] unless options[:score] == "" or options[:threshold]==-1
     query += "&negation=" + options[:negation] unless options[:negation].empty?
     query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
     query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
@@ -81,6 +83,7 @@ class AnnotatorController < ApplicationController
     query += "&whole_word_only=" + options[:whole_word_only].to_s unless options[:whole_word_only].empty?
     query += "&exclude_synonyms=" + options[:exclude_synonyms].to_s unless options[:exclude_synonyms].empty?
     query += "&ncbo_slice=" + options[:ncbo_slice].to_s unless options[:ncbo_slice].empty?
+
     
     annotations = parse_json(query) # See application_controller.rb
     #annotations = LinkedData::Client::HTTP.get(query)
