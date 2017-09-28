@@ -48,6 +48,8 @@ class NcboAnnotatorplusController < ApplicationController
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
                 :score => params[:score],
+                :score_threshold => params[:score_threshold] ||=-1,
+                :confidence_threshold => params[:confidence_threshold] ||=-1,
                 :ncbo_slice => params[:ncbo_slice] || ''
     }
 
@@ -59,6 +61,8 @@ class NcboAnnotatorplusController < ApplicationController
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0
     query += "&score=" + options[:score] unless options[:score] == ""
+    query += "&score_threshold=" + options[:threshold] unless options[:score] == "" or options[:threshold]==-1
+     query += "&confidence_threshold=" + options[:threshold] unless options[:score] == "" or options[:threshold]==-1
     query += "&negation=" + options[:negation] unless options[:negation].empty?
     query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
     query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
