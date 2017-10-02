@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: https://github.com/sifrproject/ontologies_api_ruby_client.git
-  revision: 89154ff110b9755b31d0470febcfb4b5863b94fe
+  revision: 5bbba0652fae200d745821b291fe5361932d7455
   branch: lirmm
   specs:
     ontologies_api_client (0.0.6)
@@ -89,9 +89,9 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     eventmachine (1.2.0.1)
-    excon (0.56.0)
+    excon (0.59.0)
     execjs (2.7.0)
-    faraday (0.12.1)
+    faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
     flamegraph (0.9.5)
     globalid (0.3.6)
@@ -110,6 +110,7 @@ GEM
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
     json (1.8.6)
+    libv8 (3.16.14.19)
     libv8 (3.16.14.19-x86_64-linux)
     logstash-event (1.1.5)
     logstash-logger (0.3.0)
