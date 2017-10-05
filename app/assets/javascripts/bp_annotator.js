@@ -73,7 +73,7 @@ function get_annotations() {
   var params = {},
     ont_select = jQuery("#ontology_ontologyId");
 
-  params.text = jQuery("#annotation_text").val();
+  params.text = jQuery("#annotation_tex t").val();
   if (annotator_url === "ncbo_annotatorplus") {
     params.ontologies = jQuery("#ncbo_ontologies").val();
   } else {
