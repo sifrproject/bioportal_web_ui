@@ -61,8 +61,8 @@ class NcboAnnotatorplusController < ApplicationController
     query += "&expand_class_hierarchy=true" if options[:class_hierarchy_max_level] > 0
     query += "&class_hierarchy_max_level=" + options[:class_hierarchy_max_level].to_s if options[:class_hierarchy_max_level] > 0
     query += "&score=" + options[:score] unless options[:score] == ""
-    query += "&score_threshold=" + options[:score_threshold] unless options[:score] == "" or options[:score_threshold]==-1
-     query += "&confidence_threshold=" + options[:confidence_threshold] unless options[:score] == "" or options[:confidence_threshold]==-1
+    query += "&score_threshold=" + options[:score_threshold] unless options[:score] == "" or options[:score_threshold]<0
+     query += "&confidence_threshold=" + options[:confidence_threshold] unless options[:score] == "" or options[:confidence_threshold]<0
     query += "&negation=" + options[:negation] unless options[:negation].empty?
     query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
     query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
