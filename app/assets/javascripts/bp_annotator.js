@@ -90,8 +90,8 @@ function get_annotations() {
   params.experiencer = jQuery("#experiencer").is(':checked');
   params.temporality = jQuery("#temporality").is(':checked');
 
-  params.score_threshold = jQuery("#score_threshold").is(':checked');
-  params.confidence_threshold = jQuery("#confidence_threshold").is(':checked');
+  params.score_threshold = jQuery("#score_threshold").val();
+  params.confidence_threshold = jQuery("#confidence_threshold").val();
 
   params.lemmatize = jQuery("#lemmatize").is(':checked');
 
