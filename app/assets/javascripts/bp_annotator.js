@@ -1,4 +1,7 @@
-var annotator_url = document.URL.match(".*\/([^\/?]*)")[1];
+var doc_url = document.URL.replace(/\/$/, "");
+var last_slash_index = doc_url.lastIndexOf("/");
+var annotator_url = doc_url.substr(last_slash_index+1);
+
 
 var
   bp_last_params = null,
