@@ -76,16 +76,20 @@
             = help_icon("/annotator", {:title => "Detect when the annotated concept occurred (recent, historical, hypothetical)"}).html_safe
 
     %div
-      %b Include Ancestors Up To Level:
+      %b Ancestors Level:
       - options = [["None", 0], *(1..10).map {|i| [i, i]}, ["All", 999]]
       = select_tag :class_hierarchy_max_level, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
+      = help_icon("/annotator", {:title => "Specifies the level in the ancestor hierarchy up to which the direct annotations will be expanded to."}).html_safe
       %b{:style => "margin-left: 3em;"} Include Score:
       - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
       = select_tag :score, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
+      = help_icon("/annotator", {:title => "Score the annotations following the previous 2009 NCBO measure (old) or the C-Value measure (cvalue). If hierarchy expansion is also used then prefer cvalueh. "}).html_safe
       %b{:style => "margin-left: 3em;"} Score Threshold:
       = number_field_tag :threshold,0, style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control", :id => "score_threshold"
+      = help_icon("/annotator", {:title => "Specifies the minimum score value for annotations."}).html_safe
       %b{:style => "margin-left: 3em;"} Confidence Threshold:
       = number_field_tag :threshold,0, min: 0, max:100, style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control", :id=>"confidence_threshold"
+      = help_icon("/annotator", {:title => "Specifies the minimum position in the scoring distribution (between 1 and 100)"}).html_safe
     - if @recognizers.length > 1
       %p
         %b Entity Recognizer:
