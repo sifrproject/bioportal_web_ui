@@ -3,6 +3,16 @@ bioportal_web_ui
 
 A rails application for biological ontologies, see http://bioportal.bioontology.org/
 
+## Update ontologies_api_ruby_client
+
+When changes are done to the ontologies_api_ruby_client (https://github.com/sifrproject/ontologies_api_ruby_client) you need to update the gem:
+
+
+```shell
+bundle update --source=ontologies_api_client
+```
+
+
 ## Todo
 
 ### Finir les metadata (grosse prio)

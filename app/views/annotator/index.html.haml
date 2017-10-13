@@ -74,6 +74,10 @@
       %b{:style => "margin-left: 3em;"} Include Score:
       - options = [["None", ""], ["Old", "old"], ["cvalue", "cvalue"], ["cvalueh", "cvalueh"]]
       = select_tag :score, options_for_select(options, 0), style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
+      %b{:style => "margin-left: 3em;"} Score Threshold:
+      = number_field_tag :threshold,0, style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
+      %b{:style => "margin-left: 3em;"} Confidence Threshold:
+      = number_field_tag :threshold,0, min: 0, max:100, style: "width: 7em; display: inline; margin-left: 0.5em;", class: "form-control"
     - if @recognizers.length > 1
       %p
         %b Entity Recognizer:

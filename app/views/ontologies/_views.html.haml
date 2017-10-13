@@ -127,7 +127,7 @@
               - view_submissions.each_with_index do |view_sub, view_index|
                 %tr
                   %td
-                    = raw status_link(view_sub, @ontology, view_sub.submissionId==view_sub_latestId)
+                    = raw status_link(view_sub, nil, view_sub.submissionId==view_sub_latestId)
                   %td
                     = xmldatetime_to_date(view_sub.released)
                   %td
