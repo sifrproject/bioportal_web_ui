@@ -301,7 +301,11 @@ module OntologiesHelper
     version_text = submission.version.nil? || submission.version.length == 0 ? "unknown" : submission.version
     status_text = " <span class='ontology_submission_status'>" + submission_status2string(submission) + "</span>"
     if sub_ontology.nil?
-      sub_ontology = submission.explore.ontology
+      begin
+        sub_ontology = submission.explore.ontology
+      rescue NoMethodError => e
+        sub_ontology = submission.ontology
+      end
     end
     if sub_ontology.summaryOnly || latest==false
       version_link = version_text
