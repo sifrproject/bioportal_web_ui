@@ -1,7 +1,7 @@
 {
   :en => {
     :home => {
-      :intro => 'Use ' + $SITE + ' to access and share ontologies. You can <a href="/annotate">create ontology-based 
+      :intro => 'Use ' + $SITE + ' to access and share French biomedical ontologies and terminologies. You can <a href="/annotate">create ontology-based 
         annotations for your own text </a>, <a href = "/projects"> link your own project that uses ontologies to the 
         description of  those ontologies </a>, <a href = "/mappings">find and create relations between terms in 
         different ontologies</a>, review and comment on ontologies and their components as you 
@@ -15,10 +15,10 @@
       :annotate => {
         :intro => 'The ' + $ORG_SITE + ' Annotator processes text submitted by users, recognizes relevant ontology terms in the text and returns 
           the annotations to the user. Use the interface below to submit sample text to get ontology-based annotations. Hover the mouse pointer on any 
-          button to see what it does. Click on the (?) to see a detailed help panel.
-          <br/><br/>
-          Subscribe to the <a target="_blank" href="http://groups.google.com/group/annotator-discuss">NCBO Annotator Users Google group</a> to learn more about  
-          who and how the Annotator is being used in different projects.'
+          button to see what it does.',
+	:ncbo => 'The NCBO Annotator+ is a proxy calling the NCBO Annotator Web service on the NCBO BioPortal. This proxy enables to use new Annotators features such as scoring [Melzi & Jonquet 2014] or RDF outputs [Melzi & Jonquet 2014].</br>
+If using the API, please provide a valid NCBO BioPortal apikey and hit the service at <a href="http://services.bioportal.lirmm.fr/ncbo_annotatorplus">http://services.bioportal.lirmm.fr/ncbo_annotatorplus</a></br>
+Text submitted to the NCBO Annotator+ must be in English.'
       },
       
       :resources => {
@@ -27,8 +27,7 @@
           data resources annotated with particular ontology terms.'
       },
       
-      :footer => '<a title="Powered by NCBO BioPortal" href="http://bioportal.bioontology.org/">Powered by NCBO BioPortal</a> &nbsp;
-        <a title="Release Notes" href="/home/release">Release Notes</a>'
+      :footer => '<a title="Powered by NCBO BioPortal" href="http://bioportal.bioontology.org/">Powered by NCBO BioPortal</a>'
     },
     
     :projects => {
@@ -59,16 +58,13 @@
     },
     
     :about => {
-      :welcome => 'Welcome to the National Center for Biomedical Ontology’s BioPortal. BioPortal is a Web-based application for accessing and sharing biomedical ontologies.',
-      :getting_started => $SITE + ' allows users to browse, upload, download, search, comment on, and create mappings for ontologies.',
-      :browse => '
+      :welcome => "Le SIFR BioPortal, une plateforme ouverte et générique pour l’hébergement d’ontologies et de terminologies biomédicales françaises, basée sur la technologie du National Center for Biomedical Ontology. Le portail facilite l’usage et la diffusion des ontologies du domaine en offrant un ensemble de services (recherche, alignements, métadonnées, versionnement, visualisation, recommandation) y inclus pour l’annotation sémantique. En effet, le SIFR Annotator est un outil pour traiter des données textuelles en français.",
+      :getting_started => $SITE + " permet à ses utilisateurs d'exploiter des ontologies mises en ligne : explorer, télécharger, commenter, rechercher des concepts, créer des mappings.",
+      :browse => "
         <p>
-            Users can browse and explore individual ontologies by navigating either a tree structure or an animated graphical view. Users can also view mappings and ontology metadata, and download ontologies. 
-        </p>
-        <p>
-            Additionally, users who are signed in may also submit a new ontology to the library. All submissions to the library are reviewed.
-        </p>',
-      :announce_list => 'To receive notices of new ' + $SITE + ' releases or site outages, please email ' + $SUPPORT_EMAIL,
+            Les utilisateurs peuvent explorer des ontologies sous forme d'arborescence, accéder à leur méta-données et les télécharger. 
+        </p>",
+      :announce_list => "Pour nous faire part de tout commentaires ou besoin de supports, contactez-nous à l'adresse suivante: <a href='" + $ANNOUNCE_LIST + "'>" + $ANNOUNCE_LIST + "</a>. Vous pouvez également vous inscrire à notre <a href='sifrportal-users@lirmm.fr'>liste de diffusion</a>.",
       :release_notes => ''
     },
  
