@@ -29,6 +29,7 @@ nohup.out
 
 # Ignore editor files
 .idea
+*.iml
 *.swp
 .rbenv-gemsets
 
