@@ -67,7 +67,7 @@
         <p>
             Additionally, users who are signed in may also submit a new ontology to the library. All submissions to the library are reviewed.
         </p>',
-      :announce_list => 'If you have any comment or need for support, please email <a href="mailto:' + $ANNOUNCE_LIST + ' ">' + $ANNOUNCE_LIST + '</a>. If you are interested and would like to join our information mailing list, please subscribe to our <a href="https://listes.lirmm.fr/sympa/subscribe/agroportal-users">user mailing list</a>',
+      :announce_list => 'If you have any comment or need for support, please email <a href="mailto:' + $SUPPORT_EMAIL + ' ">' + $SUPPORT_EMAIL + '</a>. If you are interested and would like to join our information mailing list, please subscribe to our <a href="https://listes.lirmm.fr/sympa/subscribe/agroportal-users">user mailing list</a>',
       :release_notes => ''
     },
  
