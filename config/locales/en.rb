@@ -27,8 +27,7 @@
           data resources annotated with particular ontology terms.'
       },
       
-      :footer => '<a title="Powered by NCBO BioPortal" href="http://bioportal.bioontology.org/">Powered by NCBO BioPortal</a> &nbsp;
-        <a title="Release Notes" href="/home/release">Release Notes</a>'
+      :footer => '<a title="Powered by NCBO BioPortal" href="http://bioportal.bioontology.org/">Powered by NCBO BioPortal</a>'
     },
     
     :projects => {
@@ -59,7 +58,7 @@
     },
     
     :about => {
-      :welcome => 'Welcome to the National Center for Biomedical Ontology’s BioPortal. BioPortal is a Web-based application for accessing and sharing biomedical ontologies.',
+      :welcome => "The AgroPortal project aims at reusing the scientific outcomes and experience of the biomedical domain in the context of plant, agronomic, food, and biodiversity sciences. We offer an ontology portal which features ontology hosting, search, versioning, visualization, comment, recommendation, enables semantic annotation, as well as storing and exploiting ontology alignments. All of these within a fully semantic web compliant infrastructure. The AgroPortal specifically pays attention to respect the requirements of the agronomic community in terms of ontology formats or supported features.",
       :getting_started => $SITE + ' allows users to browse, upload, download, search, comment on, and create mappings for ontologies.',
       :browse => '
         <p>
@@ -68,7 +67,7 @@
         <p>
             Additionally, users who are signed in may also submit a new ontology to the library. All submissions to the library are reviewed.
         </p>',
-      :announce_list => 'To receive notices of new ' + $SITE + ' releases or site outages, please email ' + $SUPPORT_EMAIL,
+      :announce_list => 'If you have any comment or need for support, please email <a href="mailto:' + $ANNOUNCE_LIST + ' ">' + $ANNOUNCE_LIST + '</a>. If you are interested and would like to join our information mailing list, please subscribe to our <a href="https://listes.lirmm.fr/sympa/subscribe/agroportal-users">user mailing list</a>',
       :release_notes => ''
     },
  
