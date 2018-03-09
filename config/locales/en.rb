@@ -64,7 +64,7 @@ Text submitted to the NCBO Annotator+ must be in English.'
         <p>
             Les utilisateurs peuvent explorer des ontologies sous forme d'arborescence, accéder à leur méta-données et les télécharger. 
         </p>",
-      :announce_list => "Pour nous faire part de tout commentaires ou besoin de supports, contactez-nous à l'adresse suivante: <a href='" + $SUPPORT_EMAIL + "'>" + $SUPPORT_EMAIL + "</a>. Vous pouvez également vous inscrire à notre <a href='sifrportal-users@lirmm.fr'>liste de diffusion</a>.",
+      :announce_list => "Pour nous faire part de tout commentaires ou besoin de supports, contactez-nous à l'adresse suivante: <a href='" + $ANNOUNCE_LIST + "'>" + $ANNOUNCE_LIST + "</a>. Vous pouvez également vous inscrire à notre <a href='sifrportal-users@lirmm.fr'>liste de diffusion</a>.",
       :release_notes => ''
     },
  
