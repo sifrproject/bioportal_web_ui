@@ -55,6 +55,7 @@ class AnnotatorController < ApplicationController
                 :negation => params[:negation] ||= "false",  # service default is false
                 :experiencer => params[:experiencer] ||= "false",  # service default is false
                 :temporality => params[:temporality] ||= "false",  # service default is false
+                :certainty => params[:certainty] ||= "false",
                 :score => params[:score],
                 :score_threshold => params[:score_threshold] ||=-1,
                 :confidence_threshold => params[:confidence_threshold] ||=-1,
@@ -76,6 +77,7 @@ class AnnotatorController < ApplicationController
     query += "&negation=" + options[:negation] unless options[:negation].empty?
     query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
     query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
+    query += "&certainty=" + options[:certainty] unless options[:certainty].empty?
     query += "&ontologies=" + CGI.escape(options[:ontologies].join(',')) unless options[:ontologies].empty?
     query += "&semantic_types=" + options[:semantic_types].join(',') unless options[:semantic_types].empty?
     query += "&semantic_groups=" + options[:semantic_groups].join(',') unless options[:semantic_groups].empty?   

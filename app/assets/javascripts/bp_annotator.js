@@ -21,7 +21,8 @@ var BP_COLUMNS = {
   score: 7,
   negation: 8,
   experiencer: 9,
-  temporality: 10
+  temporality: 10,
+  certainty: 11
 };
 
 var CONCEPT_MAP = {
@@ -92,6 +93,8 @@ function get_annotations() {
   params.negation = jQuery("#negation").is(':checked');
   params.experiencer = jQuery("#experiencer").is(':checked');
   params.temporality = jQuery("#temporality").is(':checked');
+  params.certainty = jQuery("#certainty").is(':checked');
+
 
   params.score_threshold = jQuery("#score_threshold").val();
   params.confidence_threshold = jQuery("#confidence_threshold").val();
@@ -118,6 +121,12 @@ function get_annotations() {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, true);
   } else {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, false);
+  }
+
+  if (params.certainty){
+    annotationTable.fnSetColumnVis(BP_COLUMNS.certainty, true);
+  } else {
+    annotationTable.fnSetColumnVis(BP_COLUMNS.certainty, false);
   }
 
   var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
@@ -715,7 +724,7 @@ function get_annotation_score(cls) {
 }
 
 /**
- * Set context value (negation, temporality or experienced) to empty string to avoid useless dataTable warning
+ * Set context value (negation, temporality, experienced or certainty) to empty string to avoid useless dataTable warning
  * @param context
  * @returns {*}
  */
@@ -763,7 +772,7 @@ function get_annotation_rows_from_raw(annotation, params) {
       var m_c = null;
       jQuery.each(annotation.mappings, function(i, m) {
         m_c = get_class_details_from_raw(m.annotatedClass);
-        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(m), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
+        cells = [m_c.cls_link, m_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(m), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext), get_context_value(a.certaintyContext)];
         rows.push(cells);
       }); // mappings loop
     }); // annotations loop
