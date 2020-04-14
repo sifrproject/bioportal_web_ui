@@ -5,7 +5,7 @@ gem 'rails', '4.2.1'
 
 gem 'sass-rails', '~> 5.0'
 gem 'coffee-rails', '~> 4.1.0'
-gem 'uglifier', '>= 1.0.3'
+gem 'uglifier', '>= 4.2.0'
 
 # Uncomment this line to compile assets on the CentOS server (it needs a java runtime)
 # See https://github.com/rails/execjs#readme for more supported runtimes
