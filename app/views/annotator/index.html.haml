@@ -58,26 +58,15 @@
           = check_box_tag :lemmatize, :all, false, :id => "lemmatize"
           = label_tag :lemmatize, "Lemmatize (beta)"
 
-      %div{:class => "panel panel-primary", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
+      %div{:class => "panel panel-primary", :style => "width: 20em; display: inline-block; vertical-align: top;"}
         %div{:class => "panel-heading"}
-          %h3{:class => "panel-title"} NegEx / ConText
+          %h3{:class => "panel-title"} FastContext
         %div{:class => "panel-body"}
-          %p{title: "Detect if a concept has been negated (affirmed, negated)", style: "margin-top: 40px;"}
-            = check_box_tag :negation, :all, false, :id => "negation"
-            = label_tag :negation, "Detect negation"
-            = help_icon("/annotator", {:title => "Detect if a concept has been negated (affirmed, negated, possible)"}).html_safe
-          %p{title: "Detect who experienced the found concept (patient, other)"}
-            = check_box_tag :experiencer, :all, false, :id => "experiencer"
-            = label_tag :experiencer, "Detect experiencer"
-            = help_icon("/annotator", {:title => "Detect who experienced the found concept (patient, other)"}).html_safe
-          %p{title: "Detect when the annotated concept occurred (recent, historical, hypothetical)"}
-            = check_box_tag :temporality, :all, false, :id => "temporality"
-            = label_tag :temporality, "Detect temporality"
-            = help_icon("/annotator", {:title => "Detect when the annotated concept occurred (recent, historical, hypothetical)"}).html_safe
-          %p{title: "Detect if the annotated concept is uncertain (certain, uncertain)"}
-            = check_box_tag :certainty, :all, false, :id => "certainty"
-            = label_tag :certainty, "Detect uncertainty"
-            = help_icon("/annotator", {:title => "Detect if an annotated concept is uncertain (certain, uncertain)"}).html_safe
+          - faxt_context_tooltip = "Enable FastContext to detect : if a concept has been negated (affirmed, negated), who experienced the found concept (patient, other), when the annotated concept occurred (recent, historical, hypothetical), and/or if the annotated concept is uncertain (certain, uncertain)"
+          %p{title: faxt_context_tooltip, style: ""}
+            = check_box_tag :fast_context, :all, false, :id => "fast_context"
+            = label_tag :fast_context, "Enable/disable FastContext"
+            = help_icon("/annotator", {:title => faxt_context_tooltip}).html_safe
 
     %div
       %b Ancestors Level:

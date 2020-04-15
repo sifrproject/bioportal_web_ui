@@ -52,10 +52,7 @@ class AnnotatorController < ApplicationController
                 :exclude_numbers => params[:exclude_numbers] ||= "false",  # service default is false
                 :whole_word_only => params[:whole_word_only] ||= "true", # service default is true
                 :exclude_synonyms => params[:exclude_synonyms] ||= "false",  # service default is false
-                :negation => params[:negation] ||= "false",  # service default is false
-                :experiencer => params[:experiencer] ||= "false",  # service default is false
-                :temporality => params[:temporality] ||= "false",  # service default is false
-                :certainty => params[:certainty] ||= "false",
+                :fast_context => params[:fast_context] ||= "false",  # service default is false
                 :score => params[:score],
                 :score_threshold => params[:score_threshold] ||=-1,
                 :confidence_threshold => params[:confidence_threshold] ||=-1,
@@ -74,10 +71,7 @@ class AnnotatorController < ApplicationController
     query += "&score=" + options[:score] unless options[:score] == ""
     query += "&score_threshold=" + options[:score_threshold] unless options[:score] == "" or options[:score_threshold]==-1
     query += "&confidence_threshold=" + options[:confidence_threshold] unless options[:score] == "" or options[:confidence_threshold]==-1
-    query += "&negation=" + options[:negation] unless options[:negation].empty?
-    query += "&experiencer=" + options[:experiencer] unless options[:experiencer].empty?
-    query += "&temporality=" + options[:temporality] unless options[:temporality].empty?
-    query += "&certainty=" + options[:certainty] unless options[:certainty].empty?
+    query += "&fast_context=" + options[:fast_context] unless options[:fast_context].empty?
     query += "&ontologies=" + CGI.escape(options[:ontologies].join(',')) unless options[:ontologies].empty?
     query += "&semantic_types=" + options[:semantic_types].join(',') unless options[:semantic_types].empty?
     query += "&semantic_groups=" + options[:semantic_groups].join(',') unless options[:semantic_groups].empty?   
