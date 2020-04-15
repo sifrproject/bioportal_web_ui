@@ -39,3 +39,7 @@ nohup.out
 
 
 config/newrelic.yml
+.env
+Dockerfile
+docker-compose.yml
+docker-sync.yml
