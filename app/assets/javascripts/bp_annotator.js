@@ -124,9 +124,9 @@ function get_annotations() {
   }
 
   if (params.certainty){
-    annotationTable.fnSetColumnVis(BP_COLUMNS.certainty, true);
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.certainty, true);
   } else {
-    annotationTable.fnSetColumnVis(BP_COLUMNS.certainty, false);
+    annotationsTable.fnSetColumnVis(BP_COLUMNS.certainty, false);
   }
 
   var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
