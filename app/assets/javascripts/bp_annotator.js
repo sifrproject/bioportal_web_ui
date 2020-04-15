@@ -590,6 +590,10 @@ jQuery(document).ready(function() {
       // Temporality column
       "sWidth": "5%",
       "bVisible": false
+    }, {
+      // Certainty column
+      "sWidth": "5%",
+      "bVisible": false
     }]
   });
   filter_ontologies.init();
@@ -757,14 +761,14 @@ function get_annotation_rows_from_raw(annotation, params) {
     jQuery.each(annotation.annotations, function(i, a) {
       text_markup = get_text_markup(params.text, a.from, a.to);
       match_type = match_type_translation[a.matchType.toLowerCase()] || 'direct';
-      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(annotation), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
+      cells = [cls.cls_link, cls.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(annotation), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext), get_context_value(a.certaintyContext)];
       rows.push(cells);
       // Add rows for any classes in the hierarchy.
       match_type = 'ancestor';
       var h_c = null;
       jQuery.each(annotation.hierarchy, function(i, h) {
         h_c = get_class_details_from_raw(h.annotatedClass);
-        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(h), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext)];
+        cells = [h_c.cls_link, h_c.ont_link, match_type, cls.semantic_types, text_markup, cls.cls_link, cls.ont_link, get_annotation_score(h), get_context_value(a.negationContext), get_context_value(a.experiencerContext), get_context_value(a.temporalityContext), get_context_value(a.certaintyContext)];
         rows.push(cells);
       }); // hierarchy loop
       // Add rows for any classes in the mappings. Note the ont_link will be different.
