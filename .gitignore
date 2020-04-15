@@ -43,3 +43,5 @@ config/newrelic.yml
 Dockerfile
 docker-compose.yml
 docker-sync.yml
+.docker-sync/daemon.log
+.docker-sync/daemon.pid
