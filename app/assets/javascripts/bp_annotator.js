@@ -90,7 +90,7 @@ function get_annotations() {
   params.expand_mappings = jQuery("#expand_mappings").is(':checked');
   params.ncbo_slice = (("ncbo_slice" in BP_CONFIG) ? BP_CONFIG.ncbo_slice : '');
 
-  params.negation = params.experiencer = params.temporality = params.certainty = params.fast_context = jQuery("#fast_context").is(':checked');
+  params.fast_context = jQuery("#fast_context").is(':checked');
 
   params.score_threshold = jQuery("#score_threshold").val();
   params.confidence_threshold = jQuery("#confidence_threshold").val();
@@ -103,27 +103,11 @@ function get_annotations() {
   } else {
     annotationsTable.fnSetColumnVis(BP_COLUMNS.score, false);
   }
-  if (params.negation) {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.negation, true);
-  } else {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.negation, false);
-  }
-  if (params.experiencer) {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.experiencer, true);
-  } else {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.experiencer, false);
-  }
-  if (params.temporality) {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, true);
-  } else {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, false);
-  }
-
-  if (params.certainty){
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.certainty, true);
-  } else {
-    annotationsTable.fnSetColumnVis(BP_COLUMNS.certainty, false);
-  }
+  
+  annotationsTable.fnSetColumnVis(BP_COLUMNS.negation, params.fast_context);
+  annotationsTable.fnSetColumnVis(BP_COLUMNS.experiencer, params.fast_context);
+  annotationsTable.fnSetColumnVis(BP_COLUMNS.temporality, params.fast_context);
+  annotationsTable.fnSetColumnVis(BP_COLUMNS.certainty, params.fast_context);
 
   var maxLevel = parseInt(jQuery("#class_hierarchy_max_level").val());
   if (maxLevel > 0) {
