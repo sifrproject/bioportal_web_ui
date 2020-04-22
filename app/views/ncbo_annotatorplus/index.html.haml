@@ -57,19 +57,15 @@
           = check_box_tag :exclude_synonyms, :all, false, :id => "exclude_synonyms"
           = label_tag :exclude_synonyms, "Exclude Synonyms"
 
-      %div{:class => "panel panel-primary", :style => "width: 17em; display: inline-block; vertical-align: top; height: 256px;"}
+      %div{:class => "panel panel-primary", :style => "width: 20em; display: inline-block; vertical-align: top;"}
         %div{:class => "panel-heading"}
-          %h3{:class => "panel-title"} NegEx / ConText
+          %h3{:class => "panel-title"} FastContext
         %div{:class => "panel-body"}
-          %p{title: "Detect if a concept has been negated (affirmed, negated, possible)", style: "margin-top: 40px;"}
-            = check_box_tag :negation, :all, false, :id => "negation"
-            = label_tag :negation, "Detect negation"
-          %p{title: "Detect who experienced the found concept (patient, other)"}
-            = check_box_tag :experiencer, :all, false, :id => "experiencer"
-            = label_tag :experiencer, "Detect experiencer"
-          %p{title: "Detect when the annotated concept occurred (recent, historical, hypothetical)"}
-            = check_box_tag :temporality, :all, false, :id => "temporality"
-            = label_tag :temporality, "Detect temporality"
+          - faxt_context_tooltip = "Enable FastContext to detect : if a concept has been negated (affirmed, negated), who experienced the found concept (patient, other), when the annotated concept occurred (recent, historical, hypothetical), and/or if the annotated concept is uncertain (certain, uncertain)"
+          %p{title: faxt_context_tooltip, style: ""}
+            = check_box_tag :fast_context, :all, false, :id => "fast_context"
+            = label_tag :fast_context, "Enable FastContext"
+            = help_icon("/annotator", {:title => faxt_context_tooltip}).html_safe
 
     %div
       %b Ancestors Level:
@@ -148,6 +144,7 @@
         %th Negation
         %th Experiencer
         %th Temporality
+        %th Certainty
     %tbody
   #download_links{:style => "margin-top: 1.5em;"}
     %p

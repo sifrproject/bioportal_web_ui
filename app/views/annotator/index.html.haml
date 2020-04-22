@@ -65,7 +65,7 @@
           - faxt_context_tooltip = "Enable FastContext to detect : if a concept has been negated (affirmed, negated), who experienced the found concept (patient, other), when the annotated concept occurred (recent, historical, hypothetical), and/or if the annotated concept is uncertain (certain, uncertain)"
           %p{title: faxt_context_tooltip, style: ""}
             = check_box_tag :fast_context, :all, false, :id => "fast_context"
-            = label_tag :fast_context, "Enable/disable FastContext"
+            = label_tag :fast_context, "Enable FastContext"
             = help_icon("/annotator", {:title => faxt_context_tooltip}).html_safe
 
     %div
