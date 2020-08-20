@@ -44,6 +44,7 @@ gem 'multi_json'
 gem 'rails_autolink'
 gem 'dalli'
 gem 'thin'
+gem 'turnout'
 
 # application monitoring
 gem 'newrelic_rpm'
